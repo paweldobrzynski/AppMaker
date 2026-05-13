@@ -90,18 +90,77 @@ When resolved:
 - domain model insight -> append candidate note to `appmaker/memory/wiki/domain-model.md`
 - open risk -> note for PRD `Existing System Context`
 
-Do not create PRD here. Suggest `/appmaker:interview` or `/appmaker:prd` when ready.
+### 5. Write feature folder + interview-result.md (v0.2.14, MANDATORY when proceeding to PRD)
+
+**Closes design gap surfaced in caseman session:** `prd` requires `interview-result.md` as primary input. Before v0.2.14, brownfield path went `grill-brownfield → prd` without producing this artifact — agent had to synthesize one on the fly. v0.2.14 makes the artifact part of the canonical contract.
+
+When user wants to proceed to PRD (or `/appmaker:next` detects state ready):
+
+1. **Allocate feature folder.** Same logic as `/appmaker:interview` step 2: list `appmaker/features/`, find highest existing NNN, allocate next. Confirm slug via AskUserQuestion.
+
+2. **Write `appmaker/features/<NNN-slug>/interview-result.md`** via Bash heredoc with **grill-brownfield-specific shape** — same fields as interview output, plus brownfield-specific sections:
+
+```bash
+mkdir -p "appmaker/features/<NNN-slug>"
+cat > "appmaker/features/<NNN-slug>/interview-result.md" <<'EOF'
+---
+feature: <NNN-slug>
+created: <ISO date>
+source: grill-brownfield
+readiness: ready_with_override
+override_reason: brownfield grilling covered all dimensions interview would; no formal interview phase
+---
+
+# Feature: <NNN-slug>
+
+## Problem statement
+[1-3 sentence problem rooted in brownfield context]
+
+## Existing System Context (brownfield-specific)
+- Code regions touched: [from grill conversation + context packets]
+- Glossary terms resolved during grill: [list]
+- Architectural decisions surfaced: [list with wiki/architecture.md candidate notes]
+- Open risks: [from step 4]
+
+## Target users + use case
+[from grill conversation]
+
+## Constraints discovered
+[constraints found during grilling — code, data, integration, business]
+
+## Success indicators
+[what proves this works — not yet PRD-grade SCs, but directional]
+
+## Out of scope (intentional)
+[boundaries explicitly drawn during grill]
+
+## Context packet
+[path to appmaker/context/<date>-<topic>.md if /appmaker:context was invoked]
+EOF
+test -f "appmaker/features/<NNN-slug>/interview-result.md" && echo "✓ interview-result.md written (source: grill-brownfield)"
+```
+
+**Verification:** `test -f` before continuing. Without this artifact, downstream `/appmaker:prd` will refuse (readiness gate).
+
+3. **Update glossary deterministic** (v0.2.11 pattern):
+```bash
+bash appmaker/hooks/glossary-extract.sh "appmaker/features/<NNN-slug>/interview-result.md"
+```
+
+Do NOT create PRD here. The artifact unlocks `/appmaker:prd` as the next phase. Suggest via output.
 
 ## Output
 
-Conversation only, plus optional small updates to glossary/memory wiki when a term or durable lesson is resolved.
+Conversation + feature folder + `interview-result.md` (v0.2.14) + optional glossary/memory wiki updates.
 
 ```
 Brownfield grill summary:
+- Feature folder: appmaker/features/003-tenant-routing/
+- Artifact: appmaker/features/003-tenant-routing/interview-result.md (source: grill-brownfield, readiness: ready_with_override)
 - Resolved: tenant routing uses subdomain, not user profile.
 - Risk: billing community touches auth callback.
 - Context packet: appmaker/context/2026-05-11-tenant-routing.md
-- Suggested next: /appmaker:prd appmaker/features/003-tenant-routing
+- Suggested next: /appmaker:prd
 ```
 
 ## Guardrails

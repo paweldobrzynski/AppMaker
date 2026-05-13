@@ -57,10 +57,10 @@ project_mode: brownfield             # brownfield | greenfield
 session_hook_enabled: true           # session-start hook prints 1-line status; set false to skip install / disable
 glossary_hook_enabled: true          # glossary-extract.sh runs as deterministic post-step in prd/decompose/tdd/grill
 
-# Pre-flight memory wiki read mode (v0.2.13)
+# Pre-flight memory wiki read mode (v0.2.14)
 # Controls how generator skills (grill/grill-brownfield/interview/prd/decompose/tdd/diagnose/review) handle pre-flight wiki cat:
 #   auto    — read wiki only if context window utilization is low OR if no recent compaction occurred (default; balances cost vs. context loss)
 #   always  — always cat wiki (v0.2.7 mandatory behavior — verifiable but costs tokens every invocation)
 #   never   — skip pre-flight cat entirely; rely on Claude Code's improved compaction to preserve sensitive instructions
-# After v0.2.13 caseman validation, default may switch to `never` if compaction proves reliable.
+# After v0.2.14 caseman validation, default may switch to `never` if compaction proves reliable.
 wiki_preflight_mode: auto

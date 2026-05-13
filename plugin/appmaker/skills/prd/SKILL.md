@@ -12,8 +12,15 @@ Synthesize PRD. **Do NOT interview** — synthesize what's already in conversati
 - Manual: `/appmaker:prd` (latest interview) or `/appmaker:prd <folder>`
 - Auto: by `start` on feature workflow continuation post-interview
 - AFK-safe: NO — module sketch confirmation requires human review; writes PRD artifact (side effect)
-- Required state: `interview-result.md` with readiness `ready` or `ready_with_override`
-- Required input: feature folder path (auto-detected if latest interview obvious)
+- Required state: `interview-result.md` with `readiness: ready` OR `readiness: ready_with_override` (source can be `interview` OR `grill-brownfield` — v0.2.14)
+- Required input: feature folder path (auto-detected if latest non-PRD'd feature obvious)
+
+**Input source paths (v0.2.14):**
+- Greenfield: `/appmaker:interview` writes `interview-result.md` with `source: interview, readiness: ready`
+- Brownfield (direct): `/appmaker:grill-brownfield` step 5 writes `interview-result.md` with `source: grill-brownfield, readiness: ready_with_override` (override_reason documents that brownfield grilling covered interview dimensions)
+- Brownfield (wrapped): `/appmaker:interview` internally invokes `grill-brownfield` then structures output — same artifact shape
+
+PRD does NOT branch on source — same synthesis logic regardless. The source field is metadata for audit trail.
 
 ## Process
 
