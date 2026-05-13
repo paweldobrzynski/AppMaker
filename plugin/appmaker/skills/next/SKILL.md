@@ -65,6 +65,23 @@ if [ -n "$FEATURE" ]; then
   LATEST_CHECK=$(ls -t appmaker/checklists/*"$FEATURE"*.md 2>/dev/null | head -1)
   [ -n "$LATEST_CHECK" ] && CHECK_STATUS=$(grep -m1 '^status:' "$LATEST_CHECK" 2>/dev/null | awk '{print $2}')
 fi
+
+# Oldest done backlog item for this feature with no per-slice review yet (v0.2.15)
+# done items live in appmaker/backlog/done/<YYYY-MM-DD>-NNN.md (date prefix → ls -1 sorts oldest-first)
+# An item is "reviewed" when its file has a `## Review` heading appended OR a `review_status:` YAML field
+# (latter covers `failed_overridden` explicit override flow).
+UNREVIEWED_DONE=""
+if [ -n "$FEATURE" ]; then
+  for f in $(ls -1 appmaker/backlog/done/*.md 2>/dev/null); do
+    [ -f "$f" ] || continue
+    grep -q "^feature: $FEATURE" "$f" 2>/dev/null || continue
+    if ! grep -q "^## Review" "$f" 2>/dev/null && \
+       ! grep -q "^review_status:" "$f" 2>/dev/null; then
+      UNREVIEWED_DONE=$(grep -m1 '^id:' "$f" 2>/dev/null | awk '{print $2}')
+      break
+    fi
+  done
+fi
 ```
 
 ### 2. Determine next phase (deterministic state machine)
@@ -77,10 +94,13 @@ fi
 | Active feature, no PRD | PRD synthesis | `/appmaker:prd` | feature folder |
 | PRD exists, no decomposition | decompose | `/appmaker:decompose` | feature folder |
 | Decomposition exists, no checklist or checklist FAIL | checklist | `/appmaker:checklist` | `feature <NNN-slug>` |
-| Checklist PASS/WARN, slices open | TDD next slice | `/appmaker:tdd` | `$FIRST_OPEN` |
-| All slices done, no feature review.md | review | `/appmaker:review` | `feature <NNN-slug>` |
-| Review PASS, not archived | archive | `/appmaker:archive` | `<NNN-slug>` |
+| **Done slice without per-slice review** (`$UNREVIEWED_DONE` non-empty) | per-slice review | `/appmaker:review` | `$UNREVIEWED_DONE` |
+| Checklist PASS/WARN, slices open, no unreviewed done | TDD next slice | `/appmaker:tdd` | `$FIRST_OPEN` |
+| All slices done + all reviewed, no feature review.md | feature review | `/appmaker:review` | `feature <NNN-slug>` |
+| Feature review PASS, not archived | archive | `/appmaker:archive` | `<NNN-slug>` |
 | Active feature is in archive/ AND all slices done | nothing — lifecycle complete | (output: "Feature lifecycle complete. Use /appmaker:start for next feature.") | — |
+
+**Per-slice review takes priority** over "next TDD slice" (v0.2.15). Rationale: catching constitution / glossary / AC-coverage / memory-regression issues immediately after a slice is cheaper than discovering them at end-of-feature review when 6 dependent slices have already inherited the flaw. Same critic gate as feature-level review, scoped to one backlog item — `/appmaker:review <id>` (see `review/SKILL.md` step 2: backlog-item scope reads backlog file + parent PRD + `context_packets` + diff). Override flow unchanged: review FAIL → user fix or `review_status: failed_overridden` + reason → orchestrator un-blocks.
 
 If state is ambiguous (e.g., review FAIL not resolved), surface via AskUserQuestion with options: address findings / override / skip phase.
 
@@ -128,12 +148,14 @@ Wait for completion. Read target's output/exit signal.
 Compact summary per cycle:
 
 ```
-[1/?] interview  → ✓ done
-[2/?] prd        → ✓ done
-[3/?] decompose  → ✓ done
-[4/?] checklist  → ✓ PASS
-[5/?] tdd 001    → ✓ done
-[6/?] tdd 002    → ⏸ stopped at user request
+[1/?] interview    → ✓ done
+[2/?] prd          → ✓ done
+[3/?] decompose    → ✓ done
+[4/?] checklist    → ✓ PASS
+[5/?] tdd 001      → ✓ done
+[6/?] review 001   → ✓ PASS (0 critical, 1 suggestion)
+[7/?] tdd 002      → ✓ done
+[8/?] review 002   → ⏸ stopped at user request
 
 Resume: /appmaker:next
 ```

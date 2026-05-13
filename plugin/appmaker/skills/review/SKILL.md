@@ -157,11 +157,20 @@ Subagent returns structured report. **Claude MUST persist via Bash tool** — DO
 **Per scope — persistence command:**
 
 ```bash
-# Backlog item review — append ## Review to backlog file
-cat >> "appmaker/backlog/NNN-slug.md" <<'REVIEW_EOF'
+# Backlog item review — append ## Review to backlog file.
+# Item may live in appmaker/backlog/NNN-slug.md (active) OR appmaker/backlog/done/<YYYY-MM-DD>-NNN-slug.md
+# (after tdd moves it). Resolve by ID, not hardcoded path. v0.2.15: per-slice review in /appmaker:next
+# chain runs AFTER tdd, so target is almost always in done/.
+BACKLOG_ID="NNN"  # e.g. "008" — passed as scope arg
+BACKLOG_FILE=$(ls appmaker/backlog/${BACKLOG_ID}-*.md appmaker/backlog/done/*-${BACKLOG_ID}-*.md 2>/dev/null | head -1)
+if [ -z "$BACKLOG_FILE" ] || [ ! -f "$BACKLOG_FILE" ]; then
+  echo "✗ Backlog item ${BACKLOG_ID} not found (checked active + done/)" >&2
+  exit 1
+fi
+cat >> "$BACKLOG_FILE" <<'REVIEW_EOF'
 [compact template above]
 REVIEW_EOF
-test -f "appmaker/backlog/NNN-slug.md" && echo "✓ Review appended"
+test -f "$BACKLOG_FILE" && echo "✓ Review appended → $BACKLOG_FILE"
 
 # Feature review — write to features/<NNN-slug>/review.md
 mkdir -p "appmaker/features/<NNN-slug>"
