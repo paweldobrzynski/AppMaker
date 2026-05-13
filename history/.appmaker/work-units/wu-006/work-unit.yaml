@@ -1,0 +1,392 @@
+# WU-006: Draft ADR-004 PRD Synthesis (to-prd from Matt Pocock skills)
+#
+# conforms_to: .appmaker/schemas/work-unit-v1.schema.json
+# (manual structural conformance check; automatic validator deferred per
+#  ADR-003 OQ-1 — first WU exercising work-unit-v1 schema as reference)
+#
+# First WU after schemas v1 promote. Per user/Codex directive: WĄSKO.
+# Only to-prd pattern. Does NOT mix decomposition (ADR-005), safety hooks
+# (ADR-006), implementation runner (ADR-007), bug workflow (ADR-008),
+# architecture review (ADR-009).
+#
+# Multi-output investigation (per WU-003 / WU-005 precedent):
+#   - PRIMARY:   decisions/ADR-004-prd-synthesis.md
+#   - SECONDARY: docs/reference/matt-pocock-pattern-mapping.md (append +1 entry, append-oriented)
+#
+# Per WU-005 lessons (5 of 5 applicable to wu-006-prd):
+#   - schema_design:        declare secondary_artifacts_policy explicit
+#   - validator_gap:        no JSON Schema meta-validation pretense; parser-only honest
+#   - actual_usage:         schema-conformance check is manual (no validator yet); cross-ref against work-unit-v1.schema.json structure
+#   - adr_quality:          ADR-004 D7 lessons-mapping table cross-checked against schema content where claimed
+#   - harness_engineering:  WU-006 invests in harness (work-unit-v1 manual conformance, lessons traceability, gates) not in chasing model upgrades
+#
+# This is the FIRST WU authored under work-unit-v1 schema (manual structural
+# conformance check; meta-validation deferred per ADR-003 D4 + OQ-1).
+
+id: wu-006
+title: "Draft ADR-004: PRD Synthesis (to-prd pattern from Matt Pocock skills)"
+type: investigation
+status: PROMOTED                          # PROPOSED | ACCEPTED | IN_PROGRESS | VERIFIED | PROMOTED | PROMOTED_WITH_EXCEPTION | REJECTED
+# status: PROPOSED → ACCEPTED 2026-05-10 (Codex final fact-check pass after 6 stale references fixed + 3 agentic_engineering lessons added + D2 Understanding section requirement + lessons_applied 12/12 + roadmap placeholders for ADR-NNN Agent-Native / Verifiability / Context-Pack Schema deferred)
+# status: ACCEPTED → IN_PROGRESS 2026-05-09T23:44Z (execution started after context-pack ACCEPT including 3 stale-sync fixes for Design Exploration Stage / Open Design integration; run dir: 2026-05-09T23-44-24Z)
+# status: IN_PROGRESS → VERIFIED 2026-05-09T23:44Z (self-check passed: ADR-004 338 lines / 250-550 bounds, all 12 adr-v1 sections present once, 7 D + 5 KA + 8 OQ, 12-row lessons mapping table, Understanding 7 subsections all named, Matt Pocock attribution complete with pinned commit b843cb5ea, 0 forbidden patterns post-fix; mapping entry 12 lines with 8 required fields)
+# status: VERIFIED → PROMOTED 2026-05-10T01:24Z (Codex REVIEW PASS after 7 pre-promote revisions across 2 rounds: round 1 — stale "8+3" → "8+4"; D4↔D6 contradiction resolved; D5 mapping +5 readiness.* fields; D4 mechanism softened to human-enforced; UPPERCASE casing convention; round 2 — mapping entry casing UPPERCASE; D4 internal kernel-vs-human contradiction resolved with v2 mechanical deferred to ADR-005. ADR-004 promoted to decisions/; mapping entry appended as Entry 3 in docs/reference/matt-pocock-pattern-mapping.md (existing 2 entries diff-verified unchanged); mapping doc Revision History + End footer updated.)
+created: 2026-05-10
+created_by: pawedo@gmail.com
+authored_by: claude (synthesis), codex (critic — pending)
+related_adr: [ADR-001, ADR-002, ADR-003]
+related_work_units: [wu-002, wu-003, wu-004, wu-005]
+
+# ---------------------------------------------------------------------------
+# GOAL
+# ---------------------------------------------------------------------------
+goal: |
+  Produce ADR-004 — a narrowly-scoped Architectural Decision Record that
+  establishes PRD Synthesis as a lifecycle stage between Interview Phase
+  (ADR-002) and Work_unit Decomposition (ADR-005, future). The PRD is the
+  bridge: Interview reduces ambiguity into structured interview-result.yaml;
+  PRD Synthesis turns that into a product-level reference document that
+  downstream work_units (decomposition, implementation) read as their
+  "what-to-build" source of truth.
+
+  Inspiration: Matt Pocock /to-prd skill (engineering/to-prd/SKILL.md).
+  AppMaker adapts the pattern as inspiration source, NOT runtime dependency
+  (per ADR-002 §D5 attribution policy + ADR-001 §D12 adapter selection).
+
+  Secondary output: append exactly one entry to docs/reference/matt-pocock-pattern-mapping.md
+  (per WU-003 append-oriented ledger convention).
+
+# ---------------------------------------------------------------------------
+# LESSONS APPLIED
+# ---------------------------------------------------------------------------
+lessons_applied:
+  - source: wu-003 / review / 2026-05-09T15:55:00Z
+    influence: "DIRECT (broadly applicable to all-investigation-work-units). Pre-execution checklist with external-state fact-check + wording-consistency scan drives WU-006 self-check rigor: cross-section consistency between ADR-004 §D1 (PRD definition) ↔ §D3 (lifecycle) ↔ §D7 (lessons mapping); paths to Matt Pocock to-prd verified before context-pack."
+  - source: wu-003 / adr_quality / 2026-05-09T15:55:00Z
+    influence: "DIRECT (applicable to multi-decision ADRs). ADR-004 has 7 sub-decisions D1-D7; cross_decision_consistency check is mandatory before VERIFIED."
+  - source: wu-004 / memory_layer / 2026-05-09T16:50:00Z
+    influence: "DIRECT (future-investigation-work-units). work-unit-v1 schema requires lessons_applied field; this WU populates it (see this block)."
+  - source: wu-004 / review / 2026-05-09T16:50:00Z
+    influence: "DIRECT (future-investigation-work-units). adr-v1 schema enforces forbidden_patterns; ADR-004 must contain zero TBD, zero TODO, zero bare ellipsis."
+  - source: wu-005 / schema_design / 2026-05-09T23:58:00Z
+    influence: "DIRECT (wu-006-prd). WU-006 is multi-output (ADR-004 + mapping append); secondary_artifacts_policy declared explicitly in verification block, even though mapping append is small and unlikely to defer."
+  - source: wu-005 / validator_gap / 2026-05-09T23:58:00Z
+    influence: "DIRECT (wu-006-prd). WU-006 work-unit.yaml is structurally checked against work-unit-v1.schema.json manually (no validator installed yet per ADR-003 OQ-1); parser-only validation honest, gap recorded."
+  - source: wu-005 / actual_usage / 2026-05-09T23:58:00Z
+    influence: "DIRECT (wu-006-prd). ADR-004 must reference actual usage of PRD-like artifacts (none exist yet in AppMaker; this is greenfield). For schema-shape decisions in D2, no historical artifact to mirror; ADR explicitly states this and proposes initial shape with explicit revisitation in v2."
+  - source: wu-005 / adr_quality / 2026-05-09T23:58:00Z
+    influence: "DIRECT (wu-006-prd). ADR-004 D7 lessons-mapping table will be cross-checked against any artifact it claims (e.g. mapping doc append entry must contain the fields ADR-004 D7 promises) before VERIFIED."
+  - source: wu-005 / harness_engineering / 2026-05-10T00:05:00Z
+    influence: "DIRECT (wu-006-prd). WU-006 invests in harness — manual schema conformance discipline, lessons traceability, fail-closed gates, audit trails — rather than waiting for validator implementation or chasing a 'better model' to substitute. ADR-004 D4 (PRD as required gate before decomposition) is itself a harness investment: enforces structural ordering of the lifecycle, not a model-trick."
+  - source: wu-005 / agentic_engineering / 2026-05-10T00:30:00Z (human_understanding)
+    influence: "DIRECT (wu-006-prd, load-bearing for D2). PRD shape (D2) MUST include Understanding section with 7 named subsections: users/buyers/operators, domain invariants, identity model, trust boundaries, non-delegable human judgments, verifiable success criteria, failure modes / unacceptable outcomes. This operationalizes the lesson: AppMaker explicitly marks which assumptions require human judgment vs which tasks are agent-executable."
+  - source: wu-005 / agentic_engineering / 2026-05-10T00:30:00Z (context_pack_as_program)
+    influence: "DIRECT (wu-006-prd, informs context-pack discipline). WU-006 context-pack (next step, not this contract) MUST be structured as Software 3.0 program: explicit R8 inclusions, lessons traceability table, scope statement, forbidden_patterns mention, self-check checklist. ADR-004 may note this principle in §Open Questions as informing v1.1 context-compiler design (without formal ADR yet)."
+  - source: wu-005 / agentic_engineering / 2026-05-10T00:30:00Z (verifiability_bias)
+    influence: "DIRECT (wu-006-prd, load-bearing for D2 Understanding subsection 'verifiable success criteria'). PRD success_criteria must be verifiable (auto-check OR human-review-with-explicit-criteria); unverifiable requirements (e.g. 'beautiful UI') require turning into verifiable proxies (screenshot review, layout constraints, accessibility checks, workflow completion) or explicit human-reviewed marking. Future ADR-NNN may formalize Verifiability Standards when implementation/UI work surfaces concrete needs."
+
+# ---------------------------------------------------------------------------
+# DECISIONS TO RESOLVE IN ADR-004
+# ---------------------------------------------------------------------------
+decisions_to_resolve:
+  - "D1. PRD definition: what IS a PRD in AppMaker context? What does it answer, what does it explicitly NOT answer? How does it differ from an ADR (architectural decisions about how) and from an implementation plan (work_unit decomposition / vertical slices)? PRD is product-level what-to-build reference; ADR captures structural decisions; implementation plan is the slicing of work."
+  - "D2. PRD location and format. Candidates: (a) `.appmaker/prd.md` (single project-level), (b) `.appmaker/product/prd.md` (under product subdirectory for future product artifacts), (c) `.appmaker/prds/<feature-id>.md` (per-feature), (d) embedded as expanded section in interview-result.yaml. Pick one default with rationale; ≥3 alternatives go to killed. PRD shape (regardless of location choice) MUST include Understanding section with 7 named subsections (per wu-005 lesson human_understanding): users / buyers / operators; domain invariants; identity model; trust boundaries; non-delegable human judgments; verifiable success criteria; failure modes / unacceptable outcomes. The verifiable-success-criteria subsection enforces wu-005 lesson verifiability_bias (every success criterion is auto-check OR human-review-with-explicit-criteria; unverifiable requirements turned into verifiable proxies or explicitly human-reviewed)."
+  - "D3. When does PRD emerge? Triggered after interview-result.yaml has readiness.status in {ready, ready_with_override}; before any work_unit decomposition (to-issues / ADR-005 future). Specify: manual command (`appmaker prd`) vs automatic on interview promote vs human-on-demand; specify what happens if PRD is requested before interview is ready (fail-closed reject per R5)."
+  - "D4. Is PRD a required gate before to-issues (decomposition)? Most likely YES per discipline (work_unit decomposition without product-level reference produces drifting features). But this is the place to decide explicitly. If yes, define gate semantics: PRD must exist with status ACCEPTED before decomposition WUs are created."
+  - "D5. How does PRD consume interview-result.yaml? Field-by-field input mapping. PRD pulls from interview's `problem`, `scope`, `product`, `technical`, `risks` blocks; PRD elaborates these into product-level prose (workflows, user stories, acceptance criteria for product capabilities). Specify the consumption rule: every interview field must be either explicitly addressed or explicitly noted as out-of-PRD-scope."
+  - "D6. ready_with_override behavior in PRD. Per ADR-002 §D6, interview's unresolved_ambiguities[] propagate to downstream context-packs. PRD specifically: must inherit unresolved_ambiguities[] (PRD has its own copy or references interview's by id), must surface them in a dedicated section (so product-level reading exposes them), must not silently resolve them. Specify: where in PRD do unresolved_ambiguities surface, what gate behavior PRD has when interview was ready_with_override."
+  - "D7. Matt Pocock to-prd attribution + lessons-derived fields explicit mapping. Combined housekeeping: (a) attribution per ADR-002 §D5 model (inline in prompt source + mapping doc row + pinned commit hash); (b) memory-stream test — each of 12 wu-006-applicable lessons (8 wu-005 direct including 3 agentic_engineering from extended closeout + 4 broader from wu-003/wu-004) maps to a concrete element (PRD shape constraint including Understanding section subsections, gate semantics, ADR-004 self-check item, or downstream WU validation). Table format mandatory for the lessons mapping per WU-005 lesson adr_quality (cross-check claims against actual artifacts)."
+
+# ---------------------------------------------------------------------------
+# SCOPE
+# ---------------------------------------------------------------------------
+scope:
+  allowed_files_read:
+    - decisions/ADR-001-process-kernel-architecture.md
+    - decisions/ADR-002-interview-phase.md
+    - decisions/ADR-003-schema-format-and-artifact-schemas.md
+    - constitution.md                                                 # ACCEPTED v2 (18 rules)
+    - .appmaker/schemas/interview-result-v1.schema.json
+    - .appmaker/schemas/work-unit-v1.schema.json
+    - .appmaker/schemas/adr-v1.schema.json
+    - .appmaker/work-units/wu-002/work-unit.yaml
+    - .appmaker/work-units/wu-002/context-pack.md
+    - .appmaker/work-units/wu-003/work-unit.yaml
+    - .appmaker/work-units/wu-003/context-pack.md
+    - .appmaker/work-units/wu-004/work-unit.yaml
+    - .appmaker/work-units/wu-004/context-pack.md
+    - .appmaker/work-units/wu-005/work-unit.yaml
+    - .appmaker/work-units/wu-005/context-pack.md
+    - .appmaker/lessons.jsonl                                         # 15 entries total; for WU-006: 8 wu-005-direct (5 from initial closeout + 3 from extended closeout per user/Codex directive) + 4 broad from wu-003/wu-004 = 12 applicable
+    - .appmaker/events.jsonl                                          # AUDIT REFERENCE ONLY — not primary decision source
+    - docs/reference/matt-pocock-pattern-mapping.md                   # current state (2 entries); WU-006 will append 1 entry
+    - /Users/pawel/Projects/Matt_Pocock_Skills/skills/engineering/to-prd/SKILL.md
+    - /Users/pawel/Projects/Matt_Pocock_Skills/LICENSE
+    - /Users/pawel/Projects/Matt_Pocock_Skills/README.md
+  allowed_files_write:
+    - .appmaker/work-units/wu-006/context-pack.md
+    - .appmaker/work-units/wu-006/runs/<timestamp>/**                  # entire run dir
+    - decisions/ADR-004-prd-synthesis.md                                # promote target (only on PROMOTE step)
+    - docs/reference/matt-pocock-pattern-mapping.md                    # promote target (append +1 entry only; no rewrites)
+  # blocked_files_write: writes are forbidden to these paths; read access governed by allowed_files_read above.
+  # If a path is neither in allowed_files_read nor blocked_files_write, default is "no read, no write" per R5 fail-closed.
+  blocked_files_write:
+    - decisions/ADR-001-process-kernel-architecture.md                 # immutable
+    - decisions/ADR-002-interview-phase.md                              # immutable
+    - decisions/ADR-003-schema-format-and-artifact-schemas.md          # immutable (just promoted)
+    - constitution.md                                                   # amendments via dedicated WU only
+    - .appmaker/schemas/**                                              # immutable v1 schemas (next change via amendment-style WU)
+    - .appmaker/work-units/wu-002/**                                    # closed (read OK)
+    - .appmaker/work-units/wu-003/**                                    # closed (read OK)
+    - .appmaker/work-units/wu-004/**                                    # closed (read OK)
+    - .appmaker/work-units/wu-005/**                                    # closed (read OK)
+    - "**/*.ts"                                                         # no code
+    - "**/*.json"                                                       # no JSON config (schemas are .schema.json — already promoted, blocked above)
+    - "**/*.sql"                                                        # no SQL
+    - .appmaker/state.sqlite
+    - .appmaker/decisions.jsonl                                          # not yet active
+    - .appmaker/events.jsonl                                             # append-only via runner step on promote
+    - .appmaker/lessons.jsonl                                            # append-only
+  blocked_actions:
+    - "git push"
+    - "git commit"
+    - "git reset --hard"
+    - "rm -rf"
+    - "npm install"
+    - "git clone"
+    - any modification to ADR-001/002/003 or constitution.md
+    - any modification to v1 schemas in .appmaker/schemas/
+    - any rewrite of existing matt-pocock-pattern-mapping.md entries (append-only-with-revision-history per WU-003 convention)
+  allowed_actions:
+    - "read: any file in allowed_files_read"
+    - "create: files in run dir; write to promote-target paths only at PROMOTE step"
+    - "execute parser/validator: yaml.safe_load, ruby YAML.load_file, jq empty, markdown structural inspection (grep, sed, diff)"
+    - "manually structurally check work-unit.yaml against work-unit-v1.schema.json (no automatic validator yet per ADR-003 OQ-1)"
+
+# ---------------------------------------------------------------------------
+# OUTPUT TARGETS (multi-output)
+# ---------------------------------------------------------------------------
+output_targets:
+  - name: ADR-004
+    role: primary
+    artifact_schema: adr-v1                                              # promoted in WU-005
+    draft_path: .appmaker/work-units/wu-006/runs/<timestamp>/output.md
+    promotion_path: decisions/ADR-004-prd-synthesis.md
+    promotion_status_flip: "DRAFT in run dir → ACCEPTED at decisions/ (per WU-002 lifecycle precedent)"
+  - name: matt-pocock-pattern-mapping-append
+    role: secondary
+    artifact_schema: "no formal schema; append-oriented ledger per WU-003 convention"
+    draft_path: ".appmaker/work-units/wu-006/runs/<timestamp>/matt-pocock-pattern-mapping-entry.md"
+    promotion_path: docs/reference/matt-pocock-pattern-mapping.md
+    promotion_status: "appended on PROMOTE; existing 2 entries unchanged; new entry adds row for to-prd → AppMaker PRD Synthesis"
+
+# ---------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA
+# ---------------------------------------------------------------------------
+acceptance_criteria:
+  - "ADR-004 resolves all 7 decisions D1–D7 with rationale and ≥3 killed alternatives total."
+  - "ADR-004 has all 12 required adr-v1 sections (Status, Metadata, Context, Sources Consulted, Decision, Killed Alternatives, Risks, Rollback, Open Questions, Acceptance Criteria, Verification, Revision History) per .appmaker/schemas/adr-v1.schema.json."
+  - "ADR-004 length 250–550 lines (per ADR-002 / ADR-003 precedent)."
+  - "ADR-004 explicitly cites all 12 wu-006-applicable lessons (8 wu-005 direct — schema_design, validator_gap, actual_usage, adr_quality, harness_engineering, plus 3 agentic_engineering from extended closeout: human_understanding, context_pack_as_program, verifiability_bias — plus 4 broader from wu-003/wu-004) by source / category / timestamp; for each, the ADR shows which artifact element operationalizes the lesson."
+  - "ADR-004 stays NARROW per Codex/user directive: only to-prd pattern adopted; no decomposition (ADR-005), no safety hooks (ADR-006), no implementation runner (ADR-007), no bug workflow (ADR-008), no architecture review (ADR-009). These are explicit out-of-scope notes in §Open Questions."
+  - "Matt Pocock attribution explicit: link to repo, MIT license, author name, exact SKILL.md path (skills/engineering/to-prd/SKILL.md), pinned commit hash (b843cb5ea74b1fe5e58a0fc23cddef9e66076fb8 per ADR-002 D5 + matt-pocock-pattern-mapping.md)."
+  - "matt-pocock-pattern-mapping.md gains exactly ONE new entry (3rd row total) for to-prd → AppMaker PRD Synthesis with all required fields: source_skill, source_commit, license, adr_reference (ADR-004), appmaker_pattern, surface (lifecycle), output_artifact."
+  - "matt-pocock-pattern-mapping.md existing 2 entries (grill-me, grill-with-docs) remain textually unchanged (diff verification before VERIFIED)."
+  - "PRD shape (D2 conceptual schema) described conceptually; NOT delivered as parseable schema file (that would be a future schemas-v2 work_unit)."
+  - "No constitution edits, no schema files modified, no ADR-001/002/003 edits."
+  - "No contradiction with ADR-001 §§D2, D2a, D3, D11, D12, ADR-002 D1-D7, ADR-003 D1-D5, constitution v2 R1, R8, R12, R13, R18."
+  - "Forbidden patterns absent in ADR-004 prose: zero TBD, zero TODO, zero bare ellipsis (per WU-002/003/004/005 precedent + adr-v1.schema.json forbidden_patterns required field)."
+  - "Open Questions section enumerates explicitly out-of-scope concerns (decomposition, safety hooks, implementation runner, validator implementation, schema migration, Design Exploration Stage) and any deferred design choices in PRD Synthesis itself. Design Exploration Stage is Open Design-inspired and PRD-driven, but WU-006 must only record it as a future ADR candidate; no Open Design runtime dependency, prototype generation, design-system catalog, or UI artifact is adopted here."
+  - "Memory-stream test: ADR-004 §Decision-D7 contains a TABLE mapping each of the 12 wu-006-applicable lessons to one or more elements (self-check item, PRD shape constraint including Understanding section subsection, downstream WU validation). If any lesson is not mapped, WU-006 REJECTED."
+  - "Manual schema conformance (work-unit-v1): WU-006 work-unit.yaml structurally matches .appmaker/schemas/work-unit-v1.schema.json (manually checked since validator deferred per ADR-003 OQ-1). Specifically: required top-level fields present (id, title, type, status, created, goal, scope, acceptance_criteria, verification, execution, promote_gate); promote_gate.required_pass uses mixed string|object form per WU-005 schema fix; lessons_applied present per wu-004 lesson #5; secondary_artifacts_policy present per wu-005 lesson schema_design."
+
+# ---------------------------------------------------------------------------
+# VERIFICATION
+# ---------------------------------------------------------------------------
+verification:
+  primary_artifact:
+    name: ADR-004
+    schema: adr-v1
+    required_sections:
+      - "Status"
+      - "Metadata"
+      - "Context"
+      - "Sources Consulted"
+      - "Decision (numbered)"
+      - "Killed Alternatives"
+      - "Risks and Mitigations"
+      - "Rollback Plan"
+      - "Open Questions"
+      - "Acceptance Criteria"
+      - "Verification"
+      - "Revision History"
+    forbidden_patterns: ["TBD", "TODO", "..."]
+    bounds_lines: { min: 250, max: 550 }
+    minimum_decisions_resolved: 5
+    minimum_alternatives_killed: 3
+    lessons_traceability_required: true
+    matt_pocock_attribution_required: true
+    matt_pocock_quotation_must_cite_path: true
+    matt_pocock_must_cite_pinned_commit: true                           # per ADR-002 D5 + matt-pocock-pattern-mapping
+  secondary_artifacts:
+    - name: matt-pocock-pattern-mapping-append
+      type: ledger_append
+      parser_validation: not_applicable                                 # markdown
+      content_alignment: "Single new entry with 7 required fields (source_skill, source_commit, license, adr_reference, appmaker_pattern, surface, output_artifact); existing 2 entries unchanged (diff = 0)"
+      forbidden_patterns_check: required                                # apply same TBD/TODO/ellipsis discipline to new row
+  cross_artifact_consistency_required: true                             # ADR-004 D7 mapping ↔ matt-pocock-pattern-mapping.md new entry must agree on attribution fields
+  human_review_required: true
+
+  secondary_artifacts_policy:
+    default: required
+    deferred_allowed_only_if:
+      - "No path in ADR-004 currently triggers deferral (mapping append is small, not blocked by scope, not code-backed)"
+    if_deferred:
+      - "Not expected for WU-006; documented for schema completeness per WU-005 lesson schema_design"
+
+# ---------------------------------------------------------------------------
+# VALIDATOR TOOLING PREFLIGHT
+# ---------------------------------------------------------------------------
+validator_tooling_preflight:
+  required: true
+  must_record_available_tools: true
+  if_selected_format_requires_unavailable_validator: |
+    Per WU-005 lesson validator_gap: do not pretend full validation. WU-006 produces markdown
+    artifacts (ADR-004 + mapping doc append) plus this YAML contract. No JSON Schema meta-
+    validation needed for outputs; work-unit-v1 schema conformance for THIS yaml is checked
+    manually (validator deferred per ADR-003 OQ-1).
+  available_tools_at_baseline:
+    - jq (JSON syntactic check)
+    - python yaml (PyYAML safe_load)
+    - ruby YAML (Psych)
+    - markdown structural inspection (grep, sed, diff, awk)
+  unavailable_at_baseline:
+    - ajv (JSON Schema meta-validator)
+    - python jsonschema package
+    - automatic work-unit-v1 conformance validator
+
+# ---------------------------------------------------------------------------
+# REVIEW SCORECARD
+# ---------------------------------------------------------------------------
+review_required_from:
+  - critic
+  - human                                                               # single human (not amendment, no semantic touching of core safety rules)
+
+review_scorecard_template:
+  clarity: pending
+  internal_consistency: pending
+  cross_decision_consistency: pending                                   # within ADR-004 D1-D7
+  cross_artifact_consistency: pending                                   # ADR-004 D7 mapping ↔ matt-pocock-pattern-mapping.md new entry
+  alignment_with_adr_001: pending
+  alignment_with_adr_002: pending
+  alignment_with_adr_003: pending
+  alignment_with_constitution: pending
+  matt_pocock_attribution_quality: pending
+  matt_pocock_pinned_commit_present: pending
+  killed_alternatives_quality: pending
+  lessons_traceability_concrete: pending                                # 12 lessons → 12 mapped elements (8 wu-005 direct + 4 broad from wu-003/wu-004)
+  memory_stream_actually_read: pending                                  # context-pack cites lessons; output reflects influence
+  scope_discipline: pending                                             # narrow per Codex directive (no decomposition, no hooks)
+  forbidden_patterns_absent: pending
+  schema_conformance_manual: pending                                    # work-unit.yaml conforms to work-unit-v1; ADR conforms to adr-v1; mapping append shape correct
+  mapping_doc_existing_entries_unchanged: pending                       # diff = 0 for grill-me + grill-with-docs rows
+
+# ---------------------------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------------------------
+execution:
+  mode: single                                                          # per ADR-001 §D8
+  agent: claude (default)
+  context_pack: .appmaker/work-units/wu-006/context-pack.md             # to be authored after this contract is ACCEPTED
+  estimated_effort: 2-3 hours                                           # ADR-004 250-550 lines + small mapping append + manual schema conformance check
+
+# ---------------------------------------------------------------------------
+# GATES (fail-closed per ADR-001 §D13 + constitution R5)
+# ---------------------------------------------------------------------------
+promote_gate:
+  default_decision: reject
+  on_missing_field: reject
+  on_error: reject
+  required_pass:
+    - "verification.primary_artifact.required_sections_all_present: true"
+    - "verification.primary_artifact.forbidden_patterns_absent: true"
+    - "verification.primary_artifact.bounds_lines_within: true"
+    - "verification.primary_artifact.minimum_decisions_resolved_met: true"
+    - "verification.primary_artifact.minimum_alternatives_killed_met: true"
+    - "verification.primary_artifact.lessons_traceability_pass: true"
+    - "verification.primary_artifact.matt_pocock_attribution_present: true"
+    - "verification.primary_artifact.matt_pocock_pinned_commit_present: true"
+    - "verification.secondary_artifacts.status: pass OR deferred_with_rationale"
+    - "verification.secondary_artifacts.content_alignment_pass: true"
+    - "verification.cross_artifact_consistency_pass: true"
+    - "verification.mapping_doc_existing_entries_unchanged: pass"
+    - validator_tooling_preflight.recorded: true
+    - "review.human: pass"
+  break_glass:
+    allowed: false                                                      # ADR is governance-adjacent; no escape hatch
+
+# ---------------------------------------------------------------------------
+# RISKS
+# ---------------------------------------------------------------------------
+risks:
+  - "Scope creep into decomposition (ADR-005) or safety hooks (ADR-006). Mitigation: Codex directive explicit (only to-prd); acceptance criterion #5 states out-of-scope explicitly; review_scorecard_template.scope_discipline tracks this."
+  - "PRD shape (D2) over-engineered before any real PRD authored. Mitigation: D2 describes shape conceptually, not as parseable schema; explicit OQ for v2 schemas-extension when usage data exists."
+  - "Mapping doc append silently rewrites existing entries (lessons #5 actual_usage spirit). Mitigation: diff verification mandatory before VERIFIED; review scorecard mapping_doc_existing_entries_unchanged."
+  - "Cross-decision contradiction within ADR-004 D1-D7 (per wu-003 lesson #3). Mitigation: cross_decision_consistency review scorecard field; self-check explicit step."
+  - "Matt Pocock attribution drift (commit hash not cited despite policy). Mitigation: matt_pocock_pinned_commit_present scorecard field; ADR-002 D5 + matt-pocock-pattern-mapping.md provide authoritative hash."
+  - "Manual schema conformance check skipped (no validator). Mitigation: schema_conformance_manual scorecard field; explicit ADR-003 OQ-1 deferral acknowledged."
+  - "PRD lifecycle (D3) ambiguous about supersedence and triggers. Mitigation: D3 mandates explicit answers for triggers, supersedence, gates; killed alternatives capture rejected lifecycles."
+  - "ADR-004 D2 (PRD location) chosen prematurely without project usage data. Mitigation: D2 picks initial default with explicit revisit clause in §Open Questions."
+
+# ---------------------------------------------------------------------------
+# ROLLBACK
+# ---------------------------------------------------------------------------
+rollback_plan: |
+  Soft: future ADR (ADR-NNN) supersedes specific decisions in ADR-004 (e.g. PRD location D2 changed; lifecycle D3 revised after first real PRD authored). matt-pocock-pattern-mapping.md may amend the to-prd entry via dedicated work_unit with revision history per WU-003 convention.
+
+  Hard: archive ADR-004 + mapping append (mark status REJECTED in revision history; rollback mapping append by adding revision-history-recorded retraction row, preserving audit). AppMaker continues using interview-result.yaml as both Interview output AND informal product reference until v2 PRD attempted. No production users affected (greenfield).
+
+# ---------------------------------------------------------------------------
+# NOTES
+# ---------------------------------------------------------------------------
+notes: |
+  WU-006 is the FIRST work_unit authored under work-unit-v1 schema (promoted in WU-005).
+  Schema conformance is checked MANUALLY (no validator yet per ADR-003 OQ-1).
+  Specifically: this contract uses promote_gate.required_pass with mixed string|object
+  shapes (per WU-005 schema fix); declares secondary_artifacts_policy explicitly even though
+  deferral is unlikely (per WU-005 lesson schema_design); records validator_tooling_preflight
+  even though no JSON Schema meta-validator needed for markdown outputs (per WU-005 lesson
+  validator_gap discipline applied broadly).
+
+  Per Codex's WU-006 directive: WĄSKO. ADR-004 covers ONLY to-prd pattern. Does NOT mix:
+    - decomposition (to-issues) → ADR-005 future
+    - safety hooks (git-guardrails + setup-pre-commit) → ADR-006 future
+    - implementation runner (tdd) → ADR-007 future
+    - bug workflow (diagnose) → ADR-008 future
+    - architecture review (improve-codebase-architecture) → ADR-009 future
+
+  Pattern mapping doc append: ONE new row only (to-prd → AppMaker PRD Synthesis). Existing
+  2 entries (grill-me, grill-with-docs) untouched. Append-oriented per WU-003 convention.
+
+  After PROMOTE of WU-006:
+    - WU-007: ADR-005 Work_unit Decomposition (to-issues) — appends mapping entry +1 (4 total)
+    - WU-008: ADR-006 Safety & Quality Hooks (git-guardrails + setup-pre-commit) — appends +2
+    - WU-009: ADR-007 Implementation Runner (tdd) — appends +1
+    - WU-010: ADR-008 Bug Workflow (diagnose) — appends +1
+    - WU-011: ADR-009 Architecture Review (improve-codebase-architecture) — appends +1
+    - Plus future implementation WUs: validator install (ADR-003 OQ-1), v1.1 context-compiler
+      (ADR-001 OQ-2 / WU-005 indirect lesson + WU-005 lesson context_pack_as_program), schema
+      migration tooling (ADR-003 OQ-5).
+    - Plus future ADRs deferred per user/Codex directive (NOT now, roadmap placeholders only):
+      - ADR-NNN: Agent-Native Project Interface (AGENTS.md, .appmaker/context/, copy-pasteable
+        commands, explicit task contracts, docs for agents not just humans, minimal always-on
+        context + on-demand skills) — deferred until first real project bootstrap.
+      - ADR-NNN: Verifiability Standards (formalization of WU-005 verifiability_bias lesson)
+        — deferred until implementation/UI work surfaces concrete needs.
+      - ADR-NNN: Context-Pack Schema (formalization of WU-005 context_pack_as_program lesson)
+        — deferred until v1.1 context-compiler work_unit starts.
+      - ADR-NNN: Design Exploration Stage (Open Design-inspired, PRD-driven artifact-first
+        prototyping after PRD and before decomposition for UI-heavy projects; possible outputs:
+        design-brief.md, screen-map.md, prototypes/*.html, ux-decisions.md,
+        design-review-scorecard.yaml) — deferred; no runtime dependency or prototype generation
+        in WU-006.

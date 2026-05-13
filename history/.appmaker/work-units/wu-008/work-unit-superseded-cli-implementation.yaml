@@ -1,0 +1,437 @@
+# SUPERSEDED — This contract was authored as PROPOSED-state for WU-008 "Minimal CLI Gate"
+# but was REPLACED before ACCEPT per user strategic correction 2026-05-10:
+#
+# Reason for supersedence: AppMaker needs product UX definition before
+# implementation code. Going straight to CLI primitives without interface
+# definition would produce "half-cooked kernel with poor UX". User/Codex
+# decision: WU-008 is now Interface Definition (investigation type);
+# CLI implementation moves to WU-009 after interface lands.
+#
+# This file preserved for audit trail. Canonical WU-008 contract is at
+# work-unit.yaml in the same directory (Minimal Friendly Interface Definition).
+# The CLI primitives described here (validate, promote --dry-run, context
+# compile, log append) become INTERNAL/ADMIN capabilities in the new WU-008
+# UX framing — public UX centers on appmaker start, status, review, approve.
+#
+# Status correction event recorded in events.jsonl 2026-05-10.
+#
+# Original title (now superseded):
+# WU-008: Minimal AppMaker CLI Gate + Dogfood Artifacts
+#
+# conforms_to: .appmaker/schemas/work-unit-v1.schema.json
+# (manual structural conformance check; mechanical validator deferred per
+#  ADR-003 OQ-1 — but `appmaker validate` produced by THIS WU IS that mechanical
+#  validator; circular bootstrap acknowledged in notes)
+#
+# FIRST implementation-type work_unit in AppMaker (after 6 investigation WUs:
+# WU-002 constitution, WU-003 ADR-002, WU-004 R18 amendment, WU-005 schemas,
+# WU-006 ADR-004 PRD, WU-007 ADR-005 decomposition). Verification semantics
+# differ: verification_commands MUST PASS (per ADR-001 §D2a), not artifact
+# schema validation.
+#
+# Per user/Codex strategic shift (2026-05-10):
+# - 3 advisor rounds (Codex × WU-005/006/007 reviews) flagged: too much
+#   meta-bootstrap, too little real use/tooling
+# - ADR-006/007/008/009 PAUSED until minimal CLI gate lands
+# - WU-008 is the strategic break from meta-governance accumulation
+# - After WU-008 promote, AppMaker can dogfood itself: kernel uses its own
+#   CLI to validate / compile / promote subsequent WUs
+
+id: wu-008
+title: "Minimal AppMaker CLI Gate + dogfood artifacts (north-star, config, profile)"
+type: implementation                      # FIRST implementation-type WU; verification = command-pass, not artifact-schema
+status: PROPOSED                          # PROPOSED | ACCEPTED | IN_PROGRESS | VERIFIED | PROMOTED | PROMOTED_WITH_EXCEPTION | REJECTED
+created: 2026-05-10
+created_by: pawedo@gmail.com
+authored_by: claude (synthesis), codex (critic — pending)
+related_adr: [ADR-001, ADR-002, ADR-003, ADR-004, ADR-005]
+related_work_units: [wu-002, wu-003, wu-004, wu-005, wu-006, wu-007]
+
+# ---------------------------------------------------------------------------
+# GOAL
+# ---------------------------------------------------------------------------
+goal: |
+  Build the minimal AppMaker CLI gate that turns AppMaker from documentation
+  into an executable harness. Plus fill missing dogfood artifacts that
+  ADR-001 §D3 6-file model declares but AppMaker meta-project does not yet
+  have on disk (north-star.md, appmaker.config.yaml, .appmaker/profile.yaml).
+
+  CLI commands (4):
+    1. `appmaker validate <work-unit.yaml>` — structural check against work-unit-v1.schema.json
+    2. `appmaker promote --dry-run <wu-id>` — check gate conditions without actually promoting
+    3. `appmaker context compile <wu-id>` — assemble context-pack per R8 (constitution + recent ADRs + AC + relevant lessons)
+    4. `appmaker log append <stream> <json-entry>` — validated append to events.jsonl / lessons.jsonl / decisions.jsonl
+
+  Missing dogfood artifacts (3):
+    - `north-star.md` (project root) — WHY AppMaker exists; meta-AppMaker self-purpose statement
+    - `appmaker.config.yaml` (project root) — config (adapter choice: Spec Kit; provider; etc.)
+    - `.appmaker/profile.yaml` — minimal hand-written; future Advisor work_unit will auto-generate
+
+  After WU-008 promote: AppMaker dogfoods itself. Subsequent WUs use the CLI
+  for validation / context compile / dry-run promote / log append.
+
+# ---------------------------------------------------------------------------
+# STRATEGIC CONTEXT (per user/Codex strategic shift 2026-05-10)
+# ---------------------------------------------------------------------------
+strategic_context:
+  advisor_consensus: "3 Codex review rounds (WU-005/006/007) flagged same meta-problem: too much self-bootstrap, too little real tooling/use"
+  paused_meta_adrs: [ADR-006, ADR-007, ADR-008, ADR-009]
+  paused_until: "minimal CLI gate (this WU) lands and/or real-project pilot exists"
+  pause_recorded_in_events: "events.jsonl entry retro_recorded for wu-007 with roadmap_correction field 2026-05-10T09:30:00Z"
+  meta_appmaker_decomposition_gate_exception: "Per ADR-005 §D4, decomposition is required gate before implementation work_units. AppMaker meta-project (this kernel itself) has no PRD → no decomposition. The gate applies to PROJECTS USING AppMaker, not to AppMaker meta-development. Once WU-008 promotes and CLI exists, AppMaker may dogfood future development through full lifecycle (interview → PRD → decomposition → implementation). Until then, meta-AppMaker development is bootstrap-style (constitution R2 covers ADR bootstrap; this is implementation bootstrap — different category)."
+
+# ---------------------------------------------------------------------------
+# LESSONS APPLIED (from 23 entries in lessons.jsonl)
+# ---------------------------------------------------------------------------
+lessons_applied:
+  # wu-005 direct (8) — load-bearing for harness investment
+  - source: wu-005 / harness_engineering / 2026-05-10T00:05:00Z
+    influence: "DIRECT (load-bearing for WU-008 raison d'être). WU-008 IS the harness investment per this lesson — building executable CLI rather than chasing model upgrades or piling more meta-ADRs."
+  - source: wu-005 / validator_gap / 2026-05-09T23:58:00Z
+    influence: "DIRECT (load-bearing). `appmaker validate` produced by this WU IS the validator gap closure for work-unit-v1. Per ADR-003 D4 deferred validator implementation; WU-008 implements parser+structural validator (not full JSON Schema meta-validator — that requires ajv install, deferred). Honest: no meta-validation pretense."
+  - source: wu-005 / actual_usage / 2026-05-09T23:58:00Z
+    influence: "DIRECT. CLI commands MUST mirror actual existing artifacts (work-unit.yaml shapes used in WU-002..WU-007, schemas v1, lessons.jsonl format). Do not encode mental model unchecked; cross-ref against real files."
+  - source: wu-005 / schema_design / 2026-05-09T23:58:00Z
+    influence: "DIRECT. Multi-output WU (4 CLI scripts + 3 artifacts + tests); secondary_artifacts_policy declared explicitly."
+  - source: wu-005 / adr_quality / 2026-05-09T23:58:00Z
+    influence: "INDIRECT — implementation WU not ADR; no D5-style mapping table required, but verification.verification_commands fulfills equivalent role of explicit per-claim cross-check."
+  - source: wu-005 / human_understanding / 2026-05-10T00:30:00Z
+    influence: "DIRECT. CLI must respect non-delegable judgments — `appmaker promote --dry-run` reports gate state but does NOT auto-promote; final promote is human-invoked. CLI design avoids hidden human-judgment delegation."
+  - source: wu-005 / context_pack_as_program / 2026-05-10T00:30:00Z
+    influence: "DIRECT (load-bearing). `appmaker context compile` IS the operationalization of this lesson — context-pack as program assembled from constitution + ADRs + AC + filtered lessons per R8."
+  - source: wu-005 / verifiability_bias / 2026-05-10T00:30:00Z
+    influence: "DIRECT. Implementation WU verification_commands MUST be auto-checkable (per ADR-001 §D2a implementation type). Each verification_command exits 0 on pass / non-zero on fail. No 'feels right' criteria."
+  # wu-003/wu-004 broad (4) — review discipline
+  - source: wu-003 / review / 2026-05-09T15:55:00Z
+    influence: "DIRECT (broadly applicable). Pre-execution checklist + external-state fact-check applied: actual file paths verified before scope; CLI command names match user's explicit list."
+  - source: wu-004 / memory_layer / 2026-05-09T16:50:00Z
+    influence: "DIRECT. lessons_applied field populated; WU-008 demonstrates lessons inform CLI design (not just name-dropped)."
+  - source: wu-004 / review / 2026-05-09T16:50:00Z
+    influence: "INDIRECT — implementation WU outputs include shell scripts + markdown; forbidden_patterns enforcement applies to markdown artifacts (north-star.md, README) but not to script shebangs/comments where ellipsis may legitimately appear in code semantics."
+  # wu-006 fresh (4) — load-bearing for active checks
+  - source: wu-006 / cross_decision_consistency_active_check / 2026-05-10T01:30:00Z
+    influence: "DIRECT. Implementation WU active check = verification_commands ACTUALLY EXECUTED (run each command, check exit code). Equivalent of cross-decision diff for investigation type."
+  - source: wu-006 / cross_artifact_consistency_active_check / 2026-05-10T01:30:00Z
+    influence: "DIRECT. Multi-output WU: 4 scripts + 3 artifacts + tests must be cross-consistent (e.g., `appmaker validate` script must validate against work-unit-v1.schema.json that exists in .appmaker/schemas/; CLI command names match north-star.md / README references)."
+  - source: wu-006 / wording_internal_contradiction / 2026-05-10T01:30:00Z
+    influence: "INDIRECT — applies to markdown artifacts produced (north-star.md, README); script comments diff-checked for internal terminology consistency."
+  - source: wu-006 / supersedes_pattern_for_correction_events / 2026-05-10T01:30:00Z
+    influence: "DIRECT. `appmaker log append` MUST support events.jsonl correction pattern (`<event>_v<n>` with `supersedes` pointer). v1 implementation: log append validates JSON structure but does not enforce supersedes semantics (left to caller convention)."
+  # wu-007 fresh (4) — load-bearing for v2 schema considerations
+  - source: wu-007 / scope_creep_via_reservation / 2026-05-10T09:30:00Z
+    influence: "DIRECT. WU-008 lists ONLY 4 commands (validate, promote --dry-run, context compile, log append) + 3 artifacts. Other plausible commands (init, interview, prd, decompose) NOT reserved here; explicit OQ if discussed at all."
+  - source: wu-007 / artifact_target_confusion / 2026-05-10T09:30:00Z
+    influence: "DIRECT. CLI command names precisely target their action: `appmaker validate <FILE>` validates ONE file; `appmaker promote --dry-run <WU>` checks ONE WU's gate; `appmaker context compile <WU>` compiles ONE WU's context-pack. Plurals/scopes explicit."
+  - source: wu-007 / inline_code_placeholder_ellipsis_pattern / 2026-05-10T09:30:00Z
+    influence: "DIRECT. North-star.md, README.md, script comments must use concrete placeholders (`<file>`, `<wu-id>`, `<json-entry>`), NEVER literal ellipsis `...` in instructional text."
+  - source: wu-007 / external_review_caught_what_active_self_check_missed / 2026-05-10T09:30:00Z
+    influence: "DIRECT. WU-008 verification_commands ARE active checks (executed, exit code observed) — schema-level concept made concrete for implementation type. Future schemas-extension WU may formalize for investigation type too."
+
+# ---------------------------------------------------------------------------
+# OUTPUT TARGETS (multi-output)
+# ---------------------------------------------------------------------------
+output_targets:
+  # Primary: CLI scripts
+  - name: appmaker-validate
+    role: primary
+    artifact_type: bash_script
+    promotion_path: bin/appmaker-validate
+    description: "Structurally validates work-unit.yaml against work-unit-v1.schema.json (parser + structural; meta-schema deferred per ADR-003 D4). Exit 0 on pass, non-zero on fail."
+  - name: appmaker-promote-dry-run
+    role: primary
+    artifact_type: bash_script
+    promotion_path: bin/appmaker-promote
+    description: "With --dry-run flag: reads WU work-unit.yaml + checks gate conditions (verification record exists, scorecard pass, etc.) without actually flipping status. Exit 0 if gate would pass, non-zero if blocked. Without --dry-run: not implemented in v1 (out of scope)."
+  - name: appmaker-context-compile
+    role: primary
+    artifact_type: bash_script
+    promotion_path: bin/appmaker-context
+    description: "With `compile <wu-id>` subcommand: assembles context-pack per R8 (constitution + recent ADRs + WU's acceptance_criteria + filtered lessons per applies_to). Outputs to stdout or to .appmaker/work-units/<wu-id>/context-pack.md. Exit 0 on success."
+  - name: appmaker-log-append
+    role: primary
+    artifact_type: bash_script
+    promotion_path: bin/appmaker-log
+    description: "With `append <stream> <json-entry>` subcommand: validates JSON entry shape + appends to events.jsonl / lessons.jsonl / decisions.jsonl with timestamp + JSONL formatting. Exit 0 on success, non-zero on invalid JSON or unknown stream."
+  # Primary: dogfood missing artifacts
+  - name: north-star
+    role: primary
+    artifact_type: markdown
+    promotion_path: north-star.md
+    description: "WHY AppMaker exists; meta-AppMaker self-purpose statement (per ADR-001 §D3 6-file model). Currently missing from project root."
+  - name: appmaker-config
+    role: primary
+    artifact_type: yaml
+    promotion_path: appmaker.config.yaml
+    description: "Project-level config: spec adapter (Spec Kit per ADR-002 D5), provider (anthropic), CLI bin path. Currently missing from project root."
+  - name: profile
+    role: primary
+    artifact_type: yaml
+    promotion_path: .appmaker/profile.yaml
+    description: "WHAT AppMaker meta-project technically is (advisor output; for v1 hand-written minimal). Currently missing from .appmaker/."
+  # Secondary: tests
+  - name: cli-tests
+    role: secondary
+    artifact_type: bash_test_scripts
+    promotion_path: tests/cli/
+    description: "Bash test scripts that run each CLI command on test fixtures + assert exit codes + diff actual vs expected output. Scripts MUST be invoked by verification_commands (see verification block below)."
+  - name: README-cli
+    role: secondary
+    artifact_type: markdown
+    promotion_path: bin/README.md
+    description: "CLI usage documentation: synopsis, examples, exit codes, dependencies (jq, PyYAML, Ruby Psych)."
+
+# ---------------------------------------------------------------------------
+# SCOPE
+# ---------------------------------------------------------------------------
+scope:
+  allowed_files_read:
+    - decisions/ADR-001-process-kernel-architecture.md
+    - decisions/ADR-002-interview-phase.md
+    - decisions/ADR-003-schema-format-and-artifact-schemas.md
+    - decisions/ADR-004-prd-synthesis.md
+    - decisions/ADR-005-work-unit-decomposition.md
+    - constitution.md
+    - .appmaker/schemas/**
+    - .appmaker/work-units/**                                          # all prior WUs as reference fixtures
+    - .appmaker/lessons.jsonl
+    - .appmaker/events.jsonl
+    - docs/reference/**
+  allowed_files_write:
+    - .appmaker/work-units/wu-008/context-pack.md
+    - .appmaker/work-units/wu-008/runs/<timestamp>/**
+    - bin/**                                                            # CLI scripts (NEW directory)
+    - tests/cli/**                                                       # test scripts (NEW directory)
+    - north-star.md                                                      # NEW project root file (per ADR-001 §D3)
+    - appmaker.config.yaml                                               # NEW project root file
+    - .appmaker/profile.yaml                                             # NEW kernel-managed file
+  blocked_files_write:
+    - decisions/**                                                       # all 5 ADRs immutable
+    - constitution.md                                                    # amendments via dedicated WU only
+    - .appmaker/schemas/**                                               # v1 schemas immutable
+    - .appmaker/work-units/wu-002/**                                     # closed (read OK)
+    - .appmaker/work-units/wu-003/**
+    - .appmaker/work-units/wu-004/**
+    - .appmaker/work-units/wu-005/**
+    - .appmaker/work-units/wu-006/**
+    - .appmaker/work-units/wu-007/**
+    - .appmaker/decisions.jsonl                                           # not yet active
+    - .appmaker/events.jsonl                                              # append-only via runner step
+    - .appmaker/lessons.jsonl                                             # append-only
+    - docs/reference/future-scope-registry.md                             # Codex/user discovery, non-binding
+    - docs/reference/project-strategy-notes.md                            # Codex/user discovery, non-binding
+    - docs/reference/matt-pocock-pattern-mapping.md                       # not modified by WU-008
+  blocked_actions:
+    - "git push"
+    - "git commit"
+    - "git reset --hard"
+    - "rm -rf"
+    - "npm install"                                                      # CLI is bash-based; no Node deps
+    - "git clone"
+    - any modification to ADRs, constitution.md, schemas v1, prior closed WUs
+  allowed_actions:
+    - "read: any file in allowed_files_read"
+    - "create: files in allowed_files_write paths"
+    - "execute: bash, jq, python yaml, ruby YAML for testing CLI scripts during development"
+    - "execute: each produced CLI script + assert exit code (verification_commands)"
+
+# ---------------------------------------------------------------------------
+# VERIFICATION (implementation type — verification_commands MUST PASS per ADR-001 §D2a)
+# ---------------------------------------------------------------------------
+verification:
+  type: implementation_command_pass                                       # not artifact_schema (which is investigation type)
+  verification_commands:
+    # CLI command sanity: each binary exists and is executable
+    - "test -x bin/appmaker-validate"
+    - "test -x bin/appmaker-promote"
+    - "test -x bin/appmaker-context"
+    - "test -x bin/appmaker-log"
+    # CLI command --help: each command supports --help and exits 0
+    - "bin/appmaker-validate --help"
+    - "bin/appmaker-promote --help"
+    - "bin/appmaker-context --help"
+    - "bin/appmaker-log --help"
+    # Functional tests on prior promoted WUs (real fixtures, not mocks)
+    - "bin/appmaker-validate .appmaker/work-units/wu-002/work-unit.yaml"
+    - "bin/appmaker-validate .appmaker/work-units/wu-007/work-unit.yaml"
+    # Promote dry-run on already-PROMOTED WU should report gate-passed
+    - "bin/appmaker-promote --dry-run wu-007"
+    # Context compile produces non-empty markdown for an existing WU
+    - "bin/appmaker-context compile wu-007 | grep -q 'AppMaker'"
+    # Log append validates JSON structure (negative test: bad JSON exits non-zero)
+    - "echo 'not-json' | bin/appmaker-log append events 2>/dev/null; test $? -ne 0"
+    # Test suite (full)
+    - "bash tests/cli/run-all.sh"
+    # Dogfood artifacts present + non-empty
+    - "test -s north-star.md"
+    - "test -s appmaker.config.yaml"
+    - "test -s .appmaker/profile.yaml"
+    # Dogfood artifacts parser-clean (per R7)
+    - "ruby -ryaml -e 'YAML.load_file(\"appmaker.config.yaml\")'"
+    - "ruby -ryaml -e 'YAML.load_file(\".appmaker/profile.yaml\")'"
+    # Forbidden patterns absent in markdown dogfood (north-star + README)
+    - "! grep -q 'TBD\\|TODO\\|\\.\\.\\.' north-star.md"
+    - "! grep -q 'TBD\\|TODO\\|\\.\\.\\.' bin/README.md"
+
+  # NEW for implementation WUs (analog to active cross-decision for investigation):
+  active_command_execution_required: true                                 # per WU-007 lesson #4 — verification_commands MUST be RUN, not annotated as scorecard pass
+  cross_artifact_consistency_required: true                               # CLI script subcommand names match output_targets descriptions; README examples match actual command output
+  human_review_required: true                                             # CLI design choices (subcommand naming, exit code semantics) need human eyes
+
+  secondary_artifacts_policy:
+    default: required
+    deferred_allowed_only_if:
+      - "No deferred path expected for WU-008; tests + README must accompany CLI scripts"
+
+# ---------------------------------------------------------------------------
+# VALIDATOR TOOLING PREFLIGHT
+# ---------------------------------------------------------------------------
+validator_tooling_preflight:
+  required: true
+  must_record_available_tools: true
+  if_selected_format_requires_unavailable_validator: |
+    `appmaker validate` is built on parser + structural check using available tools (jq, PyYAML, Ruby Psych).
+    Full JSON Schema meta-validation (ajv) deferred per ADR-003 D4 — `appmaker validate` does NOT pretend
+    meta-validation; it does field-presence + enum-value + pattern checks against work-unit-v1 schema's
+    explicit constraints. Future schemas-extension/validator-implementation WU may add ajv-based meta-validation.
+  available_tools_at_baseline:
+    - bash (script runtime)
+    - jq (JSON parse + query)
+    - python yaml (PyYAML safe_load — for YAML parser within bash via `python -c`)
+    - ruby YAML (Psych — fallback YAML parser)
+    - grep, sed, awk, diff (markdown structural inspection)
+  unavailable_at_baseline:
+    - ajv (Node.js) — deferred per ADR-003 OQ-1
+    - python jsonschema package — deferred per ADR-003 OQ-1
+    - any TS runtime (per ADR-001 §D10 CLI-first)
+
+# ---------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA
+# ---------------------------------------------------------------------------
+acceptance_criteria:
+  # CLI commands present + executable + functional
+  - "4 CLI scripts produced at bin/appmaker-{validate,promote,context,log}; all executable (test -x)"
+  - "Each CLI script supports --help and exits 0 on --help"
+  - "appmaker-validate exits 0 on every existing .appmaker/work-units/wu-NNN/work-unit.yaml (WU-002 through WU-007); exits non-zero on intentionally-broken test fixture"
+  - "appmaker-promote --dry-run wu-007 reports gate-passed (since WU-007 is PROMOTED); appmaker-promote --dry-run on a WU with missing verification record reports gate-blocked"
+  - "appmaker-context compile wu-NNN produces non-empty markdown including: '## ' headers, references to constitution.md, references to relevant ADRs, references to acceptance_criteria from work-unit.yaml, filtered lessons per applies_to"
+  - "appmaker-log append <stream> '<json>' validates JSON structure (rejects malformed JSON with non-zero exit); appends to correct stream file (events.jsonl / lessons.jsonl); writes valid JSONL line"
+  # Dogfood artifacts present + valid
+  - "north-star.md present at project root, non-empty, no forbidden patterns"
+  - "appmaker.config.yaml present at project root, parser-valid YAML, contains at minimum: adapter (spec_kit per ADR-002 D5), provider, cli_bin_path"
+  - ".appmaker/profile.yaml present, parser-valid YAML, contains at minimum: type (meta_appmaker_self_development), language (markdown_yaml_bash), purpose"
+  # Tests
+  - "tests/cli/ directory with bash test scripts; tests/cli/run-all.sh aggregates and exits 0 on all-pass"
+  - "Test coverage: each CLI command has at least one positive test (valid input → exit 0) and at least one negative test (invalid input → non-zero exit)"
+  - "Tests use real fixtures (existing work-unit.yaml from WU-002..WU-007); no mocks of AppMaker artifacts"
+  # Cross-artifact consistency
+  - "CLI script subcommand names exactly match descriptions in output_targets section of this work-unit.yaml; bin/README.md examples use exactly those subcommands"
+  - "ALL verification_commands listed in verification.verification_commands actually executed during VERIFIED step; exit codes recorded in verification log"
+  # Manual schema conformance for the CLI-produced artifacts (eat dogfood)
+  - "After bin/appmaker-validate is built, run it on THIS work-unit.yaml (wu-008/work-unit.yaml) — should pass (or surface real schema gaps to fix in next WU). Self-validation result recorded in verification log."
+  # No scope leakage
+  - "No edits to ADRs, constitution.md, schemas v1, prior closed WUs (wu-002..wu-007)"
+  - "No new ADRs produced; no new lessons.jsonl entries (closeout follows promote)"
+  - "Forbidden patterns absent in north-star.md and bin/README.md (per R7-derived discipline)"
+
+# ---------------------------------------------------------------------------
+# REVIEW SCORECARD
+# ---------------------------------------------------------------------------
+review_required_from:
+  - critic
+  - human
+
+review_scorecard_template:
+  cli_commands_executable: pending
+  cli_help_exits_zero: pending
+  validate_passes_on_real_fixtures: pending
+  validate_fails_on_broken_fixture: pending
+  promote_dry_run_correct: pending
+  context_compile_produces_pack: pending
+  log_append_validates_json: pending
+  dogfood_artifacts_present: pending
+  dogfood_artifacts_parser_clean: pending
+  test_suite_runs_clean: pending
+  cross_artifact_consistency: pending                                     # script names ↔ README ↔ work-unit.yaml output_targets
+  forbidden_patterns_absent: pending
+  scope_discipline: pending                                               # no scope leak into ADRs/constitution/schemas
+  self_validation_recorded: pending                                       # appmaker-validate run on wu-008/work-unit.yaml itself
+
+# ---------------------------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------------------------
+execution:
+  mode: single
+  agent: claude (default)
+  context_pack: .appmaker/work-units/wu-008/context-pack.md
+  estimated_effort: 4-6 hours                                             # bigger than investigation WUs — actual code + tests + dogfood
+
+# ---------------------------------------------------------------------------
+# GATES
+# ---------------------------------------------------------------------------
+promote_gate:
+  default_decision: reject
+  on_missing_field: reject
+  on_error: reject
+  required_pass:
+    - "verification.verification_commands.all_exit_zero: true"            # primary gate for implementation type
+    - "verification.active_command_execution_required: true"
+    - "verification.cross_artifact_consistency_required: pass"
+    - validator_tooling_preflight.recorded: true
+    - "review.human: pass"
+  break_glass:
+    allowed: false                                                         # CLI is foundational; no escape hatch
+
+# ---------------------------------------------------------------------------
+# RISKS
+# ---------------------------------------------------------------------------
+risks:
+  - "CLI scope creep — adding `appmaker init`, `appmaker interview`, `appmaker prd`, `appmaker decompose` would balloon WU-008. Mitigation: scope explicit at 4 commands; OQ for each future command."
+  - "appmaker-validate built without ajv produces false sense of full validation. Mitigation: explicit deferral wording in --help output + bin/README.md; per validator_tooling_preflight."
+  - "Bash scripts brittle across shells. Mitigation: target bash 4+ explicit; tests run in bash; no zsh-specific features."
+  - "Tests use real fixtures but real fixtures may evolve. Mitigation: tests pin to specific WU directories that are PROMOTED (immutable); no live mutations during test."
+  - "Dogfood artifacts (north-star.md, config, profile) take editorial choices that should be human decisions. Mitigation: minimal hand-written; explicit OQ for elaboration via dedicated future WU; do not over-specify."
+  - "Cross-artifact consistency (CLI scripts ↔ README ↔ output_targets) drift after promote. Mitigation: review_scorecard explicit field; verification_command checks README examples produce expected output."
+  - "Self-validation paradox: appmaker-validate on wu-008/work-unit.yaml may surface real schema gaps that block VERIFIED. Mitigation: gaps recorded; if gap found, decide whether to (a) fix work-unit.yaml, (b) fix validator (if validator over-strict), or (c) defer to schemas-extension WU."
+
+# ---------------------------------------------------------------------------
+# ROLLBACK
+# ---------------------------------------------------------------------------
+rollback_plan: |
+  Soft rollback: future WU may revise specific CLI commands (e.g., subcommand renaming, new flags). Backward-compat handled by version flag in CLI scripts.
+
+  Hard rollback: archive bin/* + tests/cli/* + 3 dogfood artifacts to .appmaker/_archive/cli-attempt-N/. Restore prior state (no CLI; AppMaker remains documentation-only). Subsequent WUs revert to manual workflow. No data loss; events.jsonl + lessons.jsonl untouched (CLI did not modify them retroactively).
+
+# ---------------------------------------------------------------------------
+# NOTES
+# ---------------------------------------------------------------------------
+notes: |
+  WU-008 is FIRST implementation-type work_unit in AppMaker. Verification
+  semantics differ from prior 6 investigation WUs: verification_commands
+  MUST PASS (exit code 0) per ADR-001 §D2a, not artifact schema validation.
+
+  Per user/Codex strategic shift 2026-05-10:
+  - 3 advisor rounds flagged meta-bootstrap problem
+  - ADR-006/007/008/009 PAUSED until CLI lands
+  - WU-008 is the strategic break from accumulating governance
+  - Roadmap_correction recorded in events.jsonl (wu-007 retro_recorded entry)
+
+  Meta-AppMaker decomposition gate exception:
+  - Per ADR-005 §D4, decomposition is required gate before implementation work_units
+  - AppMaker meta-project (this kernel) has no PRD → no decomposition
+  - The gate applies to PROJECTS USING AppMaker, not to AppMaker meta-development
+  - Once WU-008 promotes and CLI exists, AppMaker can dogfood through full lifecycle
+  - Until then, meta-AppMaker development is bootstrap-style (different category from constitution R2 ADR bootstrap)
+
+  Self-bootstrap paradox acknowledged: `appmaker validate` produced by THIS WU
+  IS the validator that future WUs use to check work-unit.yaml conformance
+  (per ADR-003 OQ-1 deferral). WU-008 self-validates wu-008/work-unit.yaml at
+  end of execution as the dogfood test.
+
+  After PROMOTE of WU-008:
+  - Closeout WU-008 (per WU-002..WU-007 precedent: 4 lessons + retro_recorded event)
+  - Then EVALUATE: which previously-paused ADRs (006/007/008/009) are still
+    needed? Some ceremonies may dissolve when CLI does the work; others may
+    surface as more urgent now that real tooling exposes gaps
+  - DO NOT auto-resume meta-ADR pipeline; user/Codex strategic decision
+    required
+  - Future ADR-NNN candidates carry forward from prior OQ lists

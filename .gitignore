@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS / temp
+*.bak
+*.tmp
+.env
+.env.local
+
+# AppMaker user-project state (this repo distributes the plugin; users create their own appmaker/ in their projects)
+# Should NOT contain appmaker/ but guarded just in case:
+/appmaker/

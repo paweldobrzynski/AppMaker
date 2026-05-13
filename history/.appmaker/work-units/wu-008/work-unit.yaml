@@ -1,0 +1,374 @@
+# WU-008: Minimal Friendly Interface Definition (AppMaker v0 product/UX spec)
+#
+# conforms_to: .appmaker/schemas/work-unit-v1.schema.json
+# (manual structural conformance check; mechanical validator deferred per
+#  ADR-003 OQ-1)
+#
+# REPLACES prior WU-008 contract (Minimal CLI Gate Implementation), now
+# preserved at work-unit-superseded-cli-implementation.yaml. Strategic
+# correction recorded in events.jsonl 2026-05-10:
+# "AppMaker needs product UX definition before implementation code,
+#  otherwise it becomes a half-cooked kernel with poor UX."
+#
+# Per user strategic shift 2026-05-10:
+# - Define AppMaker v0 from USER's perspective before implementing CLI
+# - Public UX centers on: appmaker start, status, review, approve
+# - Internal/admin primitives: validate, context compile, log append, promote --dry-run
+# - WU-009 (next) implements Friendly CLI v0 based on this WU-008 interface definition
+
+id: wu-008
+title: "Minimal Friendly Interface Definition (AppMaker v0 product/UX spec)"
+type: investigation                       # interface definition is knowledge artifact (not code)
+status: PROPOSED                          # PROPOSED | ACCEPTED | IN_PROGRESS | VERIFIED | PROMOTED | PROMOTED_WITH_EXCEPTION | REJECTED
+created: 2026-05-10
+created_by: pawedo@gmail.com
+authored_by: claude (synthesis), codex (critic — pending)
+related_adr: [ADR-001, ADR-002, ADR-003, ADR-004, ADR-005]
+related_work_units: [wu-002, wu-003, wu-004, wu-005, wu-006, wu-007]
+supersedes: "WU-008 contract Minimal CLI Gate (PROPOSED-state, never ACCEPTED) — preserved at work-unit-superseded-cli-implementation.yaml"
+
+# ---------------------------------------------------------------------------
+# GOAL
+# ---------------------------------------------------------------------------
+goal: |
+  Define AppMaker v0 from the USER's perspective before implementing any CLI
+  code. Produce a single concise product/interface definition artifact that
+  answers: who uses AppMaker, what they see, what they do, what they don't see,
+  and how the future Friendly CLI wraps existing kernel primitives without
+  weakening governance constitutional rules.
+
+  Output: docs/appmaker-interface-v0.md — concise (target 200–400 lines)
+  human-readable spec covering 7 sections per user/Codex directive.
+
+  Public UX surface (4 commands — to be implemented in WU-009):
+    1. `appmaker start "<request>"` — entry point; user states what they want
+    2. `appmaker status` — what's currently happening / blocked / waiting on human
+    3. `appmaker review` — show me what's ready for me to look at
+    4. `appmaker approve` — give explicit human approval for items requiring it
+
+  Internal/admin primitives (NOT part of public UX; available in admin/debug mode):
+    - `appmaker validate <work-unit.yaml>` (kernel structural validation)
+    - `appmaker context compile <wu-id>` (kernel context-pack assembly)
+    - `appmaker log append <stream> <json>` (kernel structured logging)
+    - `appmaker promote --dry-run <wu-id>` (kernel gate check)
+
+  WU-008 produces ONLY the interface spec. WU-009 implements the friendly CLI
+  on top of kernel primitives. Old WU-008 (CLI implementation) preserved for
+  audit; not executed.
+
+# ---------------------------------------------------------------------------
+# STRATEGIC CONTEXT (per user strategic correction 2026-05-10)
+# ---------------------------------------------------------------------------
+strategic_context:
+  prior_attempt: "WU-008 first draft was Minimal CLI Gate Implementation (CLI scripts + dogfood artifacts + tests, ~430-line contract); marked SUPERSEDED before ACCEPT per user correction"
+  reason_for_correction: "AppMaker needs product UX definition before implementation code, otherwise becomes half-cooked kernel with poor UX"
+  three_advisor_consensus_persists: "WU-005/006/007 reviews still flag meta-bootstrap problem; this WU-008 v2 is REVISED response that produces real artifact (interface spec) WITHOUT yet writing code — addresses the meta-problem differently than prior CLI attempt"
+  paused_meta_adrs: [ADR-006, ADR-007, ADR-008, ADR-009]
+  paused_until: "interface defined (WU-008) AND friendly CLI implemented (WU-009)"
+  meta_appmaker_decomposition_gate_exception: "Per ADR-005 §D4, decomposition gate applies to PROJECTS USING AppMaker, not to AppMaker meta-development. Meta-AppMaker continues bootstrap-style; future projects use full lifecycle once CLI exists."
+  next_planned_wu: "WU-009: Implement Friendly CLI v0, based on interface definition produced by THIS WU-008"
+
+# ---------------------------------------------------------------------------
+# LESSONS APPLIED (from 23 entries; particularly load-bearing for UX/interface design)
+# ---------------------------------------------------------------------------
+lessons_applied:
+  - source: wu-005 / harness_engineering / 2026-05-10T00:05:00Z
+    influence: "DIRECT (load-bearing). UX/interface IS harness investment per this lesson — defining what humans see/do is foundational; jumping to code prematurely produces kernel-without-UX."
+  - source: wu-005 / human_understanding / 2026-05-10T00:30:00Z
+    influence: "DIRECT (load-bearing for §4 ask-vs-act and §6 hidden-vs-exposed). Interface MUST mark which decisions require human judgment vs which AppMaker handles autonomously. Stripe-email anti-pattern translates here as: don't silently delegate UX choices to agent (e.g., autonomous PRD edits without user awareness)."
+  - source: wu-005 / verifiability_bias / 2026-05-10T00:30:00Z
+    influence: "DIRECT (§5 what user sees at end). Each interface output must be verifiable: 'changed files' = concrete diff list; 'verification' = pass/fail per command; 'risks' = enumerable; 'review required' = explicit list. No 'feels right' UX summaries."
+  - source: wu-005 / context_pack_as_program / 2026-05-10T00:30:00Z
+    influence: "DIRECT (§7 wrapping kernel primitives). Friendly UX is the outer Software 3.0 program; kernel primitives are inner programs. Interface defines the wrapping rules — what user signals translate to which kernel calls."
+  - source: wu-005 / actual_usage / 2026-05-09T23:58:00Z
+    influence: "DIRECT. Interface spec must reference ACTUAL existing kernel primitives (validate/promote/context/log per old WU-008 + work-unit-v1 schema + ADRs) — not invent new mental model."
+  - source: wu-005 / schema_design / 2026-05-09T23:58:00Z
+    influence: "INDIRECT — single-output WU (interface spec); no secondary artifacts; secondary_artifacts_policy not load-bearing here."
+  - source: wu-005 / validator_gap / 2026-05-09T23:58:00Z
+    influence: "DIRECT (§3 work lanes). Interface must specify what AppMaker does when validator unavailable — fall back gracefully (parser+structural per ADR-003 D4) or refuse gracefully. Lanes (micro_change/normal/high_risk/meta_repair) inform which validators apply per lane."
+  - source: wu-005 / adr_quality / 2026-05-09T23:58:00Z
+    influence: "INDIRECT — investigation WU producing interface spec, not ADR; no formal D5-style mapping table required, but spec sections must internally cross-check (§4 ask-vs-act ↔ §6 hidden-vs-exposed; §3 lanes ↔ §4 autonomy thresholds)."
+  - source: wu-003 / review / 2026-05-09T15:55:00Z
+    influence: "DIRECT. Pre-execution checklist (§10 self-check); external-state fact-check (kernel primitive names match actual schemas/old WU-008 contract); wording-consistency scan."
+  - source: wu-003 / adr_quality / 2026-05-09T15:55:00Z
+    influence: "DIRECT. Cross-section consistency for spec's 7 sections (analog of cross-decision for ADR)."
+  - source: wu-004 / memory_layer / 2026-05-09T16:50:00Z
+    influence: "DIRECT. lessons_applied populated; 19 entries demonstrate lessons inform interface design."
+  - source: wu-004 / review / 2026-05-09T16:50:00Z
+    influence: "DIRECT. Forbidden patterns enforced in interface spec markdown (R7-derived discipline)."
+  - source: wu-006 / cross_decision_consistency_active_check / 2026-05-10T01:30:00Z
+    influence: "DIRECT. Active cross-section diff for the 7 spec sections — each pair sharing concepts (e.g. §3 lanes ↔ §4 autonomy thresholds) must be diffed at self-check."
+  - source: wu-006 / cross_artifact_consistency_active_check / 2026-05-10T01:30:00Z
+    influence: "DIRECT. Interface spec MUST cross-check against: existing CLI primitive names in old WU-008 (preserved), constitution rules (R4/R5/R7/R8 per user §7 directive), work-unit-v1 status enum, ADR-005 execution_class enum (slice typing)."
+  - source: wu-006 / wording_internal_contradiction / 2026-05-10T01:30:00Z
+    influence: "DIRECT. Within-section wording-consistency scan — each spec section's prose internally consistent."
+  - source: wu-006 / supersedes_pattern_for_correction_events / 2026-05-10T01:30:00Z
+    influence: "DIRECT (active use). THIS WU-008 itself uses the supersedence pattern — old contract preserved, new contract canonical, strategic_correction event recorded. Pattern proven again."
+  - source: wu-007 / scope_creep_via_reservation / 2026-05-10T09:30:00Z
+    influence: "DIRECT. Interface spec lists ONLY 4 public commands (start/status/review/approve) — does NOT 'reserve' future commands (init/interview/prd/decompose/etc.). Future commands surface as Open Questions if mentioned at all."
+  - source: wu-007 / artifact_target_confusion / 2026-05-10T09:30:00Z
+    influence: "DIRECT. Each public command (start/status/review/approve) has one precise verb — distinguished from kernel primitives (validate/promote/context/log). Public ↔ internal/admin distinction explicit in §6."
+  - source: wu-007 / inline_code_placeholder_ellipsis_pattern / 2026-05-10T09:30:00Z
+    influence: "DIRECT. Spec markdown uses concrete placeholders (`<request>`, `<wu-id>`); NEVER literal ellipsis."
+  - source: wu-007 / external_review_caught_what_active_self_check_missed / 2026-05-10T09:30:00Z
+    influence: "DIRECT. Self-check for this spec uses ACTIVE checks (run grep/diff explicitly), not just scorecard annotations. Codex external review remains essential for cross-decision/cross-artifact catches."
+
+# ---------------------------------------------------------------------------
+# SECTIONS TO DEFINE IN INTERFACE SPEC (per user directive — 7 sections)
+# ---------------------------------------------------------------------------
+sections_to_define:
+  - "S1. User personas — who uses AppMaker (developer building a project, project owner reviewing, etc.); for each: experience level, primary use case, what they need from interface."
+  - "S2. Happy path for `appmaker start \"<request>\"` — step-by-step: user types command, AppMaker classifies request lane (per S3), creates work_unit(s), runs through interview/PRD/decomposition lifecycle as needed, surfaces output. Concrete walkthrough with example request."
+  - "S3. Work lanes: micro_change, normal, high_risk, meta_repair. For each: definition (what kind of request triggers this lane), lifecycle stages applied (skip interview/PRD for micro? full lifecycle for high_risk?), default autonomy (autonomous for micro? human-required for high_risk?), example user request."
+  - "S4. When AppMaker asks human vs acts autonomously — decision matrix: combination of (lane × constitution-rule-touched × execution_class × risk_surface) → ask | act. Cross-references constitution R11 (schema/auth/secrets/prod human approval), ADR-005 §D2 execution_class (human_required vs autonomous slices), ADR-002 §D6 ready_with_override (when ambiguity blocks autonomy)."
+  - "S5. What the user sees at end — concrete outputs per work_unit completion: changed files (diff list), verification (per verification_command pass/fail), risks (from work-unit.yaml risks block), review required (explicit list of items needing human approval per S4 matrix). No 'feels right' summaries; everything itemized + verifiable."
+  - "S6. What's hidden from user vs exposed only in admin/debug mode — public sees: changed files, verification results, risks, what to approve. Hidden by default: work-unit.yaml internals, context-pack assembly, kernel primitive invocations, lessons.jsonl entries, events.jsonl, schemas. Admin/debug mode (`--admin` or `--debug` flag): exposes all internals for kernel troubleshooting."
+  - "S7. How future UX wraps existing kernel primitives without weakening R4/R5/R7/R8. Specifically: friendly `appmaker start` translates to internal `validate + context compile + log append + (eventually) promote --dry-run + ...` calls. Each wrap preserves: R4 (promote requires verification), R5 (gates fail closed), R7 (machine-readable artifacts pass parser), R8 (context-pack includes constitution + ADRs + AC + relevant lessons). UX never bypasses these — it makes them invisible-by-default but recoverable."
+
+# ---------------------------------------------------------------------------
+# SCOPE
+# ---------------------------------------------------------------------------
+scope:
+  allowed_files_read:
+    - decisions/ADR-001-process-kernel-architecture.md
+    - decisions/ADR-002-interview-phase.md
+    - decisions/ADR-003-schema-format-and-artifact-schemas.md
+    - decisions/ADR-004-prd-synthesis.md
+    - decisions/ADR-005-work-unit-decomposition.md
+    - constitution.md
+    - .appmaker/schemas/**
+    - .appmaker/work-units/**                                            # all prior WUs as reference
+    - .appmaker/work-units/wu-008/work-unit-superseded-cli-implementation.yaml  # superseded contract for kernel primitive names
+    - .appmaker/lessons.jsonl
+    - .appmaker/events.jsonl
+    - docs/reference/**
+  allowed_files_write:
+    - .appmaker/work-units/wu-008/context-pack.md
+    - .appmaker/work-units/wu-008/runs/<timestamp>/**
+    - docs/appmaker-interface-v0.md                                       # PRIMARY OUTPUT — promoted target
+  blocked_files_write:
+    - decisions/**                                                        # all 5 ADRs immutable
+    - constitution.md                                                     # amendments via dedicated WU
+    - .appmaker/schemas/**                                                # immutable
+    - .appmaker/work-units/wu-002/**                                      # closed (read OK)
+    - .appmaker/work-units/wu-003/**
+    - .appmaker/work-units/wu-004/**
+    - .appmaker/work-units/wu-005/**
+    - .appmaker/work-units/wu-006/**
+    - .appmaker/work-units/wu-007/**
+    - .appmaker/work-units/wu-008/work-unit-superseded-cli-implementation.yaml  # preserved as audit, no further edits
+    - "**/*.ts"                                                           # NO CODE per user directive
+    - "**/*.json"                                                         # NO CODE
+    - "**/*.sh"                                                           # NO BASH SCRIPTS
+    - "**/*.py"                                                           # NO PYTHON
+    - bin/**                                                              # NO CLI implementation (deferred to WU-009)
+    - tests/**                                                            # NO tests (deferred to WU-009)
+    - north-star.md                                                       # NO dogfood artifacts (deferred to WU-009 or later)
+    - appmaker.config.yaml                                                # NO dogfood
+    - .appmaker/profile.yaml                                              # NO dogfood
+    - .appmaker/state.sqlite
+    - .appmaker/decisions.jsonl
+    - .appmaker/events.jsonl
+    - .appmaker/lessons.jsonl
+    - docs/reference/**                                                   # not modified by WU-008 v2
+  blocked_actions:
+    - "git push"
+    - "git commit"
+    - "git reset --hard"
+    - "rm -rf"
+    - "npm install"
+    - "git clone"
+    - any modification to ADRs / constitution / schemas / prior WUs / superseded WU-008 contract
+    - any code writing (no .ts, .json, .sh, .py, .yaml outside the contract+context-pack)
+  allowed_actions:
+    - "read: any file in allowed_files_read"
+    - "create: files in allowed_files_write paths"
+    - "execute parser/validator: yaml.safe_load, ruby YAML.load_file, jq empty, markdown structural inspection"
+
+# ---------------------------------------------------------------------------
+# OUTPUT TARGET (single primary; no secondary)
+# ---------------------------------------------------------------------------
+output_targets:
+  - name: appmaker-interface-v0
+    role: primary
+    artifact_type: markdown_spec
+    artifact_schema: ad-hoc with 7 required sections (S1-S7 per sections_to_define above)
+    draft_path: .appmaker/work-units/wu-008/runs/<timestamp>/output.md
+    promotion_path: docs/appmaker-interface-v0.md
+
+# ---------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA
+# ---------------------------------------------------------------------------
+acceptance_criteria:
+  - "Interface spec has all 7 required sections in declared order: S1 User personas, S2 Happy path appmaker start, S3 Work lanes (micro_change/normal/high_risk/meta_repair), S4 Ask-vs-act decision matrix, S5 What user sees at end, S6 Hidden vs admin/debug exposed, S7 UX wraps kernel primitives without weakening R4/R5/R7/R8."
+  - "Spec length 200–400 lines (concise per user directive)."
+  - "Spec defines exactly 4 public UX commands (appmaker start, status, review, approve) — no more, no less; no 'reserved' future commands per WU-007 lesson scope_creep_via_reservation."
+  - "Spec explicitly enumerates 4 internal/admin primitives (appmaker validate, context compile, log append, promote --dry-run) AND specifies they are hidden from public UX (per S6); NOT removed from kernel — just not surfaced as default UX."
+  - "S1 defines at least 2 user personas with concrete attributes (experience, use case, interface needs); each persona traced through S2 happy path."
+  - "S2 includes concrete walkthrough with example request (e.g. `appmaker start \"add login form to my app\"`); shows step-by-step what user types, what AppMaker shows back, what user does next."
+  - "S3 work lanes table with 4 rows × at least 4 columns (lane name, definition, lifecycle stages applied, default autonomy, example request)."
+  - "S4 decision matrix explicitly cross-references: constitution R11 (schema/auth/secrets/prod), ADR-005 §D2 execution_class (human_required vs autonomous), ADR-002 §D6 ready_with_override."
+  - "S5 outputs MUST be itemized + verifiable per WU-005 lesson verifiability_bias: concrete diff list (not 'changes made'), per-command pass/fail (not 'tests ok'), enumerable risks (not 'risks identified'), explicit approval list (not 'review needed')."
+  - "S6 explicit list of hidden artifacts (work-unit.yaml internals, context-pack assembly, kernel primitive invocations, lessons.jsonl, events.jsonl, schemas) AND explicit `--admin` / `--debug` mechanism that surfaces them when user opts in."
+  - "S7 explicitly addresses each of constitution R4, R5, R7, R8 with concrete preservation strategy: how friendly UX makes them invisible-by-default WITHOUT bypassing them."
+  - "Cross-section consistency: S3 lanes ↔ S4 autonomy thresholds ↔ S5 outputs ↔ S6 hidden-list all internally aligned (per WU-006 lesson cross_decision_consistency_active_check applied to spec sections)."
+  - "Cross-artifact consistency: kernel primitive names in S6/S7 EXACTLY match names in superseded CLI contract (validate, promote --dry-run, context compile, log append) — no drift; constitution rule references (R4/R5/R7/R8) cross-checked against actual constitution.md text."
+  - "Forbidden patterns absent: zero TBD, zero TODO, zero bare ellipsis."
+  - "No code produced (no .ts, .json, .sh, .py, .yaml outside contract/context-pack); no dogfood artifacts (north-star.md, appmaker.config.yaml, .appmaker/profile.yaml — those move to WU-009 or later); no edits to ADRs/constitution/schemas/prior WUs/superseded contract."
+  - "Spec ends with explicit pointer to WU-009: 'Implement Friendly CLI v0 based on this interface definition'. WU-009 is named but not specified here (just acknowledged as next)."
+
+# ---------------------------------------------------------------------------
+# VERIFICATION
+# ---------------------------------------------------------------------------
+verification:
+  type: investigation_artifact_validation
+  primary_artifact:
+    name: appmaker-interface-v0
+    schema: "ad-hoc 7-section spec (S1-S7 per sections_to_define)"
+    required_sections:
+      - "S1. User personas"
+      - "S2. Happy path for `appmaker start`"
+      - "S3. Work lanes"
+      - "S4. Ask vs act decision matrix"
+      - "S5. What the user sees at end"
+      - "S6. Hidden vs admin/debug exposed"
+      - "S7. UX wraps kernel primitives without weakening R4/R5/R7/R8"
+    forbidden_patterns: ["TBD", "TODO", "..."]
+    bounds_lines: { min: 200, max: 400 }
+    public_commands_count: 4                                              # exactly: start, status, review, approve
+    internal_primitives_count: 4                                          # exactly: validate, context compile, log append, promote --dry-run
+    constitution_rules_referenced_in_S7: ["R4", "R5", "R7", "R8"]         # all 4 must be addressed
+  cross_section_consistency_active_step:                                  # per WU-006 lesson #1, applied to spec sections
+    required: true
+    pairs_to_diff:
+      - "S3 (work lanes) ↔ S4 (autonomy thresholds per lane)"
+      - "S3 (work lanes) ↔ S5 (per-lane output expectations)"
+      - "S4 (ask vs act) ↔ S6 (hidden vs exposed — what user sees when AppMaker asks)"
+      - "S6 (hidden artifacts) ↔ S7 (kernel primitives — every hidden artifact is touched by which primitive)"
+      - "S2 (happy path) ↔ S3 (lanes — happy path covers at least one example per lane?)"
+  cross_artifact_consistency_active_step:                                 # per WU-006 lesson #2
+    required: true
+    artifacts_to_compare:
+      - "Spec S6/S7 kernel primitive names ↔ superseded CLI contract output_targets (validate/promote/context/log) — names must match"
+      - "Spec S7 constitution rule references (R4/R5/R7/R8) ↔ actual constitution.md rule text — semantic alignment"
+      - "Spec S3 lanes ↔ existing work-unit-v1 schema fields (status enum, type enum, execution_class) — no contradiction"
+  within_section_wording_consistency_required: true                       # per WU-006 lesson #3
+  human_review_required: true
+
+# ---------------------------------------------------------------------------
+# VALIDATOR TOOLING PREFLIGHT
+# ---------------------------------------------------------------------------
+validator_tooling_preflight:
+  required: true
+  must_record_available_tools: true
+  if_selected_format_requires_unavailable_validator: |
+    Spec is markdown with structural acceptance criteria; no parser-meta-validation needed.
+    Structural validation via grep/awk/sed for required sections + line count + forbidden patterns.
+  available_tools_at_baseline:
+    - jq, python yaml, ruby YAML, grep, sed, awk, diff
+  unavailable_at_baseline:
+    - ajv, python jsonschema (deferred per ADR-003 OQ-1; not needed for markdown spec)
+
+# ---------------------------------------------------------------------------
+# REVIEW SCORECARD
+# ---------------------------------------------------------------------------
+review_required_from:
+  - critic
+  - human
+
+review_scorecard_template:
+  clarity: pending
+  internal_consistency: pending
+  cross_section_consistency_active: pending                               # ACTIVE step per WU-006 lesson #1, applied to S1-S7 pairs
+  cross_artifact_consistency_active: pending                              # ACTIVE step per WU-006 lesson #2 (kernel primitive names, constitution rule refs)
+  within_section_wording_consistency: pending                             # per WU-006 lesson #3
+  alignment_with_constitution: pending                                    # R4/R5/R7/R8 specifically addressed in S7
+  alignment_with_adr_005_execution_class: pending                         # S4 references ADR-005 §D2 enum
+  alignment_with_adr_002_override: pending                                # S4 references ADR-002 §D6
+  scope_discipline_no_code: pending                                       # zero code files produced
+  scope_discipline_no_dogfood: pending                                    # north-star/config/profile NOT touched (deferred to WU-009)
+  public_commands_exactly_4: pending
+  internal_primitives_exactly_4: pending
+  forbidden_patterns_absent: pending
+  user_persona_count_at_least_2: pending
+  walkthrough_concrete: pending                                           # S2 has concrete example request, not abstract
+  pointer_to_wu_009: pending                                              # spec ends with WU-009 pointer
+
+# ---------------------------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------------------------
+execution:
+  mode: single
+  agent: claude (default)
+  context_pack: .appmaker/work-units/wu-008/context-pack.md
+  estimated_effort: 2-3 hours                                             # spec writing; no code
+
+# ---------------------------------------------------------------------------
+# GATES
+# ---------------------------------------------------------------------------
+promote_gate:
+  default_decision: reject
+  on_missing_field: reject
+  on_error: reject
+  required_pass:
+    - "verification.primary_artifact.required_sections_all_present: true"
+    - "verification.primary_artifact.forbidden_patterns_absent: true"
+    - "verification.primary_artifact.bounds_lines_within: true"
+    - "verification.primary_artifact.public_commands_count_exact: 4"
+    - "verification.primary_artifact.internal_primitives_count_exact: 4"
+    - "verification.primary_artifact.constitution_rules_referenced_in_S7_all_present: true"
+    - "verification.cross_section_consistency_active_step.all_pairs_aligned: true"
+    - "verification.cross_artifact_consistency_active_step.all_artifacts_aligned: true"
+    - "verification.within_section_wording_consistency_pass: true"
+    - "review.scope_discipline_no_code: pass"
+    - "review.scope_discipline_no_dogfood: pass"
+    - validator_tooling_preflight.recorded: true
+    - "review.human: pass"
+  break_glass:
+    allowed: false                                                        # interface spec is foundational for WU-009 implementation; no escape hatch
+
+# ---------------------------------------------------------------------------
+# RISKS
+# ---------------------------------------------------------------------------
+risks:
+  - "Spec under-specifies UX, leaving WU-009 with too much ambiguity. Mitigation: 7 sections enumerated with concrete acceptance criteria; S2 happy path concrete example mandatory."
+  - "Spec over-specifies, locking WU-009 into bad UX choices before real user feedback. Mitigation: bounds 200–400 lines (forces concise); explicit OQ for revision after WU-009 ships."
+  - "Cross-section/cross-artifact inconsistency. Mitigation: verification.cross_section_consistency_active_step + cross_artifact_consistency_active_step (per WU-006 lessons) — ACTIVELY EXECUTED, not passive scorecard."
+  - "Scope creep — adding more public commands or dogfood artifacts mid-execution. Mitigation: blocked_files_write + AC #3/#4 explicit count constraints."
+  - "Strategic correction signal not preserved across future sessions. Mitigation: events.jsonl entry strategic_correction; superseded WU-008 contract preserved with notice; lessons closeout will record."
+  - "User-facing UX choices made by agent without human input. Mitigation: review_scorecard.human_review pending; human_review_required: true; user explicitly approves spec before promote."
+  - "S7 'preserves R4/R5/R7/R8' becomes hand-wavy. Mitigation: AC #11 each rule MUST be addressed with concrete preservation strategy; reviewer cross-checks against constitution.md text."
+
+# ---------------------------------------------------------------------------
+# ROLLBACK
+# ---------------------------------------------------------------------------
+rollback_plan: |
+  Soft: future amendment work_unit revises specific sections after WU-009 reveals UX flaws.
+
+  Hard: archive interface spec to .appmaker/_archive/; restore prior state (no public UX defined; AppMaker continues as kernel + manual workflow). WU-009 cannot proceed without spec; effectively pauses CLI implementation until spec re-attempted. No production users affected (greenfield).
+
+# ---------------------------------------------------------------------------
+# NOTES
+# ---------------------------------------------------------------------------
+notes: |
+  WU-008 v2 = strategic correction from CLI implementation to interface
+  definition. Old WU-008 contract preserved at
+  work-unit-superseded-cli-implementation.yaml for audit. Strategic correction
+  event in events.jsonl 2026-05-10.
+
+  Per user directive:
+  - Public UX: 4 commands (start, status, review, approve)
+  - Internal primitives: 4 (validate, context compile, log append, promote --dry-run) — kept as kernel capabilities, hidden by default
+  - 7 spec sections: personas, happy path, lanes, ask-vs-act, what-user-sees, hidden-vs-exposed, kernel-primitive-wrapping
+  - NO CODE in WU-008; CLI implementation moves to WU-009
+
+  Meta-AppMaker decomposition gate exception: same as prior WU-008 contract —
+  AppMaker meta-project lacks PRD, gate doesn't apply. Future projects use
+  full lifecycle once WU-009 CLI lands.
+
+  After PROMOTE of WU-008 v2:
+  - Closeout WU-008 (4 lessons + retro_recorded event)
+  - WU-009: Implement Friendly CLI v0 based on docs/appmaker-interface-v0.md
+  - WU-010+: dogfood artifacts (north-star.md, appmaker.config.yaml, .appmaker/profile.yaml) — likely separate or part of WU-009
+  - DO NOT auto-resume meta-ADR pipeline (ADR-006/007/008/009 still PAUSED)
+  - Future ADR-NNN candidates carry forward

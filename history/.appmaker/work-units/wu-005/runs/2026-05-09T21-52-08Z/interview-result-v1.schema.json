@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://appmaker.local/schemas/interview-result-v1.schema.json",
+  "title": "AppMaker interview-result v1",
+  "description": "Output of the Interview Phase (per ADR-002). Lives at .appmaker/interview-result.yaml. Gates whether downstream work_units may be created (per constitution R18). v1 schema authored by WU-005 / ADR-003.",
+  "type": "object",
+  "required": ["problem", "scope", "product", "technical", "risks", "readiness"],
+  "additionalProperties": false,
+  "properties": {
+    "problem": {
+      "type": "object",
+      "description": "What the project is solving and for whom.",
+      "required": ["statement", "target_users", "current_pain"],
+      "additionalProperties": false,
+      "properties": {
+        "statement": { "type": "string", "minLength": 1 },
+        "target_users": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "current_pain": { "type": "string", "minLength": 1 }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "description": "Goals, non-goals, and constraints framing the project.",
+      "required": ["goals", "non_goals", "constraints"],
+      "additionalProperties": false,
+      "properties": {
+        "goals": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "non_goals": { "type": "array", "items": { "type": "string" } },
+        "constraints": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "product": {
+      "type": "object",
+      "description": "What the product does at the workflow level.",
+      "required": ["primary_workflows", "success_criteria", "edge_cases"],
+      "additionalProperties": false,
+      "properties": {
+        "primary_workflows": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "success_criteria": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "edge_cases": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "technical": {
+      "type": "object",
+      "description": "Technical preferences and constraints (may be empty for greenfield projects without committed stack).",
+      "required": ["preferred_stack", "integrations", "data_sensitivity", "deployment_target"],
+      "additionalProperties": false,
+      "properties": {
+        "preferred_stack": { "type": "array", "items": { "type": "string" } },
+        "integrations": { "type": "array", "items": { "type": "string" } },
+        "data_sensitivity": { "type": "string", "description": "Free-form (e.g. 'public', 'PII', 'GDPR-regulated')." },
+        "deployment_target": { "type": "string", "description": "Free-form (e.g. 'vercel', 'self-hosted', 'TBD' is forbidden — use empty string with explicit non-decision rationale in ambiguous_areas)." }
+      }
+    },
+    "risks": {
+      "type": "object",
+      "description": "Surfaces of uncertainty captured during interview.",
+      "required": ["ambiguous_areas", "assumptions", "questions_remaining"],
+      "additionalProperties": false,
+      "properties": {
+        "ambiguous_areas": { "type": "array", "items": { "type": "string" } },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "questions_remaining": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "description": "Gate state for downstream work_unit creation. Per ADR-002 §D3, four-state enum with fail-closed default.",
+      "required": ["status", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["ready", "needs_more_input", "reject", "ready_with_override"],
+          "description": "Per ADR-002 §D3: ready = pass; needs_more_input = fail-closed loop back; reject = halt project; ready_with_override = pass with caveat (see propagation in ADR-002 §D6)."
+        },
+        "reason": { "type": "string" },
+        "unresolved_ambiguities": {
+          "type": "array",
+          "description": "Required (non-empty) when status=ready_with_override, per ADR-002 §D3 structural requirement.",
+          "items": {
+            "type": "object",
+            "required": ["id", "description", "decision_deferred_to", "scope_affected", "suggested_resolution_work_unit"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^ambig-[a-z0-9-]+$" },
+              "description": { "type": "string", "minLength": 1 },
+              "decision_deferred_to": { "type": "string", "minLength": 1 },
+              "scope_affected": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+              "suggested_resolution_work_unit": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "override": {
+          "type": "object",
+          "description": "Required (populated) when status=ready_with_override, per ADR-002 §D3.",
+          "required": ["invoked_by", "invoked_at", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "invoked_by": { "type": "string", "minLength": 1, "description": "Human identity (must be human, not agent)." },
+            "invoked_at": { "type": "string", "format": "date-time" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "ready_with_override" } } },
+          "then": {
+            "required": ["unresolved_ambiguities", "override"],
+            "properties": {
+              "unresolved_ambiguities": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "existing_codebase": {
+      "type": "object",
+      "description": "Brownfield variant only (appmaker interview --with-docs). Optional. Per ADR-002 §D7.",
+      "additionalProperties": false,
+      "properties": {
+        "glossary_terms_resolved": { "type": "array", "items": { "type": "string" } },
+        "glossary_terms_introduced": { "type": "array", "items": { "type": "string" } },
+        "adr_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "title", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^adrcand-[a-z0-9-]+$" },
+              "title": { "type": "string", "minLength": 1 },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "contradictions_found": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

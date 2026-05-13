@@ -1,0 +1,168 @@
+# WU-002: Draft AppMaker constitution.md
+#
+# This is the FIRST work_unit authored through AppMaker's own discipline.
+# ADR-001 was a bootstrap exception. From here on, no more exceptions.
+#
+# NOTE: The work_unit.yaml schema itself will be formally defined in WU-003.
+# This file is a "best-guess draft" structured per ADR-001 §D2a (investigation type).
+# WU-003 will normalize the schema; this file may be revised retroactively to match.
+
+id: wu-002
+title: "Draft AppMaker constitution.md"
+type: investigation                       # per ADR-001 D2a — output is a knowledge artifact, not code
+status: PROMOTED                          # PROPOSED | ACCEPTED | IN_PROGRESS | VERIFIED | PROMOTED | PROMOTED_WITH_EXCEPTION | REJECTED
+# status: PROPOSED → ACCEPTED 2026-05-09 (Codex review of work-unit.yaml after YAML fix)
+# status: ACCEPTED → IN_PROGRESS 2026-05-09T11:18Z (execution started, run dir: 2026-05-09T11-18-09Z)
+# status: IN_PROGRESS → VERIFIED 2026-05-09T11:18Z (self-check passed: 7 sections, 17 rules, 0 forbidden patterns, 400 lines, all P1-P6 encoded, all rules have Why+How)
+# status: VERIFIED → PROMOTED 2026-05-09T14:52Z (Codex REVIEW PASS after R7 wording + lifecycle + 18-line buffer revisions; constitution.md copied to project root with DRAFT→ACCEPTED status flip)
+created: 2026-05-09
+created_by: pawedo@gmail.com
+authored_by: claude (synthesis), codex (critic — pending)
+related_adr: ADR-001
+related_work_units: []                    # WU-001 was bootstrap, not a real WU
+
+# ---------------------------------------------------------------------------
+# GOAL
+# ---------------------------------------------------------------------------
+goal: |
+  Produce constitution.md for the AppMaker project itself — the rules that
+  AppMaker (as a system) and any agent operating within it must respect.
+  AppMaker eats its own dogfood: its first non-bootstrap artifact is its own
+  governance document.
+
+# ---------------------------------------------------------------------------
+# SCOPE
+# ---------------------------------------------------------------------------
+scope:
+  allowed_files:
+    - constitution.md                     # to be created at project root
+  blocked_files:
+    - decisions/ADR-001-process-kernel-architecture.md   # ACCEPTED, immutable except via supersedence
+    - "**/*.ts"                           # no code in this work_unit
+    - "**/*.json"
+    - .appmaker/state.sqlite
+  allowed_actions:
+    - read: ["decisions/ADR-001-process-kernel-architecture.md", ".appmaker/work-units/wu-002/context-pack.md"]
+    - create: ["constitution.md"]
+  blocked_actions:
+    - "git push"
+    - "git commit"                        # human-only for v1
+    - "rm -rf"
+    - any modification to ADR-001
+
+# ---------------------------------------------------------------------------
+# OUTPUT TARGET
+# ---------------------------------------------------------------------------
+output_target:
+  path: constitution.md
+  location: project_root
+  artifact_schema: constitution-v1
+  draft_path: .appmaker/work-units/wu-002/runs/<timestamp>/output.md
+  promotion_path: constitution.md         # on PROMOTE, draft moves to project root
+
+# ---------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA (per type: investigation, ADR-001 D2a)
+# ---------------------------------------------------------------------------
+acceptance_criteria:
+  - "Document declares the rules that AppMaker (system) must enforce."
+  - "Document declares the rules that agents operating in AppMaker projects must obey."
+  - "Each rule is testable or auditable — no aspirational fluff."
+  - "Each rule has a 'why' (rationale), not only a 'what'."
+  - |
+    Document covers Codex's 6 explicit principles from ADR-001 discussion (see context-pack):
+    (1) every context-pack contains constitution + relevant ADRs + acceptance criteria;
+    (2) promote impossible without verification result;
+    (3) schema/auth/secrets/prod changes require human approval;
+    (4) gates fail closed;
+    (5) no silent fallbacks;
+    (6) every work_unit must reduce uncertainty OR deliver verified change.
+  - "Document states what is OUT of scope for the constitution (config, recommendations, taste)."
+  - "Document includes a versioning + amendment process (how is the constitution itself changed)."
+  - "Document is concise — target 200-400 lines of markdown, not a manifesto."
+
+# ---------------------------------------------------------------------------
+# VERIFICATION (per type: investigation, no test commands)
+# ---------------------------------------------------------------------------
+verification:
+  artifact_schema: constitution-v1
+  required_sections:
+    - "Status"
+    - "Purpose"
+    - "Scope (in / out)"
+    - "Rules (numbered, each with rationale)"
+    - "Amendment Process"
+    - "Verification Hooks (which rules are auto-checked vs human-reviewed)"
+    - "Revision History"
+  forbidden_patterns:
+    - "TBD"                               # constitution must not have unresolved placeholders
+    - "TODO"
+    - "..."                               # no ellipsis hand-waving
+  minimum_rules: 10
+  maximum_rules: 25                       # discipline against bloat
+  human_review_required: true
+
+# ---------------------------------------------------------------------------
+# REVIEW SCORECARD (filled at review step, before promote)
+# ---------------------------------------------------------------------------
+review_required_from:
+  - critic                                # checks: clarity, internal consistency
+  - human                                  # final approval (mandatory for governance docs)
+
+review_scorecard_template:
+  clarity: pending                        # pass | fail
+  internal_consistency: pending           # pass | fail
+  testability: pending                    # how many rules are auto-checkable?
+  alignment_with_adr_001: pending         # any contradictions with ADR-001?
+  bloat: pending                          # word count, rule count within bounds?
+
+# ---------------------------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------------------------
+execution:
+  mode: single                            # per ADR-001 D8 — only single in v1
+  agent: claude (default)
+  context_pack: .appmaker/work-units/wu-002/context-pack.md   # to be authored next step
+  estimated_effort: 1-2 hours
+
+# ---------------------------------------------------------------------------
+# GATES (fail-closed per ADR-001 D13)
+# ---------------------------------------------------------------------------
+promote_gate:
+  default_decision: reject
+  on_missing_field: reject
+  on_error: reject
+  required_pass:
+    - verification.artifact_schema_match: true
+    - verification.required_sections_all_present: true
+    - verification.forbidden_patterns_absent: true
+    - review.human: pass
+  break_glass:
+    allowed: false                        # constitution is governance — no break-glass for first version
+
+# ---------------------------------------------------------------------------
+# RISKS
+# ---------------------------------------------------------------------------
+risks:
+  - "Constitution drifts toward aspirational manifesto instead of testable rules → mitigation: minimum_rules / maximum_rules, forbidden TBD/TODO"
+  - "Constitution contradicts ADR-001 implicitly → mitigation: review checks alignment_with_adr_001"
+  - "Constitution becomes too long, no one reads it → mitigation: 200-400 line target, max 25 rules"
+
+# ---------------------------------------------------------------------------
+# ROLLBACK
+# ---------------------------------------------------------------------------
+rollback_plan: |
+  If constitution.md is promoted then later proves wrong:
+  - amendment via separate work_unit (not edit-in-place)
+  - old version archived in revision history within constitution.md
+  - any work_units in flight at amendment time are paused for re-review
+
+# ---------------------------------------------------------------------------
+# LIFECYCLE NOTES
+# ---------------------------------------------------------------------------
+notes: |
+  This work_unit is intentionally the FIRST through the work_unit pipeline.
+  Its successful completion is the proof that AppMaker's discipline is workable
+  even before the AppMaker kernel is implemented. We are running the protocol
+  manually (file edits, no CLI) but the artifacts produced are intended to be
+  schema-compatible with the future kernel — so when WU-005 implements the CLI,
+  it can ingest WU-002's files without rework.

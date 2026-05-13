@@ -1,0 +1,252 @@
+# WU-003: Draft ADR-002 — Interview Phase as First Lifecycle Stage
+#
+# First work_unit operating under fully-active constitution (R8 enforced).
+# No pre-constitution exception applies; that exception ended at WU-002 promote.
+# Context-pack for this WU MUST include constitution.md + ADR-001 + acceptance_criteria
+# (per R8). Pre-constitution condition is exhausted.
+#
+# Scope (per Codex's WU-003 directive, 2026-05-09):
+#   - may read grill-me/SKILL.md and grill-with-docs/SKILL.md
+#   - may quote and attribute
+#   - does NOT install anything
+#   - does NOT change constitution.md (amendment is WU-004)
+#   - does NOT create schema implementations (those are WU-005)
+#   - output is ONLY ADR-002 draft (markdown)
+
+id: wu-003
+title: "Draft ADR-002: Interview Phase as First Lifecycle Stage"
+type: investigation
+status: PROMOTED                          # PROPOSED | ACCEPTED | IN_PROGRESS | VERIFIED | PROMOTED | PROMOTED_WITH_EXCEPTION | REJECTED
+# status: PROPOSED → ACCEPTED 2026-05-09 (Codex review pass after Matt Pocock path fix + blocked_files_write rename + pattern mapping append-oriented secondary output)
+# status: ACCEPTED → IN_PROGRESS 2026-05-09T14:27Z (execution started after context-pack ACCEPT, run dir: 2026-05-09T14-27-51Z)
+# status: IN_PROGRESS → VERIFIED 2026-05-09T14:27Z (self-check passed: ADR-002 351 lines, 12 sections, 7 decisions D1-D7 with Decision/Why/How each, 5 killed alternatives, 0 forbidden patterns, full Matt Pocock attribution; mapping doc 58 lines, 2 entries)
+# status: VERIFIED → PROMOTED 2026-05-09T15:41Z (Codex REVIEW PASS after 3 consistency fixes: D1↔D3 contradiction resolved, commit hash b843cb5ea... recorded, .appmaker/glossary.md location specified; ADR-002 copied to decisions/, mapping doc copied to docs/reference/, status flips applied in promoted copies)
+created: 2026-05-09
+created_by: pawedo@gmail.com
+authored_by: claude (synthesis), codex (critic — pending)
+related_adr: ADR-001
+related_work_units: [wu-002]              # constitution promoted; this WU operates under it
+
+# ---------------------------------------------------------------------------
+# GOAL
+# ---------------------------------------------------------------------------
+goal: |
+  Produce ADR-002 — a single, narrowly-scoped Architectural Decision Record
+  that establishes Interview Phase as the first formal lifecycle stage of an
+  AppMaker project. ADR-002 must resolve the seven decision points listed in
+  the "Decisions to resolve" section below, document at least three killed
+  alternatives, and properly attribute Matt Pocock's grill-me / grill-with-docs
+  as inspiration sources without creating a runtime dependency on his
+  skill set.
+
+# ---------------------------------------------------------------------------
+# SCOPE
+# ---------------------------------------------------------------------------
+scope:
+  allowed_files_read:
+    - decisions/ADR-001-process-kernel-architecture.md
+    - constitution.md
+    - .appmaker/work-units/wu-002/work-unit.yaml
+    - .appmaker/work-units/wu-002/context-pack.md
+    - .appmaker/work-units/wu-002/runs/2026-05-09T11-18-09Z/output.md
+    - .appmaker/events.jsonl
+    - /Users/pawel/Projects/Matt_Pocock_Skills/skills/productivity/grill-me/SKILL.md
+    - /Users/pawel/Projects/Matt_Pocock_Skills/skills/engineering/grill-with-docs/SKILL.md
+    - /Users/pawel/Projects/Matt_Pocock_Skills/LICENSE
+    - /Users/pawel/Projects/Matt_Pocock_Skills/README.md
+  allowed_files_write:
+    - .appmaker/work-units/wu-003/context-pack.md
+    - .appmaker/work-units/wu-003/runs/<timestamp>/output.md
+    - docs/reference/matt-pocock-pattern-mapping.md          # secondary output, append-oriented ledger (see notes)
+    # decisions/ADR-002-interview-phase.md is created ONLY at promote step (copy from runs/)
+  # blocked_files_write: writes are forbidden to these paths; read access for any
+  # file is governed exclusively by allowed_files_read above. If a path is neither
+  # listed in allowed_files_read nor in blocked_files_write, the default is "no read,
+  # no write" — fail-closed per constitution R5.
+  blocked_files_write:
+    - decisions/ADR-001-process-kernel-architecture.md             # immutable, ACCEPTED
+    - constitution.md                                                # immutable in this WU; amendments are WU-004
+    - .appmaker/work-units/wu-002/**                                 # WU-002 closed, append-only audit only (read OK per allowed_files_read)
+    - "**/*.ts"                                                      # no code
+    - "**/*.json"                                                    # no JSON config
+    - "**/*.sql"                                                     # no schemas
+    - .appmaker/state.sqlite
+    - .appmaker/decisions.jsonl                                      # not yet active; events.jsonl is sole live stream
+    - .appmaker/lessons.jsonl                                        # not yet active
+  blocked_actions:
+    - "git push"
+    - "git commit"
+    - "git reset --hard"
+    - "rm -rf"
+    - "npm install"                                                  # nothing installs in WU-003
+    - "git clone"                                                    # Matt Pocock repo already at /Users/pawel/Projects/Matt_Pocock_Skills/
+    - any modification to ADR-001 or constitution.md
+  allowed_actions:
+    - "read: any file in allowed_files_read"
+    - "create: files in allowed_files_write"
+    - "execute parser/validator: yaml.safe_load, ruby Psych, markdown structure checks"
+
+# ---------------------------------------------------------------------------
+# OUTPUT TARGET
+# ---------------------------------------------------------------------------
+output_target:
+  path: ADR-002-interview-phase.md
+  location: decisions
+  artifact_schema: adr-v1
+  draft_path: .appmaker/work-units/wu-003/runs/<timestamp>/output.md
+  promotion_path: decisions/ADR-002-interview-phase.md
+  promotion_status_flip: "DRAFT in run dir → ACCEPTED at decisions/ (per WU-002 lifecycle precedent)"
+
+# ---------------------------------------------------------------------------
+# DECISIONS TO RESOLVE (verbatim from Codex's WU-003 directive, 2026-05-09)
+# ---------------------------------------------------------------------------
+decisions_to_resolve:
+  - "D1. Is Interview the required first lifecycle stage of every AppMaker project, or optional?"
+  - "D2. Where does interview-result.yaml live in the project file model? (current 6-file model becomes 7-file? or interview-result lives in .appmaker/?)"
+  - "D3. readiness enum: ready | needs_more_input | reject | ready_with_override — define each state's gate semantics."
+  - "D4. Lifecycle command decision: appmaker init --minimal then appmaker interview, OR appmaker start (combined), OR another pattern."
+  - "D5. How does Matt Pocock /grill-me and /grill-with-docs inspire the Interview prompt without becoming a runtime dependency? (attribution + adaptation policy)"
+  - "D6. How does ready_with_override propagate unresolved ambiguities to downstream context-packs? (concrete propagation mechanism + which context-pack section carries them)"
+  - "D7. Greenfield vs brownfield variants: appmaker interview (greenfield, grill-me-style) vs appmaker interview --with-docs (brownfield, grill-with-docs-style). Concrete differences in inputs, prompts, and outputs."
+
+# ---------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA (per type: investigation, ADR-001 D2a + constitution R1)
+# ---------------------------------------------------------------------------
+acceptance_criteria:
+  - "ADR-002 resolves all 7 decision points (D1–D7) listed in decisions_to_resolve."
+  - "Each major decision has rationale (Why) and consequences (How / Implications) sections."
+  - "At least 3 killed alternatives documented, each with explicit reason for rejection (per constitution R1)."
+  - "interview-result.yaml schema is described CONCEPTUALLY in prose / yaml-like example (NOT delivered as a parseable schema file — that is WU-005 scope)."
+  - "Matt Pocock attribution explicit: link to repo, license name, author name, specific SKILL.md paths quoted from."
+  - "No constitution edits. No schema files created. No code files created."
+  - "ADR-002 does not contradict ADR-001 §§D2, D2a, D3, D4, D11, D12, D13, D14."
+  - "ADR-002 does not contradict constitution rules (especially R1, R8, R12, R13, R17)."
+  - "ready_with_override propagation rule (D6) includes at least one concrete example of how an ambiguity flows from interview-result.yaml into a downstream work_unit's context-pack."
+  - "Lifecycle command decision (D4) picks a single default pattern with explicit rationale; alternatives listed in killed alternatives."
+  - "Open Questions section enumerates anything ADR-002 deliberately defers (e.g., interview UI/CLI implementation details — those are WU-005+ scope)."
+  - "Creates or updates docs/reference/matt-pocock-pattern-mapping.md as an append-oriented reference ledger with exactly two ADR-002 entries: grill-me and grill-with-docs. Each entry records: source_skill path, license, ADR reference, AppMaker pattern name, surface (lifecycle | runner | review | safety | catalog), output artifact. ADR-002 itself remains the primary output; the mapping doc is reference/provenance, not a decision artifact."
+
+# ---------------------------------------------------------------------------
+# VERIFICATION (per type: investigation; artifact_schema adr-v1)
+# ---------------------------------------------------------------------------
+verification:
+  artifact_schema: adr-v1
+  required_sections:
+    - "Status"
+    - "Metadata"
+    - "Context"
+    - "Sources Consulted"
+    - "Decision (numbered)"
+    - "Killed Alternatives"
+    - "Risks and Mitigations"
+    - "Rollback Plan"
+    - "Open Questions"
+    - "Acceptance Criteria"
+    - "Verification"
+    - "Revision History"
+  forbidden_patterns:
+    - "TBD"
+    - "TODO"
+    - "..."                                                          # no ellipsis hand-waving (per WU-002 lesson R7-derived)
+  minimum_decisions_resolved: 7                                      # one per D1–D7
+  minimum_alternatives_killed: 3
+  bounds_lines:
+    min: 250
+    max: 550                                                          # ADR-002 may be longer than constitution due to multi-decision detail
+  matt_pocock_attribution_required: true
+  matt_pocock_quotation_must_cite_path: true                          # exact SKILL.md path, not just repo URL
+  human_review_required: true
+  machine_readable_artifact_check_applies: false                      # markdown is the artifact; not parser-validated, but structure-validated
+
+# ---------------------------------------------------------------------------
+# REVIEW SCORECARD (filled at review step, before promote)
+# ---------------------------------------------------------------------------
+review_required_from:
+  - critic
+  - human
+
+review_scorecard_template:
+  clarity: pending
+  internal_consistency: pending
+  alignment_with_adr_001: pending
+  alignment_with_constitution: pending
+  matt_pocock_attribution_quality: pending
+  killed_alternatives_quality: pending
+  ready_with_override_propagation_clarity: pending
+  scope_discipline: pending                                           # did the ADR stay narrow? no schemas, no constitution edits, no code?
+
+# ---------------------------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------------------------
+execution:
+  mode: single                                                        # per ADR-001 D8 — only single in v1
+  agent: claude (default)
+  context_pack: .appmaker/work-units/wu-003/context-pack.md           # to be authored after this WU contract is ACCEPTED
+  estimated_effort: 2-3 hours
+
+# ---------------------------------------------------------------------------
+# GATES (fail-closed per ADR-001 D13 + constitution R5)
+# ---------------------------------------------------------------------------
+promote_gate:
+  default_decision: reject
+  on_missing_field: reject
+  on_error: reject
+  required_pass:
+    - verification.artifact_schema_match: true
+    - verification.required_sections_all_present: true
+    - verification.forbidden_patterns_absent: true
+    - verification.minimum_decisions_resolved_met: true
+    - verification.minimum_alternatives_killed_met: true
+    - verification.bounds_lines_within: true
+    - verification.matt_pocock_attribution_present: true
+    - review.human: pass
+  break_glass:
+    allowed: false                                                    # ADR is governance-critical, no escape hatch
+
+# ---------------------------------------------------------------------------
+# RISKS
+# ---------------------------------------------------------------------------
+risks:
+  - "Scope creep into schemas, constitution, or code. Mitigation: blocked_files list + explicit acceptance criteria 'no schemas, no code, no constitution edits'."
+  - "Matt Pocock attribution incomplete or license terms misunderstood. Mitigation: read LICENSE file; cite specific SKILL.md paths and the MIT license name."
+  - "ready_with_override propagation rule (D6) underspecified. Mitigation: include concrete worked example in ADR text; review scorecard explicitly tests this dimension."
+  - "Lifecycle command decision (D4) made prematurely without CLI implementation context. Mitigation: ADR-002 picks a default with rationale and marks it 'subject to revision in CLI implementation ADR (later)'."
+  - "ADR-002 contradicts ADR-001 or constitution implicitly. Mitigation: alignment_with_adr_001 and alignment_with_constitution review scorecard fields plus reviewer mandate to surface contradictions."
+  - "Greenfield/brownfield variants (D7) over-engineered before any real project tested either path. Mitigation: ADR-002 specifies the variants conceptually; concrete CLI flags and prompt differences deferred to later implementation ADRs."
+
+# ---------------------------------------------------------------------------
+# ROLLBACK
+# ---------------------------------------------------------------------------
+rollback_plan: |
+  Soft rollback: future ADR (ADR-NNN) supersedes specific decisions in ADR-002.
+  Open Questions in ADR-002 itself enumerate which decisions are most likely to need revision.
+
+  Hard rollback: archive WU-003 outputs, mark ADR-002 as REJECTED in revision history,
+  start a new investigation work_unit with documented learnings. No production users
+  are affected (greenfield).
+
+# ---------------------------------------------------------------------------
+# OPEN DECISIONS NOTED FOR ADR-002 BODY (not yet resolved here)
+# ---------------------------------------------------------------------------
+notes: |
+  ADR-002 will likely produce these new artifacts that come AFTER this WU:
+    - WU-004: constitution amendment adding Interview as required first stage
+    - WU-005: schemas v1 (interview-result-v1, work-unit-v1, adr-v1)
+
+  ADR-002 itself does NOT touch constitution or schemas. It only DECIDES.
+  Implementation of those decisions is delegated to subsequent work_units.
+
+  Reference inspiration to attribute (Matt Pocock Skills, MIT, https://github.com/patjfree/Matt_Pocock_Skills):
+    - skills/productivity/grill-me/SKILL.md       — interview-style requirements gathering
+    - skills/engineering/grill-with-docs/SKILL.md — same + domain-language extraction + ADR mining
+
+  This WU operates under fully-active constitution. R8 enforced: context-pack will
+  include constitution.md + ADR-001 + this work_unit's acceptance criteria when
+  authored in the next step.
+
+  Pattern mapping doc semantics (docs/reference/matt-pocock-pattern-mapping.md):
+    - This is "append-oriented", NOT strictly append-only.
+    - New pattern adoptions are APPENDED by future ADR work_units (ADR-003 adds to-prd row, ADR-004 adds to-issues row, etc.).
+    - Corrections (typos, malformed fields) are allowed via dedicated work_unit that updates the doc's revision history; no silent rewrites.
+    - This is NOT the audit stream — events.jsonl, decisions.jsonl, lessons.jsonl are governed by constitution R10 (strict append-only). The mapping doc is reference material, not auditable history.
+    - WU-003 creates the doc with exactly two entries (grill-me, grill-with-docs) plus a header explaining the append-oriented convention.

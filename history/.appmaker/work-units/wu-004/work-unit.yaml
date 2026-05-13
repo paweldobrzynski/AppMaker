@@ -1,0 +1,280 @@
+# WU-004: Constitution Amendment — Add Interview as Required First Lifecycle Stage
+#
+# This is the FIRST AMENDMENT WORK_UNIT in AppMaker.
+#
+# It tests whether the Amendment Process defined inside constitution.md itself
+# is workable. Eat-own-dogfood at meta-level: the constitution amends itself
+# through its own pipeline.
+#
+# Special property: constitution.md is in allowed_files_write for this WU only,
+# because the Amendment Process is lex specialis for amendment work_units. For
+# every OTHER work_unit, constitution.md remains in blocked_files_write.
+#
+# Per Codex's directive (post-WU-003): context-pack for this WU MUST include
+# the lessons.jsonl entries from WU-003. This is the first test that memory
+# stream actually influences subsequent work_units, not just sits in a file.
+
+id: wu-004
+title: "Constitution amendment: add Interview as required first lifecycle stage (R18)"
+type: investigation
+status: PROMOTED                          # PROPOSED | ACCEPTED | IN_PROGRESS | VERIFIED | PROMOTED | PROMOTED_WITH_EXCEPTION | REJECTED
+# status: PROPOSED → ACCEPTED 2026-05-09 (Codex review pass after 4 fixes: line count baseline 383, memory test scope BOTH lessons, strict R5/R13 precedent + solo_execution_exception, stale risk-line cleanup)
+# status: ACCEPTED → IN_PROGRESS 2026-05-09T16:24Z (execution started after context-pack ACCEPT including 2 wording fixes: ADR-002 §D6 mapping + ellipsis copy-paste warning; run dir: 2026-05-09T16-24-46Z)
+# status: IN_PROGRESS → VERIFIED 2026-05-09T16:24Z (self-check passed: 395 lines ≤ 400 hard cap, 18 rules, R1-R17 textual diff = 0, P1-P6 each encoded, R18 with Why+How references ADR-002, Verification Hooks row added auto-check+human-review, Revision History 3 rows; ellipsis from --reason=... shell example replaced with concrete placeholder per Fix #2 discipline; both wu-004-applicable lessons influenced execution: lesson 2 review drove granular self-check checklist with diff verification, lesson 3 adr_quality drove cross-section consistency validation between Status / R18 / Verification Hooks row / Revision History)
+# status: VERIFIED → PROMOTED 2026-05-09T16:35Z (Codex REVIEW PASS after 1 wording fix: footer "supersedes WU-002 v1" replaced with neutral "current version includes WU-002 v1 plus WU-004 R18 amendment" — Revision History continues to acknowledge WU-002 as valid promoted artifact; constitution.md replaced at project root with amended version 395 lines / 18 rules; solo_execution_exception=true recorded in events.jsonl substituting human_secondary review per WU-004 contract precedent-setting clause)
+created: 2026-05-09
+created_by: pawedo@gmail.com
+authored_by: claude (synthesis), codex (critic — pending)
+related_adr: [ADR-001, ADR-002]
+related_work_units: [wu-002, wu-003]      # constitution creation + ADR-002 promote
+amendment_class: ADD                      # ADD | MODIFY | REMOVE | RENAME
+
+# ---------------------------------------------------------------------------
+# GOAL
+# ---------------------------------------------------------------------------
+goal: |
+  Amend the AppMaker constitution to add a new rule (proposed slot R18)
+  formalizing ADR-002 §D1: Interview Phase is the required first lifecycle
+  stage of every AppMaker project.
+
+  The amendment must:
+   - Add exactly one new rule (R18) without modifying or removing any of R1–R17
+   - Keep all six Founding Principles (P1–P6 from ADR-001 discussion) encoded
+   - Update the Verification Hooks table with R18's classification
+   - Update the Revision History with a new amendment entry
+   - Stay within constitution bounds (200–400 lines, max 25 rules per R17)
+   - Reference ADR-002 for full design rationale (constitution stays terse;
+     ADR carries the architecture)
+
+# ---------------------------------------------------------------------------
+# AMENDMENT TARGET (specific to amendment work_units)
+# ---------------------------------------------------------------------------
+amendment_target:
+  rule_change: ADD                                                    # ADD only; no modifications to existing rules in this WU
+  proposed_rule_id: R18
+  proposed_rule_topic: "Interview Phase as required first lifecycle stage"
+  references_adr: ADR-002
+  precipitating_work_unit: wu-003
+  rationale_in_existing_constitution: "ADR-002 §D1 establishes the architectural decision; constitution rule R18 is its enforcement vehicle. The two artifacts must remain consistent."
+
+  affects_core_safety_rules: true                                     # Strict reading per Codex review of WU-004 contract: R18 is a NEW required gate that semantically operates within R5 (fail-closed gates) and instantiates R13 (uncertainty reduction). Even though R18 does not edit R5/R13 textually, it adds enforcement that lives in their semantic domain. First-amendment precedent should be strict, not loose.
+  semantic_relations:
+    R5: "Interview readiness gate ({ready, ready_with_override}) is a new fail-closed gate. R5 establishes the principle; R18 adds a specific enforced gate within it."
+    R13: "Interview Phase is the project-level mechanism by which projects honor R13's 'reduce uncertainty or deliver verified change' — Interview produces uncertainty-reducing artifact (interview-result.yaml)."
+  semantic_relations_note: "R18 does not edit R5 or R13 directly. Per strict reading of Amendment Process meta-rule 'amendments touching R4, R5, R6, R8, R11, or R13 require an additional second human reviewer', semantic touching counts. This sets the precedent: first amendment uses strict reading."
+
+# ---------------------------------------------------------------------------
+# SCOPE
+# ---------------------------------------------------------------------------
+scope:
+  allowed_files_read:
+    - decisions/ADR-001-process-kernel-architecture.md
+    - decisions/ADR-002-interview-phase.md
+    - constitution.md                                                 # current ACCEPTED version (will be replaced)
+    - .appmaker/work-units/wu-002/work-unit.yaml
+    - .appmaker/work-units/wu-002/context-pack.md
+    - .appmaker/work-units/wu-002/runs/2026-05-09T11-18-09Z/output.md
+    - .appmaker/work-units/wu-003/work-unit.yaml
+    - .appmaker/work-units/wu-003/context-pack.md
+    - .appmaker/work-units/wu-003/runs/2026-05-09T14-27-51Z/output.md
+    - .appmaker/work-units/wu-003/runs/2026-05-09T14-27-51Z/matt-pocock-pattern-mapping.md
+    - .appmaker/lessons.jsonl                                         # NEW — fresh lessons from WU-003 (per Codex's memory-stream test); decision-influencing input
+    - .appmaker/events.jsonl                                          # AUDIT REFERENCE ONLY — used to verify lifecycle history of WU-002 / WU-003; NOT a primary decision source for the amendment
+    - docs/reference/matt-pocock-pattern-mapping.md                   # reference for completeness; not directly consulted in amendment
+  allowed_files_write:
+    - .appmaker/work-units/wu-004/context-pack.md
+    - .appmaker/work-units/wu-004/runs/<timestamp>/output.md
+    - constitution.md                                                 # SPECIAL EXCEPTION: this is THE amendment WU; for all other WUs constitution.md is blocked
+  blocked_files_write:
+    - decisions/ADR-001-process-kernel-architecture.md                # immutable
+    - decisions/ADR-002-interview-phase.md                            # immutable
+    - .appmaker/work-units/wu-002/**                                  # WU-002 closed (read OK)
+    - .appmaker/work-units/wu-003/**                                  # WU-003 closed (read OK)
+    - "**/*.ts"                                                       # no code
+    - "**/*.json"                                                     # no JSON config
+    - "**/*.sql"                                                      # no schemas
+    - .appmaker/state.sqlite
+    - .appmaker/decisions.jsonl                                       # not yet active
+    - .appmaker/events.jsonl                                          # append-only via runner step, not direct edit
+    - .appmaker/lessons.jsonl                                         # append-only
+    - docs/reference/matt-pocock-pattern-mapping.md                   # this WU does not adopt new Matt patterns
+  blocked_actions:
+    - "git push"
+    - "git commit"
+    - "git reset --hard"
+    - "rm -rf"
+    - "npm install"
+    - "git clone"
+    - "any deletion or modification of rules R1–R17 in constitution.md"
+    - "any silent deletion of Founding Principles P1–P6"
+    - "any retroactive invalidation of already-promoted work_units (wu-002, wu-003)"
+  allowed_actions:
+    - "read: any file in allowed_files_read"
+    - "create: files in allowed_files_write"
+    - "modify constitution.md: by ADDING rule R18 only; existing rules R1–R17 must remain identical"
+
+# ---------------------------------------------------------------------------
+# OUTPUT TARGET
+# ---------------------------------------------------------------------------
+output_target:
+  path: constitution.md
+  location: project_root
+  artifact_schema: constitution-v1
+  draft_path: .appmaker/work-units/wu-004/runs/<timestamp>/output.md
+  promotion_path: constitution.md                                     # REPLACES current ACCEPTED version
+  promotion_status_flip: "DRAFT in run dir → ACCEPTED at project root; prior version's Status header replaced; Revision History gains a new amendment row recording the change"
+
+# ---------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA (per type: investigation; constitution Amendment Process applies)
+# ---------------------------------------------------------------------------
+acceptance_criteria:
+  - "Constitution adds exactly one new rule, slot R18, in the appropriate Rules section subgroup. Each existing rule R1–R17 is unchanged in title, body, Why, and How to apply."
+  - "Rule R18 is titled 'Every project begins with Interview Phase producing .appmaker/interview-result.yaml' (or near-equivalent that captures the gate enforcement)."
+  - "Rule R18 has a Why: paragraph (rationale tied to R13 uncertainty reduction and R12 no-silent-fallbacks)."
+  - "Rule R18 has a How to apply: paragraph specifying the kernel-level enforcement (no work_units other than interview work_unit until .appmaker/interview-result.yaml has readiness.status in {ready, ready_with_override}; --skip is human-only break-glass producing structured ready_with_override per ADR-002 §D1)."
+  - "Rule R18 explicitly references ADR-002 for full design rationale; constitution stays terse."
+  - "Verification Hooks table extended with R18 row, classified as auto-check + human-review."
+  - "All six Founding Principles (P1 through P6 from ADR-001 discussion) remain encoded in the post-amendment constitution. None silently deleted."
+  - "Amended constitution length stays in 200–400 line bounds. Pre-amendment: 383 lines. Amended constitution must remain ≤ 400; if R18 + Verification Hooks row + Revision History row push past 400, executor must trim non-load-bearing prose before declaring VERIFIED. The hard cap is 400, no exceptions."
+  - "Total rule count is 18 (was 17 in v1). R17's max-25 cap respected with 7-rule buffer."
+  - "Forbidden patterns absent: zero TBD, zero TODO, zero bare ellipsis (per R7-derived discipline; mentions of these strings inside instructional / quoted contexts should be paraphrased to avoid the literal strings)."
+  - "Revision History gains a new row for the amendment, recording: date 2026-05-09, work_unit wu-004, status ACCEPTED, summary of change (added R18 enforcing ADR-002 §D1), and explicit confirmation that R1–R17 were not modified."
+  - "Section ordering preserved: Status, Purpose, Scope, Rules, Amendment Process, Verification Hooks, Revision History."
+  - "No retroactive invalidation: WU-002 (constitution creation) and WU-003 (ADR-002 promote) remain valid promoted artifacts. The amendment applies to projects created after WU-004 promote; existing AppMaker (the meta-project) is grandfathered with an explicit transitional note in Revision History."
+  - "Status section in promoted constitution.md updates: 'ACCEPTED — promoted from WU-002... AMENDED on 2026-05-09 by WU-004' (or near-equivalent capturing the amendment chain)."
+  - "Memory-stream test: Context-pack for this WU (next step) explicitly cites BOTH lessons.jsonl entries that list `wu-004` in their `applies_to` field. As of 2026-05-09 these are: (a) lesson 2 (category=review) — pre-execution checklist must include external fact-check + wording consistency; and (b) lesson 3 (category=adr_quality) — cross-decision consistency must be checked, particularly when one decision constrains structure and another invokes it. The amendment work_unit must demonstrate that both lessons influenced its design or execution, not merely be name-dropped."
+
+# ---------------------------------------------------------------------------
+# VERIFICATION (per type: investigation; constitution-v1 schema)
+# ---------------------------------------------------------------------------
+verification:
+  artifact_schema: constitution-v1
+  required_sections:                                                  # constitution-v1 sections
+    - "Status"
+    - "Purpose"
+    - "Scope (in / out)"
+    - "Rules (numbered, each with rationale)"
+    - "Amendment Process"
+    - "Verification Hooks (which rules are auto-checked vs human-reviewed)"
+    - "Revision History"
+  forbidden_patterns:
+    - "TBD"
+    - "TODO"
+    - "..."
+  rule_count_min: 10
+  rule_count_max: 25                                                  # per R17
+  expected_post_amendment_rule_count: 18
+  founding_principles_check:
+    P1: required_present
+    P2: required_present
+    P3: required_present
+    P4: required_present
+    P5: required_present
+    P6: required_present
+  bounds_lines:
+    min: 200
+    max: 400
+  rules_unchanged_check:
+    rules_to_compare: [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17]
+    method: "diff each rule's Title / Why / How block against the pre-amendment version; any difference outside whitespace = fail"
+  human_review_required: true
+  amendment_meta_rules_compliance: required                           # per constitution Amendment Process
+
+# ---------------------------------------------------------------------------
+# REVIEW SCORECARD (filled at review step)
+# ---------------------------------------------------------------------------
+review_required_from:
+  - critic
+  - human_primary                                                     # mandatory
+  - human_secondary                                                   # mandatory per Amendment Process for amendments touching core rules (R4/R5/R6/R8/R11/R13); R18 touches R5 and R13 semantically — see amendment_target.semantic_relations
+
+solo_execution_exception:
+  applicable: true                                                    # AppMaker currently operates with one human (pawedo@gmail.com); no second human is operationally available
+  effect: "human_secondary requirement is satisfied by recording solo_exception: true in events.jsonl on promote, with explicit note acknowledging the dual-review rule was applied with documented exception for solo operation. This sets a documented precedent for future amendments touching core rules during solo operation. Solo exception is NOT break-glass: the rule still applies; the exception is a procedural acknowledgment, not a bypass. When AppMaker grows beyond one operator, this exception ceases to apply automatically."
+  precedent_setting: true                                             # this WU sets the convention; future amendments cite this precedent
+  recorded_in_events_on_promote: true
+
+review_scorecard_template:
+  clarity: pending
+  internal_consistency: pending
+  cross_decision_consistency: pending                                 # NEW field, distilled from WU-003 lesson 3 (lessons.jsonl)
+  alignment_with_adr_001: pending
+  alignment_with_adr_002: pending
+  founding_principles_preserved: pending                              # P1–P6 still encoded
+  rules_r1_r17_unchanged: pending                                     # diff check
+  rule_count_in_bounds: pending                                       # ≤25 per R17
+  amendment_process_followed: pending
+  bounds_lines_within: pending                                        # ≤400 hard cap
+  lessons_stream_actually_read: pending                               # context-pack MUST cite both wu-004-applicable lessons (review + adr_quality) AND output must reflect their influence (not just name-drop)
+  human_primary_review: pending                                       # mandatory
+  human_secondary_review: pending                                     # mandatory OR solo_exception flagged with note in events.jsonl
+  solo_exception_documented: pending                                  # if applicable, must be explicit in events.jsonl on promote
+
+# ---------------------------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------------------------
+execution:
+  mode: single                                                        # per ADR-001 §D8
+  agent: claude (default)
+  context_pack: .appmaker/work-units/wu-004/context-pack.md           # to be authored after this contract is ACCEPTED
+  estimated_effort: 1-2 hours
+
+# ---------------------------------------------------------------------------
+# GATES (fail-closed per ADR-001 §D13 and constitution R5)
+# ---------------------------------------------------------------------------
+promote_gate:
+  default_decision: reject
+  on_missing_field: reject
+  on_error: reject
+  required_pass:
+    - verification.required_sections_all_present: true
+    - verification.forbidden_patterns_absent: true
+    - verification.rule_count_min_max_within: true
+    - verification.expected_post_amendment_rule_count_match: true
+    - verification.founding_principles_check_all_present: true
+    - verification.rules_unchanged_check_pass: true
+    - verification.bounds_lines_within: true
+    - verification.amendment_meta_rules_compliance: pass
+    - review.human_primary: pass
+    - review.human_secondary: "pass OR (solo_execution_exception.applicable AND events.jsonl entry recording solo_exception=true with rationale)"
+  break_glass:
+    allowed: false                                                    # constitution amendment is governance-critical; no escape hatch
+
+# ---------------------------------------------------------------------------
+# RISKS
+# ---------------------------------------------------------------------------
+risks:
+  - "Executor accidentally edits a rule R1–R17 while adding R18. Mitigation: rules_unchanged_check (diff each rule against pre-amendment version) is mandatory verification step."
+  - "R18 length pushes constitution past 400-line cap. Mitigation: acceptance criterion explicit; if exceeded, executor must trim non-load-bearing prose or refactor a verbose rule (without changing its meaning)."
+  - "Amendment Process meta-rules misinterpreted (e.g., 'touching R5' interpreted loosely). Mitigation: amendment_target.affects_core_safety_rules is set to true explicit; semantic_relations documents R5 (fail-closed gates) and R13 (uncertainty reduction); promote_gate requires both human_primary and human_secondary, OR a documented solo_execution_exception with events.jsonl entry. This sets first-amendment precedent for strict reading."
+  - "Lessons stream cited but not actually applied. Mitigation: review_scorecard_template.lessons_stream_actually_read field — reviewer checks that cited lesson is reflected in output, not just name-dropped."
+  - "Hidden conflict between R18 and existing rules (e.g., R13 says 'reduce uncertainty OR deliver verified change' — R18 mandates Interview as the uncertainty-reduction mechanism. Could be read as constraining R13). Mitigation: R18 is additive ('Interview is the FIRST stage'), not redefining R13. Codex review checks no semantic conflict."
+  - "interview-result.yaml schema is conceptual (per ADR-002); R18 must reference it without depending on a not-yet-existent formal schema. Mitigation: R18 names file path and readiness.status enum values explicitly; formal schema validation deferred to WU-005."
+
+# ---------------------------------------------------------------------------
+# ROLLBACK
+# ---------------------------------------------------------------------------
+rollback_plan: |
+  Soft: future amendment work_unit modifies or removes R18. Amendment Process applies (single human reviewer; if the modification touches R4/R5/R6/R8/R11/R13, second human reviewer required).
+
+  Hard: archive amended constitution.md to .appmaker/_archive/constitution-pre-wu-004.md, restore the pre-amendment version. Revision History preserves both. ADR-002 unaffected — it remains the architectural decision; constitution rule R18 is just its enforcement vehicle. Existing projects with interview-result.yaml are unaffected.
+
+# ---------------------------------------------------------------------------
+# NOTES
+# ---------------------------------------------------------------------------
+notes: |
+  This is the FIRST amendment work_unit. Successful execution proves:
+    1. Constitution's own Amendment Process (defined inside constitution.md) is workable.
+    2. Memory stream (lessons.jsonl) is actually consumed by subsequent work_units, not just produced.
+    3. Per-WU exception model (constitution.md writable here, blocked elsewhere) holds without leaking.
+
+  Per Codex's post-WU-003 directive: context-pack for this WU (next step,
+  not this contract) MUST cite at least one lesson from .appmaker/lessons.jsonl.
+  The most directly applicable lesson is wu-003 lesson 3 (cross-decision
+  consistency), which informs WU-004's review_scorecard_template addition
+  of the cross_decision_consistency field.
+
+  After PROMOTE of WU-004, planned next steps:
+    - WU-005: schemas v1 (interview-result-v1, work-unit-v1, adr-v1)
+    - WU-006: ADR-003 PRD Synthesis (to-prd)
+    - ... per ADR-002 Open Questions roadmap

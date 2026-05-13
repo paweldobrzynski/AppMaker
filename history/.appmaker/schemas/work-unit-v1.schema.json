@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://appmaker.local/schemas/work-unit-v1.schema.json",
+  "title": "AppMaker work-unit v1",
+  "description": "Formal schema for work-unit.yaml (the contract describing one unit of work). Authored by WU-005 / ADR-003 based on actual fields used in WU-002, WU-003, WU-004, WU-005 ad-hoc YAML files. Includes lessons-derived fields (lessons_applied, amendment_target.affects_core_safety_rules, amendment_target.semantic_relations, validator_tooling_preflight, secondary_artifacts_policy, solo_execution_exception) per ADR-003 §D5.",
+  "type": "object",
+  "required": ["id", "title", "type", "status", "created", "goal", "scope", "acceptance_criteria", "verification", "execution", "promote_gate"],
+  "additionalProperties": true,
+  "properties": {
+    "id": { "type": "string", "pattern": "^wu-[0-9]+$", "description": "e.g. 'wu-005'." },
+    "title": { "type": "string", "minLength": 1 },
+    "type": {
+      "type": "string",
+      "enum": ["investigation", "implementation"],
+      "description": "Per ADR-001 §D2a. investigation = artifact-validated; implementation = command-validated."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PROPOSED", "ACCEPTED", "IN_PROGRESS", "VERIFIED", "PROMOTED", "PROMOTED_WITH_EXCEPTION", "REJECTED"],
+      "description": "Per WU-002 status enum precedent."
+    },
+    "created": { "type": "string", "format": "date" },
+    "created_by": { "type": "string" },
+    "authored_by": { "type": "string" },
+    "related_adr": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    },
+    "related_work_units": { "type": "array", "items": { "type": "string", "pattern": "^wu-[0-9]+$" } },
+    "amendment_class": {
+      "type": "string",
+      "enum": ["ADD", "MODIFY", "REMOVE", "RENAME"],
+      "description": "Amendment subtype only (constitution amendment work_units). Per WU-004 first-amendment precedent."
+    },
+    "amendment_target": {
+      "type": "object",
+      "description": "Amendment subtype only. Per ADR-003 §D5 lessons-derived fields (lessons #4, #6).",
+      "required": ["rule_change", "affects_core_safety_rules"],
+      "additionalProperties": true,
+      "properties": {
+        "rule_change": { "type": "string", "enum": ["ADD", "MODIFY", "REMOVE", "RENAME"] },
+        "proposed_rule_id": { "type": "string", "pattern": "^R[0-9]+$" },
+        "proposed_rule_topic": { "type": "string" },
+        "references_adr": { "type": "string" },
+        "precipitating_work_unit": { "type": "string", "pattern": "^wu-[0-9]+$" },
+        "affects_core_safety_rules": {
+          "type": "boolean",
+          "description": "Per WU-004 lesson #6 (semantic touching). True if the amendment textually OR semantically touches core rules (R4, R5, R6, R8, R11, R13). When true, dual human review required (or solo_execution_exception)."
+        },
+        "semantic_relations": {
+          "type": "object",
+          "description": "Per WU-004 lesson #6. Mapping rule_id → rationale explaining how amendment relates to that core rule.",
+          "additionalProperties": { "type": "string" }
+        },
+        "semantic_relations_note": { "type": "string" }
+      }
+    },
+    "goal": { "type": "string", "minLength": 1 },
+    "lessons_applied": {
+      "type": "array",
+      "description": "Per WU-004 lesson #5 (memory_layer). Lessons.jsonl entries that demonstrably influenced this WU's design or execution. Citation alone is insufficient; influence must be reflected in scope, acceptance_criteria, or output.",
+      "items": {
+        "type": "object",
+        "required": ["source", "influence"],
+        "additionalProperties": false,
+        "properties": {
+          "source": { "type": "string", "description": "e.g. 'wu-003 / review / 2026-05-09T15:55:00Z'" },
+          "influence": { "type": "string", "description": "Concrete description of how the lesson shaped this WU. DIRECT or INDIRECT marker recommended." }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "required": ["allowed_files_read", "allowed_files_write", "blocked_files_write", "blocked_actions"],
+      "additionalProperties": true,
+      "properties": {
+        "allowed_files_read": { "type": "array", "items": { "type": "string" } },
+        "allowed_files_write": { "type": "array", "items": { "type": "string" } },
+        "blocked_files_write": { "type": "array", "items": { "type": "string" } },
+        "blocked_actions": { "type": "array", "items": { "type": "string" } },
+        "allowed_actions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "output_target": {
+      "type": "object",
+      "description": "Single-output WU. For multi-output, use output_targets (array).",
+      "additionalProperties": true,
+      "properties": {
+        "path": { "type": "string" },
+        "location": { "type": "string" },
+        "artifact_schema": { "type": "string" },
+        "draft_path": { "type": "string" },
+        "promotion_path": { "type": "string" }
+      }
+    },
+    "output_targets": {
+      "type": "array",
+      "description": "Multi-output WU (e.g. WU-003 ADR + mapping doc; WU-005 ADR + 3 schemas). Each entry has role: primary | secondary.",
+      "items": {
+        "type": "object",
+        "required": ["name", "role", "draft_path", "promotion_path"],
+        "additionalProperties": true,
+        "properties": {
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "artifact_schema": { "type": "string" },
+          "draft_path": { "type": "string" },
+          "promotion_path": { "type": "string" }
+        }
+      }
+    },
+    "decisions_to_resolve": {
+      "type": "array",
+      "description": "Investigation WUs producing ADRs typically enumerate decisions here.",
+      "items": { "type": "string" }
+    },
+    "acceptance_criteria": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "verification": {
+      "type": "object",
+      "description": "Investigation: artifact_schema + structural checks. Implementation: verification_commands + test runs.",
+      "additionalProperties": true,
+      "properties": {
+        "artifact_schema": { "type": "string" },
+        "required_sections": { "type": "array", "items": { "type": "string" } },
+        "forbidden_patterns": { "type": "array", "items": { "type": "string" } },
+        "bounds_lines": {
+          "type": "object",
+          "properties": { "min": { "type": "integer" }, "max": { "type": "integer" } }
+        },
+        "verification_commands": { "type": "array", "items": { "type": "string" } },
+        "rules_unchanged_check": {
+          "type": "object",
+          "description": "Per WU-004 lesson #4 (amendment_process diff). Required for amendment WUs to prove non-amended rules remained unchanged.",
+          "additionalProperties": true,
+          "properties": {
+            "rules_to_compare": { "type": "array", "items": { "type": "string" } },
+            "method": { "type": "string" }
+          }
+        },
+        "secondary_artifacts": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true }
+        },
+        "secondary_artifacts_policy": {
+          "type": "object",
+          "description": "Per WU-005 multi-output precedent. Governs when secondary_artifacts may be deferred (e.g. D1 GUARD).",
+          "additionalProperties": true,
+          "properties": {
+            "default": { "type": "string", "enum": ["required", "optional", "deferred_with_rationale"] },
+            "deferred_allowed_only_if": { "type": "array", "items": { "type": "string" } },
+            "if_deferred": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "human_review_required": { "type": "boolean" }
+      }
+    },
+    "validator_tooling_preflight": {
+      "type": "object",
+      "description": "Per WU-005 first introduction. For WUs producing schemas or other format-bound artifacts. Records available + unavailable validators; specifies fallback behavior.",
+      "required": ["required", "must_record_available_tools"],
+      "additionalProperties": true,
+      "properties": {
+        "required": { "type": "boolean" },
+        "must_record_available_tools": { "type": "boolean" },
+        "if_selected_format_requires_unavailable_validator": { "type": "string" },
+        "available_tools_at_baseline": { "type": "array", "items": { "type": "string" } },
+        "unavailable_at_baseline": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "review_required_from": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["critic", "human", "human_primary", "human_secondary"] },
+      "minItems": 1
+    },
+    "review_scorecard_template": {
+      "type": "object",
+      "description": "Extensible mapping. Common fields: clarity, internal_consistency, cross_decision_consistency (per WU-003 lesson #3), cross_artifact_consistency, alignment_with_*, lessons_stream_actually_read (per WU-004 lesson #5).",
+      "additionalProperties": true
+    },
+    "solo_execution_exception": {
+      "type": "object",
+      "description": "Per WU-004 first-precedent. Applicable when only one human operates AppMaker; substitutes human_secondary review with documented exception in events.jsonl.",
+      "additionalProperties": true,
+      "properties": {
+        "applicable": { "type": "boolean" },
+        "effect": { "type": "string" },
+        "precedent_setting": { "type": "boolean" },
+        "recorded_in_events_on_promote": { "type": "boolean" }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "required": ["mode", "context_pack"],
+      "additionalProperties": true,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["single", "voting", "debate"],
+          "description": "Per ADR-001 §D8. v1 implements single only; voting/debate produce explicit error per R12 no silent fallbacks."
+        },
+        "agent": { "type": "string" },
+        "context_pack": { "type": "string" },
+        "estimated_effort": { "type": "string" }
+      }
+    },
+    "promote_gate": {
+      "type": "object",
+      "required": ["default_decision", "on_missing_field", "on_error", "required_pass", "break_glass"],
+      "additionalProperties": true,
+      "properties": {
+        "default_decision": { "type": "string", "enum": ["accept", "reject"] },
+        "on_missing_field": { "type": "string", "enum": ["accept", "reject"] },
+        "on_error": { "type": "string", "enum": ["accept", "reject"] },
+        "required_pass": {
+          "type": "array",
+          "description": "Each entry is either a string (e.g. 'verification.foo: pass OR deferred_with_rationale') or an object with a single key:value (e.g. {verification.foo: true}). Both shapes used historically in WU-002/003/004/005 work-unit.yaml files.",
+          "items": {
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": true
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "break_glass": {
+          "type": "object",
+          "required": ["allowed"],
+          "additionalProperties": true,
+          "properties": {
+            "allowed": { "oneOf": [{ "type": "boolean" }, { "type": "string", "enum": ["human_only"] }] },
+            "requires_reason": { "type": "boolean" },
+            "resulting_state": { "type": "string", "enum": ["promoted_with_exception"] }
+          }
+        }
+      }
+    },
+    "risks": { "type": "array", "items": { "type": "string" } },
+    "rollback_plan": { "type": "string" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "required": ["amendment_class"] },
+      "then": {
+        "required": ["amendment_target", "verification"],
+        "description": "Amendment subtype: amendment_target block required when amendment_class is set. Per ADR-003 §D5 lessons-mapping (lesson #4 wu-004 amendment_process diff-verification), amendment work_units MUST also include verification.rules_unchanged_check with rules_to_compare[] and method.",
+        "properties": {
+          "verification": {
+            "required": ["rules_unchanged_check"],
+            "properties": {
+              "rules_unchanged_check": {
+                "required": ["rules_to_compare", "method"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

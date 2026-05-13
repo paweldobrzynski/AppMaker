@@ -1,0 +1,375 @@
+# WU-005: Schema Format ADR + v1 Schemas (interview-result-v1, work-unit-v1, adr-v1)
+#
+# Multi-output investigation work_unit. PRIMARY output is ADR-003, which
+# resolves the schema format choice. SECONDARY outputs are three v1 schema
+# files conforming to the chosen format.
+#
+# Per Codex's WU-005 directive: format choice is architectural, must be in
+# ADR; but a separate mini-ADR before WU-005 would be ceremony. WU-005
+# combines ADR + schema artifacts following WU-003 multi-output precedent
+# (ADR-002 + matt-pocock-pattern-mapping.md).
+#
+# Schemas v1 are the place where 6 direct lessons (2 from WU-003 review/adr_quality
+# + 4 from WU-004 amendment_process×2/memory_layer/review) plus 1 indirect lesson
+# from WU-003 context_compiler turn into concrete fields and validators. Total: 7
+# lessons.jsonl entries cited; 6 are load-bearing. Lessons traceability is mandatory.
+
+id: wu-005
+title: "Schemas v1: ADR-003 schema format decision + interview-result-v1 + work-unit-v1 + adr-v1"
+type: investigation
+status: PROMOTED                          # PROPOSED | ACCEPTED | IN_PROGRESS | VERIFIED | PROMOTED | PROMOTED_WITH_EXCEPTION | REJECTED
+# status: PROPOSED → ACCEPTED 2026-05-09 (Codex review pass after 6 fixes: 4 initial — D1 guard, validator preflight, comment count, stale roadmap; +2 cross-section — gate vs defer path conditional, AC #6 aligned with preflight)
+# status: ACCEPTED → IN_PROGRESS 2026-05-09T21:52Z (execution started after context-pack ACCEPT; run dir: 2026-05-09T21-52-08Z; validator_tooling_preflight recorded — available: jq 1.7.1, PyYAML 6.0.3, Ruby Psych; unavailable: ajv, python jsonschema; per Codex execution directive, JSON Schema meta-validation deferred to future implementation WU)
+# status: IN_PROGRESS → VERIFIED 2026-05-09T21:52Z (self-check passed: ADR-003 251 lines / 250-550 bounds, 12 sections, D1 picked JSON Schema canonical with 5 killed alternatives, 5 D1-D5 decisions resolved, lessons mapping table 6 rows in §D5, validator gap recorded explicitly per Codex execution directive; 3 schemas all valid JSON via jq empty; lessons-derived fields all present: lessons_applied + amendment_target.{affects_core_safety_rules,semantic_relations} + validator_tooling_preflight + solo_execution_exception + secondary_artifacts_policy + rules_unchanged_check + forbidden_patterns; D1 GUARD did not activate because JSON Schema is text not code)
+# status: VERIFIED → PROMOTED 2026-05-09T23:55Z (Codex REVIEW PASS after 2 schema fixes: required_pass items oneOf string|object — pokrywa historic WU-002/003/004 Hash + WU-005 mixed; amendment subtype then now requires verification.rules_unchanged_check with rules_to_compare + method per ADR-003 D5 lesson #4 mapping; ADR-003 + 3 schemas copied to canonical paths: decisions/ADR-003-schema-format-and-artifact-schemas.md + .appmaker/schemas/{interview-result-v1,work-unit-v1,adr-v1}.schema.json)
+created: 2026-05-09
+created_by: pawedo@gmail.com
+authored_by: claude (synthesis), codex (critic — pending)
+related_adr: [ADR-001, ADR-002]
+related_work_units: [wu-002, wu-003, wu-004]
+
+# ---------------------------------------------------------------------------
+# GOAL
+# ---------------------------------------------------------------------------
+goal: |
+  Produce four artifacts in one investigation work_unit:
+
+   1. ADR-003 (primary): resolves schema format canonical choice and v1
+      schema authoring policy. Includes ≥3 killed alternatives.
+   2. interview-result-v1.schema.<ext>: formal schema for the conceptual
+      shape established in ADR-002 §schema-shape. Format determined by
+      ADR-003 D1.
+   3. work-unit-v1.schema.<ext>: formal schema for the ad-hoc work_unit.yaml
+      shape used in WU-002, WU-003, WU-004. Must include fields distilled
+      from lessons (lessons_applied, cross_decision_consistency,
+      affects_core_safety_rules, semantic_relations, forbidden_patterns
+      enforcement, etc.). Format determined by ADR-003 D1.
+   4. adr-v1.schema.<ext>: formal schema for ADR document structure used
+      since ADR-001. Includes forbidden_patterns, required_sections, etc.
+      Format determined by ADR-003 D1.
+
+  All three schemas must (a) parse as their declared format, (b) be
+  internally consistent with each other where they share concepts (e.g.
+  status enum, work_unit type), and (c) trace each non-trivial field
+  back to a constitution rule, ADR decision, or lessons.jsonl entry.
+
+# ---------------------------------------------------------------------------
+# LESSONS APPLIED (per WU-004 lesson #5: lessons useful only when proven influence)
+# ---------------------------------------------------------------------------
+lessons_applied:
+  - source: wu-003 / context_compiler / 2026-05-09T15:55:00Z
+    influence: "Manual R8 inclusion makes context-packs long. WU-005 context-pack will follow precedent (Appendix style) but flag that schemas v1 enable v1.1 context-compiler design (Aider-style ranking). Indirect influence — design-informing only."
+  - source: wu-003 / review / 2026-05-09T15:55:00Z
+    influence: "DIRECT. Pre-execution checklist with external-state fact-check (lesson 2) drives WU-005 parser-validation rigor: every schema must parse as declared format; cross-schema consistency (e.g. status enum used by both work-unit-v1 and adr-v1) is part of self-check."
+  - source: wu-003 / adr_quality / 2026-05-09T15:55:00Z
+    influence: "DIRECT. ADR-003 has 5+ decisions (format, location, versioning, validation, lessons-fields). cross_decision_consistency check is mandatory before VERIFIED. Cross-artifact consistency: ADR decisions must agree with schema files content."
+  - source: wu-004 / amendment_process (diff-verification) / 2026-05-09T16:50:00Z
+    influence: "INDIRECT. WU-005 is not an amendment. But the precedent — diff verification rigor — informs schema design: ADR-003 D5 (lessons-driven fields) MUST include `verification.rules_unchanged_check` field for amendment work_units in work-unit-v1 schema."
+  - source: wu-004 / memory_layer / 2026-05-09T16:50:00Z
+    influence: "DIRECT (load-bearing). work-unit-v1 schema MUST include `lessons_applied` field per this lesson's action. ADR-003 D5 (lessons-driven fields mapping) must explicitly address this and design the field shape."
+  - source: wu-004 / amendment_process (semantic touching) / 2026-05-09T16:50:00Z
+    influence: "DIRECT (load-bearing). work-unit-v1 schema (specifically the amendment subtype/variant) MUST include `affects_core_safety_rules` (boolean) and `semantic_relations` (mapping rule_id → rationale) fields per this lesson's action. ADR-003 D5 must design these fields."
+  - source: wu-004 / review / 2026-05-09T16:50:00Z
+    influence: "DIRECT (load-bearing). adr-v1 schema MUST include `forbidden_patterns` enforcement (TBD, TODO, ellipsis) for markdown governance artifacts. constitution-v1 schema (already implicit; future formalization) similarly. ADR-003 D5 must design forbidden_patterns as schema-level concern."
+
+# ---------------------------------------------------------------------------
+# DECISIONS TO RESOLVE IN ADR-003
+# ---------------------------------------------------------------------------
+decisions_to_resolve:
+  - "D1. Canonical schema format. Four candidates: (a) JSON Schema canonical + YAML examples for humans; (b) Zod canonical + generated JSON Schema; (c) custom YAML schema; (d) hybrid ad hoc. ADR-003 picks one default with rationale; ≥3 alternatives go to killed. GUARD: WU-005 is a no-code investigation (scope blocks `**/*.ts` and other code). If D1 selects a code-backed format (e.g. Zod) that requires a blocked extension to author canonical schemas, ADR-003 must (a) select it but EXPLICITLY DEFER schema-file authoring to a follow-up implementation work_unit (recording the deferral in §Open Questions of ADR-003) — in which case WU-005 produces only ADR-003, not the three schema files; OR (b) drop the code-backed option to killed alternatives. WU-005 cannot author code-backed schemas itself."
+  - "D2. Schema directory and naming convention. Recommended: `.appmaker/schemas/<name>-v<n>.schema.<ext>` with `<n>` incremental. ADR-003 confirms or adjusts."
+  - "D3. Schema versioning policy. v1 is initial; how do v2+ supersede v1? Mandatory deprecation period? Co-existence? ADR-003 picks policy."
+  - "D4. Validation conformance requirements. Which artifacts MUST be validated against which schema? When is validation invoked (pre-execution, pre-VERIFIED, pre-PROMOTE)? Who runs the validator (kernel, manual, CI)?"
+  - "D5. Lessons-derived fields explicit mapping. Each of the 6 wu-005-applicable lessons must map to one or more schema fields with named rationale. ADR-003 lists this mapping as its core deliverable for the memory-layer test."
+
+# ---------------------------------------------------------------------------
+# SCOPE
+# ---------------------------------------------------------------------------
+scope:
+  allowed_files_read:
+    - decisions/ADR-001-process-kernel-architecture.md
+    - decisions/ADR-002-interview-phase.md
+    - constitution.md                                                 # ACCEPTED v2 (v1 + R18 amendment), 395 lines, 18 rules
+    - .appmaker/work-units/wu-002/work-unit.yaml
+    - .appmaker/work-units/wu-002/context-pack.md
+    - .appmaker/work-units/wu-002/runs/2026-05-09T11-18-09Z/output.md
+    - .appmaker/work-units/wu-003/work-unit.yaml
+    - .appmaker/work-units/wu-003/context-pack.md
+    - .appmaker/work-units/wu-003/runs/2026-05-09T14-27-51Z/output.md
+    - .appmaker/work-units/wu-003/runs/2026-05-09T14-27-51Z/matt-pocock-pattern-mapping.md
+    - .appmaker/work-units/wu-004/work-unit.yaml
+    - .appmaker/work-units/wu-004/context-pack.md
+    - .appmaker/work-units/wu-004/runs/2026-05-09T16-24-46Z/output.md
+    - .appmaker/lessons.jsonl                                         # 7 entries; 6 applicable to wu-005-schema
+    - .appmaker/events.jsonl                                          # AUDIT REFERENCE ONLY
+    - docs/reference/matt-pocock-pattern-mapping.md
+  allowed_files_write:
+    - .appmaker/work-units/wu-005/context-pack.md
+    - .appmaker/work-units/wu-005/runs/<timestamp>/**                  # entire run dir (ADR-003 draft + 3 schema drafts; extension determined by ADR-003 D1)
+    - decisions/ADR-003-schema-format-and-artifact-schemas.md          # promote target (only on PROMOTE step)
+    - .appmaker/schemas/**                                              # promote targets for 3 schema files (only on PROMOTE step; directory created on first promote)
+  blocked_files_write:
+    - decisions/ADR-001-process-kernel-architecture.md                 # immutable
+    - decisions/ADR-002-interview-phase.md                              # immutable
+    - constitution.md                                                   # immutable in this WU; amendments require dedicated work_unit
+    - .appmaker/work-units/wu-002/**
+    - .appmaker/work-units/wu-003/**
+    - .appmaker/work-units/wu-004/**
+    - "**/*.ts"                                                         # no code
+    - "**/*.sql"                                                        # no SQL schemas (these are JSON/YAML/etc per ADR-003)
+    - .appmaker/state.sqlite
+    - .appmaker/decisions.jsonl                                          # not yet active
+    - .appmaker/events.jsonl                                             # append-only via runner step on promote
+    - .appmaker/lessons.jsonl                                            # append-only
+    - docs/reference/matt-pocock-pattern-mapping.md                     # not in scope (no Matt Pocock patterns adopted in WU-005)
+  blocked_actions:
+    - "git push"
+    - "git commit"
+    - "git reset --hard"
+    - "rm -rf"
+    - "npm install"
+    - "git clone"
+    - any modification to ADR-001, ADR-002, or constitution.md
+    - any deletion of pre-existing files
+  allowed_actions:
+    - "read: any file in allowed_files_read"
+    - "create: files in run dir; create files in promote-target paths only at PROMOTE step"
+    - "execute parser/validator: yaml.safe_load, ruby YAML.load_file, jq, JSON.parse, JSON Schema meta-schema validators (e.g. ajv, jsonschema); structure validation against constitution-v1 / adr-v1"
+
+# ---------------------------------------------------------------------------
+# OUTPUT TARGETS (multi-output)
+# ---------------------------------------------------------------------------
+output_targets:
+  - name: ADR-003
+    role: primary
+    artifact_schema: adr-v1                                              # circular: adr-v1 is one of WU-005's outputs; verification uses ad-hoc adr-v1 from WU-003 ADR-002 conventions until ADR-003 promotes
+    draft_path: .appmaker/work-units/wu-005/runs/<timestamp>/output.md
+    promotion_path: decisions/ADR-003-schema-format-and-artifact-schemas.md
+    promotion_status_flip: "DRAFT in run dir → ACCEPTED at decisions/"
+  - name: interview-result-v1
+    role: secondary (depends on ADR-003 D1 format choice)
+    artifact_schema: "format-determined-by-ADR-003-D1"
+    draft_path: .appmaker/work-units/wu-005/runs/<timestamp>/interview-result-v1.schema.<ext>
+    promotion_path: .appmaker/schemas/interview-result-v1.schema.<ext>
+    promotion_status: "added on PROMOTE"
+  - name: work-unit-v1
+    role: secondary
+    artifact_schema: "format-determined-by-ADR-003-D1"
+    draft_path: .appmaker/work-units/wu-005/runs/<timestamp>/work-unit-v1.schema.<ext>
+    promotion_path: .appmaker/schemas/work-unit-v1.schema.<ext>
+    promotion_status: "added on PROMOTE"
+  - name: adr-v1
+    role: secondary
+    artifact_schema: "format-determined-by-ADR-003-D1"
+    draft_path: .appmaker/work-units/wu-005/runs/<timestamp>/adr-v1.schema.<ext>
+    promotion_path: .appmaker/schemas/adr-v1.schema.<ext>
+    promotion_status: "added on PROMOTE"
+
+# ---------------------------------------------------------------------------
+# ACCEPTANCE CRITERIA
+# ---------------------------------------------------------------------------
+acceptance_criteria:
+  - "ADR-003 resolves all 5 decisions D1–D5 with rationale and ≥3 alternatives each (or alternatives consolidated where reasonable, but never fewer than 3 killed alternatives total across the ADR)."
+  - "ADR-003 has all 12 required adr-v1 sections (Status, Metadata, Context, Sources Consulted, Decision, Killed Alternatives, Risks, Rollback, Open Questions, Acceptance Criteria, Verification, Revision History)."
+  - "ADR-003 length 250–550 lines (per WU-003 / ADR-002 precedent)."
+  - "ADR-003 explicitly cites all 6 wu-005-applicable lessons by source / category / timestamp; for each, the ADR shows which schema field(s) operationalize the lesson."
+  - "Three schema files produced (interview-result-v1, work-unit-v1, adr-v1) in the format chosen by ADR-003 D1. EXCEPTION per D1 GUARD: if ADR-003 D1 selected a code-backed format requiring a scope-blocked extension (e.g. Zod requiring .ts), ADR-003 explicitly defers schema-file authoring to a follow-up implementation work_unit and records the deferral in §Open Questions; in that case WU-005's schema-file acceptance criteria (#5–#11 below) are marked 'deferred' rather than 'failed' in the verification record, and only ADR-003 (with full §D1 rationale, §Open Questions enumerating the deferral, and §Decision-D5 lessons-traceability table) is produced and PROMOTED by WU-005."
+  - "All three schema files parse as their declared format. If JSON Schema, files are valid JSON. Meta-schema validation (e.g. Draft 2020-12) is required only if a validator is available locally per validator_tooling_preflight; otherwise WU-005 records the validator gap explicitly and performs parser + structural validation only, with validator implementation deferred to a future implementation work_unit. EXCEPTION per D1 GUARD: if schema files were deferred (D1 selected code-backed format), this criterion is marked 'deferred' rather than 'failed'."
+  - "interview-result-v1 schema covers the conceptual shape from ADR-002 §schema-shape, including the four-state readiness enum and `ready_with_override` structural requirements (non-empty `unresolved_ambiguities[]` and populated `override` block)."
+  - "work-unit-v1 schema includes (at minimum) fields: id, title, type (investigation | implementation), status (full enum), scope, output_target, acceptance_criteria, verification, review_required_from, review_scorecard_template, execution, promote_gate, risks, rollback_plan, lessons_applied, notes."
+  - "work-unit-v1 schema MUST include `lessons_applied: []` (per wu-004 memory_layer lesson) and amendment subtype variant including `affects_core_safety_rules: bool` and `semantic_relations: mapping<rule_id, rationale>` (per wu-004 amendment_process semantic-touching lesson)."
+  - "adr-v1 schema includes (at minimum) `required_sections: []`, `forbidden_patterns: []`, `decisions_min_count`, `killed_alternatives_min_count`, length bounds. forbidden_patterns enforcement applies to the markdown body (per wu-004 review lesson)."
+  - "Cross-schema consistency: shared concepts (e.g. status enum used in work-unit-v1 must match the values used historically in WU-002/003/004 work-unit.yaml files; ADR section names in adr-v1 must match what ADR-001/002 actually use) are aligned. cross_decision_consistency check is a self-check item."
+  - "Memory-stream test: ADR-003 §Decision-D5 contains a table mapping each of the 6 lessons to one or more schema fields with named rationale. If any lesson is not mapped to at least one field, the WU is REJECTED. Lessons may not be name-dropped; their action items must be reflected as concrete schema content."
+  - "Forbidden patterns absent in ADR-003 prose: zero TBD, zero TODO, zero bare ellipsis. Schema files may contain `description` fields whose text is similarly clean."
+  - "No edits to ADR-001, ADR-002, constitution.md, or any prior work_unit run dir."
+  - "Open Questions section enumerates anything ADR-003 deliberately defers (e.g. validator implementation, runner integration, schema migration tooling)."
+
+# ---------------------------------------------------------------------------
+# VERIFICATION
+# ---------------------------------------------------------------------------
+verification:
+  primary_artifact:
+    name: ADR-003
+    schema: adr-v1
+    required_sections:
+      - "Status"
+      - "Metadata"
+      - "Context"
+      - "Sources Consulted"
+      - "Decision (numbered)"
+      - "Killed Alternatives"
+      - "Risks and Mitigations"
+      - "Rollback Plan"
+      - "Open Questions"
+      - "Acceptance Criteria"
+      - "Verification"
+      - "Revision History"
+    forbidden_patterns: ["TBD", "TODO", "..."]
+    bounds_lines: { min: 250, max: 550 }
+    minimum_decisions_resolved: 5
+    minimum_alternatives_killed: 3
+    lessons_traceability_required: true
+  secondary_artifacts:
+    - name: interview-result-v1
+      parser_validation: required                                       # parses as ADR-003 D1 format
+      declared_format_validation: "Run format-appropriate validation. If declared format requires a validator unavailable locally, fall back to parser + structural check and record the gap in verification log per validator_tooling_preflight policy below."
+      content_alignment: "ADR-002 §schema-shape conceptual fields must all be present"
+    - name: work-unit-v1
+      parser_validation: required
+      declared_format_validation: "as above"
+      content_alignment: "fields actually used in WU-002/003/004 work-unit.yaml files must all be representable"
+      lessons_traceability: "lessons_applied, affects_core_safety_rules, semantic_relations fields present per acceptance criteria"
+    - name: adr-v1
+      parser_validation: required
+      declared_format_validation: "as above"
+      content_alignment: "section names match ADR-001 / ADR-002 actual structure"
+      lessons_traceability: "forbidden_patterns enforcement field present"
+  cross_artifact_consistency_required: true                             # status enum, type enum, etc. consistent across schemas (when schemas exist; not_applicable_due_to_deferred_secondary_artifacts otherwise)
+  human_review_required: true
+
+  # Per Codex review: secondary_artifacts may be deferred under explicit conditions (D1 GUARD).
+  # This policy block governs when that is permitted.
+  secondary_artifacts_policy:
+    default: required
+    deferred_allowed_only_if:
+      - "ADR-003 D1 selects a code-backed canonical format blocked by WU-005's no-code scope (e.g. Zod requiring .ts)"
+      - "ADR-003 §Open Questions records a follow-up implementation work_unit for schema authoring"
+      - "verification.secondary_artifacts.status is set to deferred_with_rationale (not pass, not fail)"
+    if_deferred:
+      - "verification.secondary_artifacts.all_parse_clean → not_applicable_due_to_deferred_secondary_artifacts"
+      - "verification.secondary_artifacts.declared_format_validation_pass → not_applicable_due_to_deferred_secondary_artifacts"
+      - "verification.cross_artifact_consistency_pass → not_applicable_due_to_deferred_secondary_artifacts"
+      - "WU-005 still PROMOTES, but only ADR-003 is added to canonical paths; .appmaker/schemas/ is created empty or omitted depending on what the follow-up implementation WU prefers"
+
+# ---------------------------------------------------------------------------
+# VALIDATOR TOOLING PREFLIGHT (per Codex review of WU-005 contract)
+# ---------------------------------------------------------------------------
+# Local environment lacks JSON Schema meta-validators (ajv, jsonschema). Only
+# jq is available. Without explicit policy, a gate requiring meta-validation
+# is unsatisfiable. ADR-003 §D4 (validation conformance requirements) must
+# decide v1 validation vs. deferred validator implementation.
+validator_tooling_preflight:
+  required: true
+  must_record_available_tools: true                                     # before VERIFIED, executor lists available validators (jq, yaml, parser tools); records gaps explicitly
+  if_selected_format_requires_unavailable_validator: |
+    Defer validator implementation to a future work_unit (implementation type) and do
+    parser + structural validation only at WU-005 VERIFIED. Record the deferral in
+    ADR-003 §Open Questions and in the verification log. Schema files are still
+    produced and promoted; the kernel-side validator is the deferred work.
+  available_tools_at_baseline:
+    - jq (JSON syntactic check, jq empty)
+    - python yaml (PyYAML safe_load)
+    - ruby YAML (Psych)
+    - markdown structural inspection (grep, sed, diff)
+  unavailable_at_baseline:
+    - ajv (JSON Schema meta-validator, Node.js)
+    - python jsonschema package
+    - JSON Schema Draft 2020-12 meta-schema validator
+
+# ---------------------------------------------------------------------------
+# REVIEW SCORECARD
+# ---------------------------------------------------------------------------
+review_required_from:
+  - critic
+  - human                                                               # single human (WU-005 is not amendment; standard review per ADR-001)
+
+review_scorecard_template:
+  clarity: pending
+  internal_consistency: pending
+  cross_decision_consistency: pending                                   # within ADR-003 D1-D5
+  cross_artifact_consistency: pending                                   # ADR-003 ↔ 3 schemas
+  alignment_with_adr_001: pending
+  alignment_with_adr_002: pending
+  alignment_with_constitution: pending                                  # constitution v2 with R18
+  schemas_parser_clean: pending                                         # all three parse + declared-format validation per validator_tooling_preflight (meta-schema only if validator available; otherwise parser + structural with deferred validator implementation); marked 'deferred_with_rationale' if D1 GUARD activated and schema files are deferred
+  schemas_field_coverage: pending                                       # acceptance criteria for each schema met
+  lessons_traceability_concrete: pending                                # each lesson maps to specific field, not name-dropped
+  memory_stream_actually_read: pending                                  # ADR-003 §D5 table demonstrates real influence
+  format_choice_justified: pending                                      # D1 has rationale + ≥3 killed
+  forbidden_patterns_absent: pending
+
+# ---------------------------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------------------------
+execution:
+  mode: single                                                          # per ADR-001 §D8
+  agent: claude (default)
+  context_pack: .appmaker/work-units/wu-005/context-pack.md             # to be authored after this contract is ACCEPTED
+  estimated_effort: 3-4 hours                                           # multi-output (ADR + 3 schemas) increases effort
+
+# ---------------------------------------------------------------------------
+# GATES
+# ---------------------------------------------------------------------------
+promote_gate:
+  default_decision: reject
+  on_missing_field: reject
+  on_error: reject
+  required_pass:
+    - verification.primary_artifact.required_sections_all_present: true
+    - verification.primary_artifact.forbidden_patterns_absent: true
+    - verification.primary_artifact.bounds_lines_within: true
+    - verification.primary_artifact.minimum_decisions_resolved_met: true
+    - verification.primary_artifact.minimum_alternatives_killed_met: true
+    - verification.primary_artifact.lessons_traceability_pass: true
+    - "verification.secondary_artifacts.status: pass OR deferred_with_rationale"
+    - "verification.secondary_artifacts.all_parse_clean: pass OR not_applicable_due_to_deferred_secondary_artifacts"
+    - "verification.secondary_artifacts.declared_format_validation_pass: pass OR not_applicable_due_to_deferred_secondary_artifacts"
+    - validator_tooling_preflight.recorded: true                                 # always required: tools enumerated, gaps explicit in verification log (regardless of D1 outcome)
+    - "verification.cross_artifact_consistency_pass: pass OR not_applicable_due_to_deferred_secondary_artifacts"
+    - review.human: pass
+  break_glass:
+    allowed: false                                                      # schema artifacts are governance-adjacent; no escape hatch
+
+# ---------------------------------------------------------------------------
+# RISKS
+# ---------------------------------------------------------------------------
+risks:
+  - "Multi-output WU increases scope and review surface. Mitigation: explicit acceptance criterion per output; cross_artifact_consistency as separate scorecard field; estimated 3-4 hours not 1-2."
+  - "Format choice (D1) locks future tooling. Mitigation: ADR-003 D3 specifies migration / supersedence policy; killed alternatives include their own rationale for revisit."
+  - "Lessons traceability becomes hand-wavy. Mitigation: ADR-003 §D5 must contain a concrete TABLE (lesson → field), not prose. Review scorecard explicitly tests this."
+  - "JSON Schema meta-validation tooling assumption. Mitigation: ADR-003 names the meta-schema draft chosen and a concrete validator command (e.g. `ajv compile`)."
+  - "Schema circular dependency (adr-v1 used to verify ADR-003 itself). Mitigation: ADR-003 verification uses ad-hoc adr-v1 conventions from WU-003 ADR-002 (sections, killed alternatives, etc.); after promote, the formal adr-v1 schema becomes canonical for ADR-004+."
+  - "Schemas under-specify or over-specify. Mitigation: align with fields actually used in WU-002/003/004 (under-specify guard); avoid unused future fields (over-specify guard)."
+  - "Cross-schema inconsistency (e.g. status enum diverges between work-unit-v1 and adr-v1). Mitigation: cross_artifact_consistency review scorecard field; self-check explicit step."
+
+# ---------------------------------------------------------------------------
+# ROLLBACK
+# ---------------------------------------------------------------------------
+rollback_plan: |
+  Soft: future ADR (ADR-NNN) supersedes specific decisions in ADR-003 (e.g. D1 format choice changed; D2 directory renamed). Schema files updated via dedicated work_unit; old versions archived under `.appmaker/_archive/schemas/`.
+
+  Hard: archive all four artifacts (ADR-003 + 3 schemas), mark ADR-003 status REJECTED in revision history, restart with new investigation work_unit. AppMaker continues using ad-hoc work-unit.yaml conventions (as in WU-002/003/004) until v1 schemas are re-attempted. No production users affected (greenfield).
+
+# ---------------------------------------------------------------------------
+# NOTES
+# ---------------------------------------------------------------------------
+notes: |
+  WU-005 is the most lessons-dense work_unit so far: 6 of 7 lessons.jsonl
+  entries have `wu-005-schema` in their `applies_to` field. This is the
+  acid test of whether the memory layer actually shapes future work, or
+  is just an archive.
+
+  Codex's recommended default (NOT mandated; ADR-003 must justify):
+    JSON Schema canonical + YAML examples for humans.
+  Killed alternatives Codex suggested:
+    - custom YAML-only schema
+    - TypeScript/Zod-only schema as v1 canonical
+    - "schemas described in prose only"
+
+  WU-005 is investigation, not implementation. Validators / runners /
+  CI integration are deferred to future implementation work_units.
+  Schemas themselves are governance-adjacent artifacts: they constrain
+  how future work_units, ADRs, and interview results are shaped.
+
+  Per Codex's guidance: "WU-005 może wymagać parser validation: JSON
+  schemas muszą parsować się jako JSON, przykładowe YAML muszą parsować
+  się jako YAML." This is encoded in verification.secondary_artifacts.
+
+  After PROMOTE of WU-005:
+    - WU-006: ADR-004 PRD Synthesis (to-prd). Numbering shifted because
+      ADR-003 is now schemas; PRD Synthesis becomes ADR-004; remaining
+      ADR-005..ADR-008 shift accordingly (Safety Hooks, Implementation
+      Runner, Bug Workflow, Architecture Review).
+    - work_unit.yaml schema becomes enforceable for WU-006+ (kernel
+      validates against work-unit-v1.schema before ACCEPTED).

@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://appmaker.local/schemas/adr-v1.schema.json",
+  "title": "AppMaker ADR v1",
+  "description": "Formal schema for ADR documents under decisions/. Authored by WU-005 / ADR-003 based on actual structure used in ADR-001, ADR-002, ADR-003. Includes forbidden_patterns enforcement field per WU-004 lesson #7 (review).",
+  "type": "object",
+  "description_note": "ADRs are markdown documents, not JSON. This schema describes the META-LEVEL CONTRACT (which sections must be present, what counts as forbidden content, what bounds apply). A future implementation WU may build a markdown-to-structure parser that extracts these fields from an ADR file for validation. v1 enforcement is via shell-based grep / awk / sed checks at WU verification time.",
+  "type": "object",
+  "required": ["required_sections", "forbidden_patterns", "decisions_min_count", "killed_alternatives_min_count", "length_bounds", "revision_history_required", "metadata_required"],
+  "additionalProperties": false,
+  "properties": {
+    "required_sections": {
+      "type": "array",
+      "description": "ADR top-level (## ) sections that MUST appear in declared order. Per ADR-001 / ADR-002 / ADR-003 conventions: 12 sections.",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "default": [
+        "Status",
+        "Metadata",
+        "Context",
+        "Sources Consulted",
+        "Decision",
+        "Killed Alternatives",
+        "Risks and Mitigations",
+        "Rollback Plan",
+        "Open Questions",
+        "Acceptance Criteria",
+        "Verification",
+        "Revision History"
+      ]
+    },
+    "forbidden_patterns": {
+      "type": "array",
+      "description": "String patterns that MUST NOT appear in ADR markdown body (governance discipline). Per WU-004 lesson #7 (review): parser/grep checks catch placeholders before VERIFIED. Mentions inside instructional contexts may need paraphrasing to avoid the literal token.",
+      "items": { "type": "string" },
+      "minItems": 0,
+      "default": ["TBD", "TODO", "..."]
+    },
+    "decisions_min_count": {
+      "type": "integer",
+      "description": "Minimum number of numbered decisions (D1, D2, ...) required in the Decision section.",
+      "minimum": 1,
+      "default": 1
+    },
+    "killed_alternatives_min_count": {
+      "type": "integer",
+      "description": "Minimum number of killed alternatives (KA-1, KA-2, ...) required. Per constitution R1.",
+      "minimum": 3,
+      "default": 3
+    },
+    "risks_min_count": {
+      "type": "integer",
+      "description": "Minimum number of risk rows required in Risks and Mitigations table.",
+      "minimum": 1,
+      "default": 1
+    },
+    "length_bounds": {
+      "type": "object",
+      "description": "Markdown line count bounds for the ADR file.",
+      "required": ["min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "min": { "type": "integer", "minimum": 0, "default": 200 },
+        "max": { "type": "integer", "minimum": 0, "default": 600 }
+      }
+    },
+    "revision_history_required": { "type": "boolean", "default": true },
+    "metadata_required": {
+      "type": "boolean",
+      "description": "Metadata section must include: date, authors, type (investigation | implementation), supersedes, superseded_by.",
+      "default": true
+    },
+    "lessons_applied_optional": {
+      "type": "boolean",
+      "description": "When ADR is created by an investigation work_unit, lessons traceability table strongly recommended (typically inside §Decision-D[N]).",
+      "default": true
+    },
+    "open_questions_recommended": {
+      "type": "boolean",
+      "description": "Open Questions section enumerates what the ADR deliberately defers. Recommended for any non-trivial ADR.",
+      "default": true
+    },
+    "rollback_plan_required": {
+      "type": "boolean",
+      "description": "Soft + hard rollback paths must be documented.",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,27 @@
+# AppMaker Graphify defaults
+
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+.turbo/
+.cache/
+.git/
+
+# Generated or local-only artifacts
+*.generated.*
+*.min.*
+*.map
+graphify-out/cache/
+graphify-out/cost.json
+graphify-out/manifest.json
+
+# Supabase/local service state
+supabase/.branches/
+supabase/.temp/
+
+# AppMaker state that should not dominate code graph
+appmaker/backlog/done/
+appmaker/features/archive/

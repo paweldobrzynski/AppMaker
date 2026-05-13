@@ -1,0 +1,66 @@
+# AppMaker project configuration
+# Created by /appmaker:init. Edit freely.
+
+# Schema version (this file format). Don't edit unless migrating.
+config_schema_version: 1
+
+# Plugin resource version used at last init/upgrade.
+# Compared against installed plugin version to detect upgrade availability.
+# Auto-updated by /appmaker:init on upgrade.
+resource_version: "${VERSION}"  # substituted by /appmaker:init at materialization (v0.2.11 SoT)
+
+# Backlog persistence
+backlog_provider: local              # local | github
+github_repo:                         # owner/repo if backlog_provider: github
+github_label_decompose: ready-for-decompose
+github_label_archive: archived
+
+# Project commands (auto-detected by /appmaker:init or set manually)
+test_command:                        # e.g. "npm test", "pytest", "cargo test"
+lint_command:                        # e.g. "npm run lint", "ruff check"
+typecheck_command:                   # e.g. "tsc --noEmit", "mypy"
+build_command:                       # e.g. "npm run build"
+
+# Review configuration
+review_mode: subagent                # subagent | external | manual
+review_subagent: code-reviewer       # Claude Code subagent type used by /appmaker:review
+checklist_report_dir: appmaker/checklists
+diagnostics_dir: appmaker/diagnostics
+review_report_dir: appmaker/reviews
+
+# Memory wiki (Karpathy-style compiled knowledge)
+memory_wiki_enabled: true
+memory_wiki_dir: appmaker/memory/wiki
+memory_raw_dir: appmaker/memory/raw
+memory_log_path: appmaker/memory/log.md
+
+# Graphify integration (Layer 3, optional)
+graphify_enabled: false              # detected at init; flip to true if Graphify installed
+graphify_out_dir: graphify-out
+graphify_context_packet_dir: appmaker/context
+graphify_stale_after_commits: 1       # checklist warns when graph older than HEAD by >= this many commits
+graphify_use_cli: true                # use graphify query/path/explain instead of parsing graph.json
+graphify_commit_output: true          # graphify-out/ is intended to be committed; local cache/cost ignored
+
+# AFK runner config (Layer 4, explicit opt-in)
+afk_enabled: false                   # explicit opt-in required before /appmaker:afk
+afk_max_iterations: 100
+afk_cost_cap_usd: 10                 # safety cap per loop
+afk_require_human_review_on_promote: true
+afk_report_dir: appmaker/afk
+afk_allow_commits: false             # default no silent commits
+
+# Brownfield vs greenfield (set at init)
+project_mode: brownfield             # brownfield | greenfield
+
+# Hooks (v0.2.11)
+session_hook_enabled: true           # session-start hook prints 1-line status; set false to skip install / disable
+glossary_hook_enabled: true          # glossary-extract.sh runs as deterministic post-step in prd/decompose/tdd/grill
+
+# Pre-flight memory wiki read mode (v0.2.12)
+# Controls how generator skills (grill/grill-brownfield/interview/prd/decompose/tdd/diagnose/review) handle pre-flight wiki cat:
+#   auto    — read wiki only if context window utilization is low OR if no recent compaction occurred (default; balances cost vs. context loss)
+#   always  — always cat wiki (v0.2.7 mandatory behavior — verifiable but costs tokens every invocation)
+#   never   — skip pre-flight cat entirely; rely on Claude Code's improved compaction to preserve sensitive instructions
+# After v0.2.12 caseman validation, default may switch to `never` if compaction proves reliable.
+wiki_preflight_mode: auto
