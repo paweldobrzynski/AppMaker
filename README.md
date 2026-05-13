@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.12. 18 skills (15 core + afk + status + token-audit). Test harness covers hook + glossary-extract + version SoT. See `DESIGN.md`.
+**Status:** v0.2.13. 19 skills (15 core + afk + status + token-audit + next). Test harness covers hook + glossary-extract + version SoT. See `DESIGN.md`.
 
 ## Install
 
@@ -152,7 +152,8 @@ AppMaker/
 │       ├── glossary/SKILL.md
 │       ├── afk/SKILL.md
 │       ├── status/SKILL.md             ← v0.2.6: compact state snapshot
-│       └── token-audit/SKILL.md        ← v0.2.8: session log diagnostic
+│       ├── token-audit/SKILL.md        ← v0.2.8: session log diagnostic
+│       └── next/SKILL.md               ← v0.2.13: lifecycle orchestrator (user-explicit chain trigger)
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                             ← archived prior iterations

@@ -25,7 +25,7 @@ After success here, optional next test = feature scenario (full lifecycle init â
 ```bash
 # Verify plugin source exists:
 ls /Users/pawel/Projects/AppMaker/plugin/appmaker/.claude-plugin/plugin.json
-ls /Users/pawel/Projects/AppMaker/plugin/appmaker/skills/   # Should show 18 dirs (15 core + afk + status v0.2.6 + token-audit v0.2.8)
+ls /Users/pawel/Projects/AppMaker/plugin/appmaker/skills/   # Should show 19 dirs (15 core + afk + status v0.2.6 + token-audit v0.2.8 + next v0.2.13)
 
 # Verify plugin packaged resources:
 ls /Users/pawel/Projects/AppMaker/plugin/appmaker/resources/appmaker/templates/   # 3 files
