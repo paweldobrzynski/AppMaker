@@ -102,7 +102,21 @@ lessons_extracted: 3
    - [003] graph confidence ≠ certainty — verify before scope inclusion
    - [003] packet-first reduces backlog re-edits
    ```
-5. Update memory wiki **only when** the lesson is durable and reusable:
+5. **Append hard-to-reverse decisions to `appmaker/memory/decisions.md`.** Source: `interview-result.md` "Architectural decisions surfaced" + retro answers. Filter Matt's criteria (hard-to-reverse AND surprising-without-context — see decisions.md header). For each qualifying:
+
+   ```bash
+   cat >> appmaker/memory/decisions.md <<EOF
+
+   ### $(date +%Y-%m-%d) — <title>
+   **Feature:** <NNN-slug>
+   **Decision:** <what picked>
+   **Why:** <trade-off + alternatives rejected>
+   **Consequences:** <downstream impacts>
+   EOF
+   ```
+
+   Skip step if none qualify. NOT every architectural choice — only hard-to-reverse.
+6. Update memory wiki **only when** the lesson is durable and reusable:
    - architecture insight → `appmaker/memory/wiki/architecture.md`
    - domain invariant → `appmaker/memory/wiki/domain-model.md`
    - test seam/loop → `appmaker/memory/wiki/testing.md`

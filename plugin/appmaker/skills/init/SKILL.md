@@ -170,7 +170,29 @@ fi
 
 # Seed memory files (header-only)
 [ -f appmaker/memory/architecture.md ] || printf '# Architecture Memory\n\nLazy-loaded notes. Updated by appmaker commands and user.\n' > appmaker/memory/architecture.md
-[ -f appmaker/memory/decisions.md ] || printf '# Decisions Memory\n\nMarkdown notes on key project decisions. NIE numbered ADRs.\n' > appmaker/memory/decisions.md
+[ -f appmaker/memory/decisions.md ] || cat > appmaker/memory/decisions.md <<'DECISIONS_EOF'
+# Decisions Memory
+
+Cross-feature hard-to-reverse decisions. Markdown, NIE numbered ADRs.
+
+## When to log
+
+Both criteria:
+- Hard to reverse (migration, public API, schema, lib lock-in)
+- Surprising without context (real trade-off; future reader asks "why?")
+
+Skip interchangeable choices, defaults, style preferences.
+
+## Format
+
+    ### YYYY-MM-DD — <title>
+    **Feature:** <NNN-slug> (or cross-cutting)
+    **Decision:** <what picked>
+    **Why:** <trade-off + alternatives rejected>
+    **Consequences:** <downstream impacts>
+
+Written by /appmaker:archive retro from interview-result.md "Architectural decisions surfaced" + retro answers.
+DECISIONS_EOF
 [ -f appmaker/memory/lessons.md ] || printf '# Lessons Memory\n\nPost-retro lessons learned. Appended by /appmaker:archive when retro run.\n' > appmaker/memory/lessons.md
 
 # Seed glossary (header-only — auto-populated by grill/interview/prd/decompose)
@@ -220,6 +242,34 @@ Plus set `project_mode: brownfield` or `greenfield` per user confirmation in 2a.
 - **Session-start hook:** installed automatically in step 2b (default-on as of v0.2.11). Hook script lives at `appmaker/hooks/session-start.sh`; `.claude/settings.json` wires the `SessionStart` event. Prints a 1-line status (version, active feature, slice progress, checklist state). Silent exit when no `appmaker/` folder present.
 - **Pre-commit hook:** write `.git/hooks/pre-commit` (or `.husky/pre-commit`) with detected `lint_command` + `typecheck_command`.
 - **Multi-project:** instruct user about parent `~/Projects/CLAUDE.md`.
+
+**2f. AppMaker pointer in `CLAUDE.md`** (default-on, idempotent)
+
+Why: Claude Code auto-reads project-root `CLAUDE.md`. Without pointer, ambient Claude doesn't know `appmaker/glossary.md` exists — domain language stays invisible until a skill cats it. 4-line append fixes ubiquitous-language visibility (per Matt Pocock `grill-with-docs` rationale).
+
+Run via Bash tool AFTER Forest's CLAUDE.md handling above (so Forest curl doesn't clobber pointer):
+
+```bash
+APPMAKER_POINTER='## AppMaker
+
+- Domain language: `appmaker/glossary.md`
+- Project rules: `appmaker/constitution.md`
+- Active features: `appmaker/features/`
+- Cross-feature decisions: `appmaker/memory/decisions.md`
+'
+
+if [ ! -f CLAUDE.md ]; then
+  printf '%s' "$APPMAKER_POINTER" > CLAUDE.md
+  echo "✓ CLAUDE.md created with AppMaker pointer"
+elif ! grep -q '^## AppMaker' CLAUDE.md; then
+  printf '\n%s' "$APPMAKER_POINTER" >> CLAUDE.md
+  echo "✓ AppMaker pointer appended to existing CLAUDE.md"
+else
+  echo "ⓘ CLAUDE.md already has AppMaker pointer — skipping"
+fi
+```
+
+Idempotent: re-running detects `^## AppMaker` header + skips. Opt-out: user deletes section after init (won't be re-added on upgrade unless section absent again).
 
 ### 3. UPGRADE mode (existing appmaker/ with version marker)
 

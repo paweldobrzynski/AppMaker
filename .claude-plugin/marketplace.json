@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "AppMaker plugin — single-purpose Claude Code skills orchestrating full dev lifecycle",
-    "version": "0.2.15"
+    "version": "0.2.16"
   },
   "plugins": [
     {

@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.15. 19 skills (15 core + afk + status + token-audit + next). Per-slice review gate now part of `/appmaker:next` chain — no more silent slice-to-slice propagation. Test harness covers hook + glossary-extract + version SoT. See `DESIGN.md`.
+**Status:** v0.2.16. 19 skills (15 core + afk + status + token-audit + next). Close ubiquitous-language visibility + decisions.md lifecycle gap: `/appmaker:init` now appends idempotent AppMaker pointer to project-root `CLAUDE.md` (domain language + constitution + features + decisions visible to ambient Claude); `/appmaker:archive` retro appenduje hard-to-reverse decyzji do `memory/decisions.md` (per Matt Pocock `grill-with-docs` ADR criteria). See `DESIGN.md`.
 
 ## Install
 
