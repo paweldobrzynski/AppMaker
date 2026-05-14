@@ -9,7 +9,7 @@ Checklist gate. Spec Kit `/analyze` spirit, AppMaker invariants. Deterministic f
 
 ## When to invoke
 
-- Manual: `/appmaker:checklist [feature <NNN-slug> | backlog <NNN> | project | archive <NNN-slug>]`
+- Manual: `/appmaker:checklist [feature <NNN-slug> | backlog <NNN> | project | archive <NNN-slug> | memory]`
 - Suggested by `decompose` before `tdd`, by `archive` before closeout, by `afk` before loops
 - AFK-safe: yes for read-only checks; writes report
 - Required state: `appmaker/`
@@ -51,7 +51,10 @@ Required checks:
 | Touch map drift | review/archive | changed files outside expected `touches.files` without note |
 | Graphify freshness | project | graph enabled but output missing or older than threshold = WARN |
 | Glossary drift | feature | PRD/backlog uses known aliases-to-avoid = WARN/FAIL depending severity |
-| Memory wiki health | project | missing `memory/index.md`, `memory/schema.md`, or core wiki pages = WARN |
+| Memory wiki health | project/memory | missing `memory/index.md`, `memory/schema.md`, or core wiki pages = WARN |
+| Memory broken links | project/memory | `[[name]]` in wiki/* that doesn't resolve to existing memory file = FAIL |
+| Memory stale pages | project/memory | `memory/wiki/*.md` mtime > 30 days since last touch = WARN |
+| Memory raw orphans | project/memory | `memory/raw/*.md` not referenced in `memory/log.md` and mtime > 30 days = WARN |
 
 ### 3. Use shell where useful
 
@@ -61,6 +64,10 @@ Prefer concrete commands:
 - `rg -n 'status:|execution_class:|blocked_by:|traces_to:' appmaker/backlog`
 - `find appmaker/context -type f`
 - `git status --short` and `git log -1 --format=%ct -- graphify-out/GRAPH_REPORT.md` if git repo
+- Memory checks (scope=memory or project):
+  - broken `[[links]]`: `rg -no '\[\[[^]]+\]\]' appmaker/memory/` then for each match `test -f appmaker/memory/wiki/<name>.md || test -f appmaker/memory/<name>.md`
+  - stale wiki: `find appmaker/memory/wiki -name '*.md' -mtime +30`
+  - raw orphans: `find appmaker/memory/raw -name '*.md' ! -name 'README.md' -mtime +30` then `rg -l "<stem>" appmaker/memory/log.md`
 
 Do not rely on vibes when a file/regex check is possible.
 
