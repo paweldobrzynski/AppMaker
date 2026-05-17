@@ -22,10 +22,11 @@ MARKETPLACE_VERSION=$(jq -r '.metadata.version' "$MARKETPLACE")
 assert_eq "plugin.json + marketplace.json versions match" "$PLUGIN_VERSION" "$MARKETPLACE_VERSION"
 assert_contains "version is semver-ish" "$PLUGIN_VERSION" "."
 
-# v0.2.19 release-target assertion (pcrit-003, slice 009 / 2026-05-17).
-# When release version bumps, update EXPECTED_RELEASE_VERSION here together with plugin.json + marketplace.json.
+# Release-target assertion. Bump EXPECTED_RELEASE_VERSION together with the
+# 4 other places: plugin.json + marketplace.json + README:19 Status + DESIGN:3 Status.
+# Introduced v0.2.18 (pcrit-009 addendum); kept release-agnostic from v0.2.20.
 EXPECTED_RELEASE_VERSION="0.2.20"
-assert_eq "plugin.json version matches release target (pcrit-009)" "$EXPECTED_RELEASE_VERSION" "$PLUGIN_VERSION"
+assert_eq "plugin.json version matches release target" "$EXPECTED_RELEASE_VERSION" "$PLUGIN_VERSION"
 
 # Cross-slice coherence: README + DESIGN Status narrative must reference release target.
 # Drift class caught at feature-level review 2026-05-17 (slice 003 + 006 each correct, but

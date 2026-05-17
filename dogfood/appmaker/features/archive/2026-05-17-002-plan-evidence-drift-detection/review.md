@@ -54,7 +54,7 @@ Cross-slice coherence audit. Per-slice manual reviews already captured in each `
 
 | pcrit | Slice | Status |
 |---|---|---|
-| pcrit-001 | 007 | done with Review + ExecutionRecord |
+| pcrit-001 | 007 | done with Review; ExecutionRecord is template-spec example in `## What to build`, NOT a filled slice-execution record (see Errata below) |
 | pcrit-002 | 008 | done with Review + ExecutionRecord (self-applying) |
 | pcrit-003 | 009 | done with Review + ExecutionRecord |
 | pcrit-004 | 010 | done with Review + ExecutionRecord |
