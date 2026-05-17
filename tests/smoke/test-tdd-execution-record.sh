@@ -59,4 +59,12 @@ for label in "Actual files" "Tests run" "AC completed" "Drift notes"; do
   assert_eq "final Execution Record field documented: ${label}" "yes" "$PRESENT"
 done
 
+# v0.2.20 patch: step 9a must re-read Base ref from backlog item, not assume
+# $BASE_REF shell variable persists across separate Bash tool calls between
+# step 3b (Phase A) and step 9a (Phase B). Real Claude Code usage runs these
+# in different shell contexts.
+READS_BASE_REF=$(grep -ciE 'read.*\*?\*?Base ref\*?\*?.*(back )?from.*backlog|backlog.*\*\*Base ref\*\*' "$TDD_SKILL" || true)
+[ "$READS_BASE_REF" -ge 1 ] && READS_BACK="yes" || READS_BACK="no"
+assert_eq "step 9a re-reads Base ref from backlog item (not shell variable persistence)" "yes" "$READS_BACK"
+
 print_summary

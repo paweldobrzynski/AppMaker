@@ -60,3 +60,19 @@ Cross-slice coherence audit. Per-slice manual reviews already captured in each `
 | pcrit-004 | 010 | done with Review + ExecutionRecord |
 
 **Status:** PASS. Ready for retro + archive + commit.
+
+## Errata (2026-05-17, post-archive)
+
+**Original claim (line ~20 + AC coverage table):** "all 4 done items have `## Execution Record`" — overstated.
+
+**Reality:** Verification grep matched `^## Execution Record` heading at start-of-line, but didn't distinguish heading inside fenced ``` code block (template example in slice 007's `## What to build`) from actual filled section. Codex caught the false positive during post-push test.
+
+**Corrected count:** **3 of 4 v0.2.19 slices have FILLED Execution Record** (008, 009, 010 — all with real `Base ref: 33568a3`, dirty state, AC counts). Slice 007 contains the section format as a template-spec example inside its `## What to build`, NOT as its own slice-execution record. This is consistent with slice 007's nature (introduces the template; doesn't yet have the materialization skill — slice 008 added that).
+
+**AC coverage table updated:** slice 007 status corrected to "done with Review + ExecutionRecord template example (not filled record)".
+
+**Self-applying meta-test claim downgrade:** Within v0.2.19, evidence is 3 of 4 slices (not 4 of 4). Cross-feature n=2 claim (v0.2.18 PRD `## Criticisms` + v0.2.19 Execution Record) still holds at feature level.
+
+**Related v0.2.19 bug surfaced same review:** `tdd/SKILL.md` step 9a was using `$BASE_REF` shell variable from step 3b without recovery instructions for separate Bash tool calls — fixed in v0.2.20.
+
+**Patch ship:** v0.2.20 (this correction + tdd/SKILL.md step 9a fix).

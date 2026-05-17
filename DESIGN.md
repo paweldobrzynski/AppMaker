@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.19 — Execution Record MVP for backlog slices: capture-only base ref, dirty state, planned/actual files, tests, AC completed, and drift notes, with `/appmaker:tdd` materializing the record before and after apply. Review auto-diff and checklist enforcement stay deferred until the MVP has evidence. 10 smoke suites, 72+ assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target).
+Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.20 — patch for v0.2.19 Execution Record MVP: `/appmaker:tdd` step 9a re-reads `Base ref` from the backlog item (fixes shell variable scoping across separate Bash tool calls). Plus v0.2.19 archive errata — 3 of 4 slices have filled Execution Record (slice 007 is template-spec). 10 smoke suites, 73 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target).
 Last updated: 2026-05-17.
 
 ## Esencja (v0.2.12+ pozycjonowanie)

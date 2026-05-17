@@ -219,10 +219,10 @@ Verifiable bash. Idempotent.
 
 Before moving the backlog item to `done/`, fill the final `## Execution Record`
 fields:
-- **Actual files:** record touched paths from `git diff --name-only "$BASE_REF"..HEAD`
-  when `BASE_REF` exists, plus working-tree paths from `git diff --name-only`
-  where relevant. Use `Dirty files at start` to avoid mislabeling pre-existing
-  work as slice drift.
+- **Actual files:** Read **Base ref:** back from the backlog item's `## Execution Record` section (do NOT rely on `$BASE_REF` shell variable from step 3b — separate Bash tool calls between Phase A and Phase B don't share shell state). Then:
+  - If Base ref is a SHA: `git diff --name-only "$BASE_REF"..HEAD` for committed delta plus `git diff --name-only` for working-tree delta.
+  - If Base ref is `no_base_ref`: only `git diff --name-only` working-tree delta (no committed history to compare).
+  - Subtract `Dirty files at start` (also read back from backlog) so pre-existing work isn't mislabeled as slice drift.
 - **Tests run:** command(s) run + pass/fail summary
 - **AC completed:** checked AC count / total AC count
 - **Drift notes:** `- (none)` unless files/tests/AC differed from the approved plan

@@ -41,3 +41,15 @@ None. v0.2.19 was template + skill body + version + docs — no Graphify explora
 ## Pending operator review
 
 Operator approves Q&A + lesson destinations before write to `dogfood/appmaker/memory/`. Default: write 5 lessons to destinations above (1 to decisions.md, 1 to wiki/testing.md, 3 to wiki/integration-gotchas.md).
+
+## Errata (2026-05-17, post-archive)
+
+**Q&A "Surprises?" overstated:** retro said *"Self-applying meta-test EXCEEDED plan — all 4 v0.2.19 slices have Execution Record sections, not just slice 008."* Verification was based on grep `^## Execution Record` heading-line match, which false-positived on slice 007's template-spec example inside fenced ``` code block. Codex caught the false positive during post-push test.
+
+**Corrected:** **3 of 4 v0.2.19 slices have FILLED Execution Record** (008, 009, 010 — real values, not placeholders). Slice 007 contains the section format as template example in `## What to build`, which is correct for its template-introducing role but NOT a slice-execution record.
+
+**Lessons unchanged:** "Self-applying meta-test for new contracts (validated n=2)" still holds at feature level (v0.2.18 + v0.2.19 both honored their own contracts). Within-v0.2.19 enthusiasm "all 4 slices" was overclaim from grep false positive.
+
+**Related bug fixed same patch:** `tdd/SKILL.md` step 9a was using `$BASE_REF` shell variable assuming persistence across Bash tool calls (broken in real Claude Code usage). v0.2.20 fixes step 9a to re-read `Base ref` from the backlog item.
+
+**Patch ship:** v0.2.20 (this correction + tdd/SKILL.md step 9a fix).

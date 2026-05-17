@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.19. 19 skills (15 core + afk + status + token-audit + next). **Execution Record MVP** — backlog slices now carry a durable capture-only execution record (base ref, dirty state, planned/actual files, tests, AC completed, drift notes), and `/appmaker:tdd` instructs agents to fill it before and after apply. Review auto-diff and checklist enforcement remain deferred until the MVP proves useful. 10 smoke test suites, 72+ assertions. See `DESIGN.md`, `METHOD.md`, and `dogfood/appmaker/features/002-plan-evidence-drift-detection/prd.md`.
+**Status:** v0.2.20. 19 skills (15 core + afk + status + token-audit + next). Patch for v0.2.19 Execution Record MVP: `/appmaker:tdd` step 9a now re-reads `Base ref` from the backlog item (fixes shell variable scoping across separate Bash tool calls between Phase A and Phase B). Plus errata in v0.2.19 archive — 3 of 4 slices have filled Execution Record (slice 007 contains template example, not a slice-execution record). 10 smoke test suites, 73 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 

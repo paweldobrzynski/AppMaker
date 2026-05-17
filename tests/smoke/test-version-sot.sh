@@ -24,7 +24,7 @@ assert_contains "version is semver-ish" "$PLUGIN_VERSION" "."
 
 # v0.2.19 release-target assertion (pcrit-003, slice 009 / 2026-05-17).
 # When release version bumps, update EXPECTED_RELEASE_VERSION here together with plugin.json + marketplace.json.
-EXPECTED_RELEASE_VERSION="0.2.19"
+EXPECTED_RELEASE_VERSION="0.2.20"
 assert_eq "plugin.json version matches release target (pcrit-009)" "$EXPECTED_RELEASE_VERSION" "$PLUGIN_VERSION"
 
 # Cross-slice coherence: README + DESIGN Status narrative must reference release target.
