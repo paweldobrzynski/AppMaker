@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.18. 19 skills (15 core + afk + status + token-audit + next). **First dogfood feature** — Method applied to AppMaker itself via `dogfood/appmaker/`. Release brings: PRD `## Criticisms` section with stable `pcrit-NNN` IDs, backlog AC inline `test:` / `human-review:` refs, doc drift cleanup (README/DESIGN/init), `/appmaker:start` spike route honesty (graceful fallback to `grill` with TODO note), release version bump (pcrit-009 addendum). 8 smoke test suites, 50 assertions. See `DESIGN.md`, `METHOD.md`, and `audits/2026-05-17-method-vs-plugin.md`.
+**Status:** v0.2.19. 19 skills (15 core + afk + status + token-audit + next). **Execution Record MVP** — backlog slices now carry a durable capture-only execution record (base ref, dirty state, planned/actual files, tests, AC completed, drift notes), and `/appmaker:tdd` instructs agents to fill it before and after apply. Review auto-diff and checklist enforcement remain deferred until the MVP proves useful. 10 smoke test suites, 72+ assertions. See `DESIGN.md`, `METHOD.md`, and `dogfood/appmaker/features/002-plan-evidence-drift-detection/prd.md`.
 
 ## Install
 

@@ -47,3 +47,32 @@ When AC says "X must do Y", don't translate verbatim to regex. Ask: **"what coul
 5. Iterate until violation cases are eliminated or implausible.
 
 **Why this matters:** Test gates trust. If test passes false-positive, the gate is fictional. Codex framing: "zielony test ≠ AC enforcement". Test is enforcement only when written from failure mode, not from AC paraphrase.
+
+## Line-number ordering checks (structural, not content)
+
+When a test must assert a section's POSITION (e.g., "Execution Record between Acceptance criteria and Blocked by") use `grep -nE` to get line numbers + integer comparison, NOT content-based matching.
+
+**Pattern:**
+
+```bash
+AC_LINE=$(grep -nE '^## Acceptance criteria$' "$FILE" | head -1 | cut -d: -f1)
+EXEC_LINE=$(grep -nE '^## Execution Record$' "$FILE" | head -1 | cut -d: -f1)
+BLOCKED_LINE=$(grep -nE '^## Blocked by$' "$FILE" | head -1 | cut -d: -f1)
+
+if [ "$AC_LINE" -lt "$EXEC_LINE" ] && [ "$EXEC_LINE" -lt "$BLOCKED_LINE" ]; then
+  ORDER_OK="yes"
+else
+  ORDER_OK="no"
+fi
+assert_eq "Execution Record sits between AC and Blocked by" "yes" "$ORDER_OK"
+```
+
+**Why this over content matching:** content-based assertion (e.g., "section X appears AFTER section Y") would need brittle string search or false-positive on prose mentions. Line numbers are structural — survive rephrasing within sections, fail honestly on reordering.
+
+**Real examples (v0.2.19):**
+- `test-backlog-execution-record.sh` asserts Execution Record sits between Acceptance criteria and Blocked by.
+- `test-tdd-execution-record.sh` extends pattern: asserts step `3b` between step `3` and step `4`; step `9a` between step `9` and `Move file:`.
+
+**Trade-off:** test locks in section heading wording. If operator renames `## Execution Record` to `## Slice Execution`, test fails. Acceptable — heading wording is part of the contract being asserted.
+
+Pairs with: scoped regex (above), test-from-failure-mode (above).

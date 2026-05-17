@@ -294,13 +294,13 @@ The Method describes **what artifacts exist and how they link**. Everything else
 
 ## Open invariants worth testing
 
-The Method is current as of v0.2.17. Hypotheses still being validated:
+The Method is current as of v0.2.19. Hypotheses still being validated:
 
 1. **Slice contract: consolidate 5 artifacts per slice in one coherent location.** Plugin currently scatters across PRD section + decomposition row + backlog item + chat-only TDD plan. v0.3 candidate: single location per slice — either `slices/NN/` subfolder OR sections in backlog item (audit-driven decision).
 
    **Important — traceability direction:** PRD stays upstream source of product intent, NEVER a rollup of slices. Decomposition may be a rollup/index over slices. Slice is execution record, derived from PRD intent — never the originator of product intent. Inverting this direction would break traceability (slices could declare intent the PRD never asserted), creating circular dependency.
 
-2. **Plan-vs-actual drift detection is the missing audit ogniwo.** Method demands `plan.md` before `apply` and `evidence.md` after. Plugin currently has neither as named artifact. v0.3 candidate primitive.
+2. **Plan-vs-actual drift detection is MVP under validation in v0.2.19.** The plugin now captures a slice-level `## Execution Record` in the backlog item: base ref, dirty-at-start state, planned files/tests, actual files, tests run, AC completed, and drift notes. This is capture-only. It does not implement review auto-diff or checklist enforcement; those remain v0.3+ candidates pending MVP evidence. Validation criteria: does the section get filled in real slices, do operators or future sessions use it when resuming work, and does feature-level review surface drift by reading it? If no, simplify or remove before automating.
 
 3. **Aviation metaphor unification.** Constitution = aircraft limitations, checklist = pre-flight, plan.md = filed flight plan, retro = post-flight debrief. Worth lifting into Method language as a learning aid, not just marketing.
 

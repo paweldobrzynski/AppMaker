@@ -147,6 +147,28 @@ Column rules:
 - **Traces:** SC2, ID3
 ```
 
+### 3b. Execution Record — initial fields (v0.2.19)
+
+After the user approves the TDD plan, and BEFORE the first RED test, materialize
+the initial `## Execution Record` fields in the backlog item. Preserve the
+existing approval gate; this step only writes the approved plan to disk.
+
+Required capture:
+```bash
+BASE_REF=$(git rev-parse HEAD 2>/dev/null || echo no_base_ref)
+DIRTY_STATUS=$(git status --short 2>/dev/null || true)
+```
+
+Write/update these fields:
+- **Base ref:** `$BASE_REF`
+- **Dirty at start:** `yes` if `DIRTY_STATUS` non-empty, otherwise `no`
+- **Dirty files at start:** paths from `git status --short`
+- **Planned files:** from the approved TDD plan
+- **Planned tests:** from the approved TDD plan
+
+Dirty worktree behavior: capture + WARN, never refuse. The warning exists so
+reviewers can separate pre-existing edits from slice drift later.
+
 ### 4. Tracer Bullet (Matt 1:1)
 
 ONE test → minimal code to pass. Proves path works end-to-end.
@@ -192,6 +214,18 @@ Verifiable bash. Idempotent.
 **Tier 2 — Semantic review:** If extraction surfaced new stubs AND TDD conversation has definitions, MAY invoke `/appmaker:glossary` via Skill tool. Otherwise leave stubs for explicit review. Best-effort, NOT deterministic.
 
 ### 9. Mark done + suggest next
+
+### 9a. Execution Record — final fields (v0.2.19)
+
+Before moving the backlog item to `done/`, fill the final `## Execution Record`
+fields:
+- **Actual files:** record touched paths from `git diff --name-only "$BASE_REF"..HEAD`
+  when `BASE_REF` exists, plus working-tree paths from `git diff --name-only`
+  where relevant. Use `Dirty files at start` to avoid mislabeling pre-existing
+  work as slice drift.
+- **Tests run:** command(s) run + pass/fail summary
+- **AC completed:** checked AC count / total AC count
+- **Drift notes:** `- (none)` unless files/tests/AC differed from the approved plan
 
 Update front-matter: `status: done`, append `completed: <ISO date>`. Move file: `appmaker/backlog/NNN.md` → `appmaker/backlog/done/<YYYY-MM-DD>-NNN.md`.
 

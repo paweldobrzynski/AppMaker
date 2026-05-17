@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.18 — first dogfood feature (Method applied to AppMaker itself, `dogfood/appmaker/`). PRD `## Criticisms` section, backlog AC inline `test:` / `human-review:` refs, doc drift cleanup, `/appmaker:start` spike route fix, release version bump (pcrit-009 addendum). 8 smoke suites, 50 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target).
+Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.19 — Execution Record MVP for backlog slices: capture-only base ref, dirty state, planned/actual files, tests, AC completed, and drift notes, with `/appmaker:tdd` materializing the record before and after apply. Review auto-diff and checklist enforcement stay deferred until the MVP has evidence. 10 smoke suites, 72+ assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target).
 Last updated: 2026-05-17.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
