@@ -1,7 +1,7 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.17 — memory wiki linting (`checklist memory` scope) + `memory/raw/` lifecycle. Test harness covers hooks + glossary-extract + version SoT.
-Last updated: 2026-05-14.
+Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.18 — first dogfood feature (Method applied to AppMaker itself, `dogfood/appmaker/`). PRD `## Criticisms` section, backlog AC inline `test:` / `human-review:` refs, doc drift cleanup, `/appmaker:start` spike route fix, release version bump (pcrit-009 addendum). 8 smoke suites, 50 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target).
+Last updated: 2026-05-17.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
 
@@ -110,7 +110,7 @@ AppMaker/
 │   │   │   │   └── tdd/                  ← Matt Pocock supporting (deep-modules, mocking, ...)
 │   │   │   └── config.yaml.template      ← seed config (auto-detected fields filled at init)
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                           ← 18 dirs (15 core + afk + status + token-audit)
+│   └── skills/                           ← 19 dirs (15 core + afk + status + token-audit + next)
 │       ├── init/SKILL.md                 ← /appmaker:init
 │       ├── start/SKILL.md                ← /appmaker:start
 │       ├── grill/SKILL.md                ← /appmaker:grill
@@ -140,7 +140,7 @@ AppMaker/
 your-project/
 ├── CLAUDE.md                             ← optional Forest's universal agent baseline
 └── appmaker/                             ← project state (materialized by /appmaker:init from plugin resources)
-    ├── .appmaker-version                 ← plugin resource version marker (current: "0.2.9")
+    ├── .appmaker-version                 ← plugin resource version marker (current: "<version>")
     ├── config.yaml                       ← project config (commands, providers, integrations)
     ├── constitution.md                   ← 5-7 rules MAX (project principles, user-owned)
     ├── glossary.md                       ← ubiquitous language (deterministic stub extraction + explicit semantic review)

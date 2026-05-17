@@ -311,7 +311,7 @@ Compare the two. If different (and current isn't "unknown"), proceed with upgrad
 
 **Show user a summary before applying:**
 ```
-Upgrade: 0.1.1 → 0.2.11
+Upgrade: <previous> → <current>
 Will refresh (with confirmation if user edits):
   - appmaker/templates/backlog-item-template.md
   - appmaker/skills/tdd/deep-modules.md
@@ -332,10 +332,10 @@ Proceed? [Y/n]
 **Fresh init:**
 ```
 ✓ AppMaker initialized at appmaker/
-✓ Resources materialized from plugin v0.2.11
+✓ Resources materialized from plugin v<current>
 ✓ Constitution: 7 default rules (edit appmaker/constitution.md as needed)
 ✓ Config: appmaker/config.yaml (commands auto-detected for node project)
-✓ Version marker: appmaker/.appmaker-version → 0.2.11
+✓ Version marker: appmaker/.appmaker-version → <current>
 ✓ Memory: 3 areas (architecture, decisions, lessons)
 ✓ Memory wiki: appmaker/memory/wiki/ + index/schema/log
 ✓ Context packets: appmaker/context/ (created empty)
@@ -351,7 +351,7 @@ Next: /appmaker:start "<your first intent>"
 
 **Upgrade:**
 ```
-✓ AppMaker upgraded: 0.1.1 → 0.2.11
+✓ AppMaker upgraded: <previous> → <current>
 ✓ Resources refreshed: 3 template files, memory wiki seed files, 5 supporting files
 ✓ Config fields added: memory wiki, checklist/diagnostics/review dirs, AFK controls
 ✓ User-owned files preserved: constitution.md, glossary.md (12 terms), memory/, backlog/ (4 items), features/

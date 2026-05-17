@@ -36,7 +36,7 @@ If no intent provided, ask via AskUserQuestion:
 |---|---|---|
 | **feature** | "add", "build", "implement", "new" | `grill-brownfield` or `grill` → `interview` → `prd` → `decompose` → `checklist` → (`tdd` → `review`) per slice → feature `review` → `archive` |
 | **bug** | "fix", "broken", "doesn't work", "error", "crash" | `diagnose` → `feedback` if backlog item needed → `tdd` → `review` → `archive` |
-| **prototype** | "try", "explore design", "validate idea", "spike" | `spike` (logic OR ui variant) |
+| **prototype** | "try", "explore design", "validate idea", "spike" | `grill` — prototype flow (`spike`) TODO/not yet implemented, use grill for exploration |
 | **refactor** | "refactor", "clean up", "restructure" | `grill-brownfield` → `prd` → `decompose` → `checklist` → `tdd` |
 | **research** | "investigate", "explore", "understand", "what is" | `grill` (general questioning), NO artifact unless wanted |
 | **review** | "review", "audit", "check", "verify quality" | `review` (invokes code-reviewer subagent) |

@@ -22,6 +22,22 @@ MARKETPLACE_VERSION=$(jq -r '.metadata.version' "$MARKETPLACE")
 assert_eq "plugin.json + marketplace.json versions match" "$PLUGIN_VERSION" "$MARKETPLACE_VERSION"
 assert_contains "version is semver-ish" "$PLUGIN_VERSION" "."
 
+# v0.2.18 release-target assertion (pcrit-009 addendum, slice 006 / 2026-05-17).
+# When release version bumps, update EXPECTED_RELEASE_VERSION here together with plugin.json + marketplace.json.
+EXPECTED_RELEASE_VERSION="0.2.18"
+assert_eq "plugin.json version matches release target (pcrit-009)" "$EXPECTED_RELEASE_VERSION" "$PLUGIN_VERSION"
+
+# Cross-slice coherence: README + DESIGN Status narrative must reference release target.
+# Drift class caught at feature-level review 2026-05-17 (slice 003 + 006 each correct, but
+# narrative not propagated from manifest bump). Test closes class for future releases.
+README_VER_COUNT=$(grep -c "^\*\*Status:\*\* v$EXPECTED_RELEASE_VERSION" "$REPO_ROOT/README.md" || true)
+[ "$README_VER_COUNT" -ge 1 ] && README_VER_OK="yes" || README_VER_OK="no"
+assert_eq "README Status narrative references release target (cross-slice coherence)" "yes" "$README_VER_OK"
+
+DESIGN_VER_COUNT=$(grep -c "v$EXPECTED_RELEASE_VERSION " "$REPO_ROOT/DESIGN.md" || true)
+[ "$DESIGN_VER_COUNT" -ge 1 ] && DESIGN_VER_OK="yes" || DESIGN_VER_OK="no"
+assert_eq "DESIGN Status narrative references release target (cross-slice coherence)" "yes" "$DESIGN_VER_OK"
+
 # config.yaml.template uses ${VERSION} placeholder, not hardcoded number
 TEMPLATE="$REPO_ROOT/plugin/appmaker/resources/appmaker/config.yaml.template"
 TEMPLATE_LINE=$(grep '^resource_version:' "$TEMPLATE")

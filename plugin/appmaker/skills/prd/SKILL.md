@@ -117,6 +117,15 @@ readiness: inherited
 
 ## Clarifications (auto-populated by /appmaker:clarify if invoked)
 
+## Criticisms
+
+Numbered criticisms — each = one tight MUST/MUST NOT statement. Stable `pcrit-NNN` IDs anchor downstream `traces_to` (decomposition + backlog).
+
+Per criterion: verification mechanism explicit — `auto-check` (scripted) OR `human-review-with-criteria` (documented rule).
+
+- **pcrit-001:** <one-line criterion>. Verification: `auto-check` via `<assertion>`.
+- **pcrit-002:** <one-line criterion>. Verification: `human-review-with-criteria: <rule>`.
+
 ## Problem Statement
 
 ## Solution

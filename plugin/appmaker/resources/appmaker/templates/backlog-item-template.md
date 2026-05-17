@@ -39,8 +39,9 @@ Avoid file paths — they go stale. **Exception (per Matt Pocock canonical to-is
 
 ## Acceptance criteria
 
-- [ ] `useTheme()` returns `{ theme, setTheme }` (traces_to: pcrit-001)
-- [ ] `setTheme('dark')` updates context, triggers re-render (traces_to: pcrit-003)
+- [ ] `useTheme()` returns `{ theme, setTheme }` (traces_to: pcrit-001, test: tests/theme.test.ts::useTheme_returns_theme)
+- [ ] `setTheme('dark')` updates context, triggers re-render (traces_to: pcrit-003, test: tests/theme.test.ts::setTheme_triggers_rerender)
+- [ ] Toggle visual feedback feels responsive on Safari + Chrome (traces_to: pcrit-004, human-review: no flicker, < 300ms perceived latency)
 
 ## Blocked by
 
@@ -73,7 +74,7 @@ After completion (status flips to `done`), move file to `appmaker/backlog/done/<
 
 - **Front-matter mandatory.** All required fields present.
 - **`What to build` describes end-to-end behavior.** Not layer-by-layer.
-- **Acceptance criteria checkbox list** with `traces_to` per criterion.
+- **Acceptance criteria checkbox list** with inline annotations: `traces_to:` mandatory (links AC → PRD `pcrit-*`); `test:` optional for executable tests (form `<file>::<name>`, e.g. `tests/theme.test.ts::useTheme_returns_theme`) — closes AC ↔ test name drift; `human-review:` optional for manual ACs — must include explicit criterion describing what reviewer checks.
 - **Context packet links if used.** Don't paste Graphify output into backlog item.
 - **Touches are advisory.** Confirm in code; don't implement graph neighbors unless AC requires it.
 - **`Blocked by` explicit.** "None — can start immediately" if no blockers (don't omit section).

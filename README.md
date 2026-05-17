@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.17. 19 skills (15 core + afk + status + token-audit + next). Memory wiki linting (`/appmaker:checklist memory` scope) + `memory/raw/` user-owned drop folder lifecycle. Three new deterministic checks: broken `[[links]]` (FAIL), stale wiki pages > 30 days (WARN), raw orphans not referenced in log (WARN). Compiler analogy explicit per Cole Medin's Karpathy synthesis. See `DESIGN.md`.
+**Status:** v0.2.18. 19 skills (15 core + afk + status + token-audit + next). **First dogfood feature** — Method applied to AppMaker itself via `dogfood/appmaker/`. Release brings: PRD `## Criticisms` section with stable `pcrit-NNN` IDs, backlog AC inline `test:` / `human-review:` refs, doc drift cleanup (README/DESIGN/init), `/appmaker:start` spike route honesty (graceful fallback to `grill` with TODO note), release version bump (pcrit-009 addendum). 8 smoke test suites, 50 assertions. See `DESIGN.md`, `METHOD.md`, and `audits/2026-05-17-method-vs-plugin.md`.
 
 ## Install
 
@@ -63,7 +63,7 @@ Future: publish to plugin marketplace for `/plugin install appmaker` style.
 /appmaker:glossary              → ubiquitous language (deterministic stub extraction + best-effort semantic review)
 ```
 
-15 written.
+19 written: 15 core (above) + 4 supporting (afk, status, token-audit, next).
 
 ### Opt-in deepening (4 skills, all TODO)
 
@@ -134,7 +134,7 @@ AppMaker/
 │   │   │       ├── context-packet-template.md
 │   │   │       └── decomposition-template.md
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                          ← 18 dirs (15 core + afk + status + token-audit)
+│   └── skills/                          ← 19 dirs (15 core + afk + status + token-audit + next)
 │       ├── init/SKILL.md
 │       ├── start/SKILL.md
 │       ├── grill/SKILL.md
