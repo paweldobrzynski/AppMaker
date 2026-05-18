@@ -209,7 +209,7 @@ term_count: 0
 GLOSSARY_EOF
 ```
 
-**2c. Seed `appmaker/constitution.md`** (7 default rules, user edits freely):
+**2c. Seed `appmaker/constitution.md`** (10 default rules, user edits freely):
 
 ```markdown
 # Project Constitution
@@ -220,7 +220,10 @@ GLOSSARY_EOF
 4. **One thing well per slice.** Vertical slices demoable on their own.
 5. **Glossary terms canonical.** Use ubiquitous language from appmaker/glossary.md.
 6. **Non-delegable judgments explicit.** Identity/trust/money/irreversible decisions = `human_required`.
-7. **Promote requires green.** No merge with failing tests, type errors, or lint violations.
+7. **Test first, promote green.** For code-changing slices, define verification before implementation; for business logic and bug fixes, write or extend the failing test first, make the smallest change to green, then refactor. A slice may not be promoted with failing tests, type errors, lint violations, or an unrecorded verification gap.
+8. **No broken windows.** If we notice something broken or rotting (stale doc, dead code, untracked cruft, intermittent test, drift between artifact and reality), we fix it or open a backlog item the same turn. Don't walk past it.
+9. **KISS / YAGNI.** Prefer the simplest clear implementation that satisfies the current acceptance criteria. Do not add abstractions, generic frameworks, future-proofing, or extra features until there is a real second use case. If 20 clear lines solve it well, do not write 200.
+10. **Understand before changing.** Read the existing code path, call sites, and local patterns before editing. When a contract changes, update dependent files/tests in the same slice; no partial fixes.
 ```
 
 **2d. Auto-detect project commands** for `appmaker/config.yaml`:
@@ -333,7 +336,7 @@ Proceed? [Y/n]
 ```
 ✓ AppMaker initialized at appmaker/
 ✓ Resources materialized from plugin v<current>
-✓ Constitution: 7 default rules (edit appmaker/constitution.md as needed)
+✓ Constitution: 10 default rules (edit appmaker/constitution.md as needed)
 ✓ Config: appmaker/config.yaml (commands auto-detected for node project)
 ✓ Version marker: appmaker/.appmaker-version → <current>
 ✓ Memory: 3 areas (architecture, decisions, lessons)
