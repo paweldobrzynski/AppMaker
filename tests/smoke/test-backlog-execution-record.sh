@@ -45,4 +45,12 @@ DOC_COUNT=$(grep -cE 'Execution Record.*Base ref|Base ref.*Execution Record' "$T
 [ "$DOC_COUNT" -ge 1 ] && DOC_PRESENT="yes" || DOC_PRESENT="no"
 assert_eq "template documents Execution Record semantics" "yes" "$DOC_PRESENT"
 
+AUTO_FILL_COUNT=$(grep -cF "auto-filled factual fields" "$TEMPLATE" || true)
+[ "$AUTO_FILL_COUNT" -ge 1 ] && AUTO_FILL_PRESENT="yes" || AUTO_FILL_PRESENT="no"
+assert_eq "template prefers auto-filled factual fields" "yes" "$AUTO_FILL_PRESENT"
+
+HUMAN_ONLY_COUNT=$(grep -cF "Human writes only intent, AC status, and drift explanation" "$TEMPLATE" || true)
+[ "$HUMAN_ONLY_COUNT" -ge 1 ] && HUMAN_ONLY_PRESENT="yes" || HUMAN_ONLY_PRESENT="no"
+assert_eq "template limits human-written Execution Record content" "yes" "$HUMAN_ONLY_PRESENT"
+
 print_summary

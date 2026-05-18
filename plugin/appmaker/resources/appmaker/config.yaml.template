@@ -53,6 +53,12 @@ afk_allow_commits: false             # default no silent commits
 # Brownfield vs greenfield (set at init)
 project_mode: brownfield             # brownfield | greenfield
 
+# Workflow rigor (anti-bureaucracy control)
+rigor_level: standard                # light | standard | strict
+# light    — bugfix/small refactor: backlog item + AC + test/review evidence
+# standard — normal AppMaker lifecycle: interview/prd/decompose/tdd/review/archive
+# strict   — auth/payments/security/migrations/data-loss: full plan/evidence discipline
+
 # Hooks (v0.2.11)
 session_hook_enabled: true           # session-start hook prints 1-line status; set false to skip install / disable
 glossary_hook_enabled: true          # glossary-extract.sh runs as deterministic post-step in prd/decompose/tdd/grill

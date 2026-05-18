@@ -1,7 +1,7 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.20 — patch for v0.2.19 Execution Record MVP: `/appmaker:tdd` step 9a re-reads `Base ref` from the backlog item (fixes shell variable scoping across separate Bash tool calls). Plus v0.2.19 archive errata — 3 of 4 slices have filled Execution Record (slice 007 is template-spec). 10 smoke suites, 73 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target).
-Last updated: 2026-05-17.
+Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.21 — anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 12 smoke suites, 90 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), rigor config, checklist Execution Record gates.
+Last updated: 2026-05-18.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
 

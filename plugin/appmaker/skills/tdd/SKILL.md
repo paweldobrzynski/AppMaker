@@ -152,6 +152,9 @@ Column rules:
 After the user approves the TDD plan, and BEFORE the first RED test, materialize
 the initial `## Execution Record` fields in the backlog item. Preserve the
 existing approval gate; this step only writes the approved plan to disk.
+Anti-bureaucracy rule: auto-fill factual Execution Record fields wherever a
+shell command can prove the value. Human-written fields are for intent,
+AC status, and drift explanation — not for transcribing git facts.
 
 Required capture:
 ```bash
@@ -225,7 +228,7 @@ fields:
   - Subtract `Dirty files at start` (also read back from backlog) so pre-existing work isn't mislabeled as slice drift.
 - **Tests run:** command(s) run + pass/fail summary
 - **AC completed:** checked AC count / total AC count
-- **Drift notes:** `- (none)` unless files/tests/AC differed from the approved plan
+- **Drift notes:** `- (none)` unless files/tests/AC differed from the approved plan. Drift notes are human-written only when planned files/tests/AC differ; otherwise keep the field mechanical.
 
 Update front-matter: `status: done`, append `completed: <ISO date>`. Move file: `appmaker/backlog/NNN.md` → `appmaker/backlog/done/<YYYY-MM-DD>-NNN.md`.
 

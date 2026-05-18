@@ -24,7 +24,10 @@ Default order:
 2. latest feature with `prd.md`
 3. project scope
 
-Read `appmaker/config.yaml`, constitution, glossary, memory index, relevant feature/backlog/context packets.
+Read `appmaker/config.yaml`, constitution, glossary, memory index, relevant feature/backlog/context packets. Capture `rigor_level` (`light|standard|strict`, default `standard`) before classifying gates:
+- `light` may skip feature-level PRD/decomposition checks for ad-hoc bug/feedback backlog items; traceability inside the backlog item still applies.
+- `standard` uses the Required checks table as written.
+- `strict` escalates unexplained Execution Record drift from WARN to FAIL for auth/payments/security/migrations/data-loss slices.
 
 ### 2. Run deterministic checks
 
@@ -32,6 +35,10 @@ Classify each check:
 - **FAIL** = invariant broken; should block promote/archive/AFK
 - **WARN** = risk or stale context; user may proceed
 - **PASS** = OK
+
+Only invariant breakage should be FAIL. Style preferences, extra polish, and
+"nice to have" completeness checks stay WARN unless they break traceability,
+reviewability, or archive safety.
 
 Required checks:
 
@@ -45,7 +52,11 @@ Required checks:
 | Blocker cycles | project/feature | cycle in `blocked_by` graph |
 | Status validity | backlog | status not `open|in_progress|done|blocked` |
 | Execution class | backlog | missing or not `human_required|autonomous|conditional` |
+| AC test mapping | backlog | AC missing both `test:` and `human-review:` annotation |
 | AC checkbox coverage | backlog | item `done` with unchecked AC |
+| Execution Record base | backlog | missing `Base ref` = FAIL |
+| Execution Record tests | backlog | missing `Tests run` = FAIL |
+| Execution Record drift | backlog | planned-vs-actual differs and `Drift notes` is empty = WARN |
 | Review gate | archive | feature archive requested without review PASS or explicit force |
 | Context packet links | brownfield | referenced `context_packets` missing |
 | Touch map drift | review/archive | changed files outside expected `touches.files` without note |

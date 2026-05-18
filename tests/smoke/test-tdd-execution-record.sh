@@ -67,4 +67,12 @@ READS_BASE_REF=$(grep -ciE 'read.*\*?\*?Base ref\*?\*?.*(back )?from.*backlog|ba
 [ "$READS_BASE_REF" -ge 1 ] && READS_BACK="yes" || READS_BACK="no"
 assert_eq "step 9a re-reads Base ref from backlog item (not shell variable persistence)" "yes" "$READS_BACK"
 
+AUTO_FILL_COUNT=$(grep -cF "auto-fill factual Execution Record fields" "$TDD_SKILL" || true)
+[ "$AUTO_FILL_COUNT" -ge 1 ] && AUTO_FILL_PRESENT="yes" || AUTO_FILL_PRESENT="no"
+assert_eq "tdd explicitly auto-fills factual Execution Record fields" "yes" "$AUTO_FILL_PRESENT"
+
+HUMAN_DRIFT_COUNT=$(grep -cF "human-written only when planned files/tests/AC differ" "$TDD_SKILL" || true)
+[ "$HUMAN_DRIFT_COUNT" -ge 1 ] && HUMAN_DRIFT_PRESENT="yes" || HUMAN_DRIFT_PRESENT="no"
+assert_eq "tdd limits human drift writing to real deviations" "yes" "$HUMAN_DRIFT_PRESENT"
+
 print_summary

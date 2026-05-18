@@ -108,6 +108,8 @@ Three tiers, used in this order:
 
 When you reach for Tier 3, ask: could this be Tier 2 if I wrote down a criterion? Could it be Tier 1 if I scripted the check?
 
+**Anti-bureaucracy field rule:** New artifact fields must either automate evidence capture or close a named drift class. Otherwise they stay optional.
+
 **Discipline test:** Pick any gate in your workflow. Which tier is it? If everything is Tier 3, the workflow has no determinism floor and will drift the moment the LLM picks a worse interpretation.
 
 ---
