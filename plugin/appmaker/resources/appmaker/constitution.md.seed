@@ -1,0 +1,12 @@
+# Project Constitution
+
+1. **No silent fallbacks.** Errors surface to caller.
+2. **Verifiable success criteria.** Every requirement: auto-check OR human-review-with-criteria.
+3. **Real boundaries in integration tests.** No mocking DB/file/API in integration tests.
+4. **One thing well per slice.** Vertical slices demoable on their own.
+5. **Glossary terms canonical.** Use ubiquitous language from appmaker/glossary.md.
+6. **Non-delegable judgments explicit.** Identity/trust/money/irreversible decisions = `human_required`.
+7. **Test first, promote green.** For code-changing slices, define verification before implementation; for business logic and bug fixes, write or extend the failing test first, make the smallest change to green, then refactor. A slice may not be promoted with failing tests, type errors, lint violations, or an unrecorded verification gap.
+8. **No broken windows.** If we notice something broken or rotting (stale doc, dead code, untracked cruft, intermittent test, drift between artifact and reality), we fix it or open a backlog item the same turn. Don't walk past it.
+9. **KISS / YAGNI.** Prefer the simplest clear implementation that satisfies the current acceptance criteria. Do not add abstractions, generic frameworks, future-proofing, or extra features until there is a real second use case. If 20 clear lines solve it well, do not write 200.
+10. **Understand before changing.** Read the existing code path, call sites, and local patterns before editing. When a contract changes, update dependent files/tests in the same slice; no partial fixes.

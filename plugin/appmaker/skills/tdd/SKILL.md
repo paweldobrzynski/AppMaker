@@ -5,12 +5,10 @@ disable-model-invocation: true
 
 Test-driven dev per slice. Adopts Matt Pocock `tdd` (canonical) plus AppMaker extensions.
 
-Supporting reference files (Matt Pocock 1:1, MIT) live in project tree:
-- `appmaker/skills/tdd/deep-modules.md` — deep vs shallow module pattern
-- `appmaker/skills/tdd/interface-design.md` — testable interface design
-- `appmaker/skills/tdd/mocking.md` — when to mock, when not to
-- `appmaker/skills/tdd/refactoring.md` — refactor candidates
-- `appmaker/skills/tdd/tests.md` — good vs bad test examples
+Supporting reference files in project tree (`appmaker/skills/tdd/`):
+
+- `deep-modules.md`, `interface-design.md`, `mocking.md`, `refactoring.md`, `tests.md` — Matt Pocock 1:1 (MIT).
+- `plan-format.md` — TDD-plan output format (table vs heading template, column rules).
 
 ## When to invoke
 
@@ -30,12 +28,7 @@ See `appmaker/skills/tdd/tests.md` and `appmaker/skills/tdd/mocking.md`.
 
 ## Anti-Pattern: Horizontal Slices (Matt Pocock 1:1)
 
-**DO NOT write all tests first, then all implementation.** Vertical: ONE test → ONE implementation → repeat.
-
-```
-WRONG: test1, test2, test3 → impl1, impl2, impl3
-RIGHT: test1→impl1, test2→impl2, test3→impl3
-```
+**DO NOT write all tests first, then all implementation.** Vertical: ONE test → ONE implementation → repeat. (`test1→impl1, test2→impl2, ...`, NOT `test1,test2,test3 → impl1,impl2,impl3`.)
 
 ## Process
 
@@ -92,60 +85,12 @@ Matt Pocock checklist + AppMaker addition:
 
 ### 3a. Plan output format
 
-**See `appmaker/skills/output-style.md` for global style.** TDD-specific:
+See `appmaker/skills/tdd/plan-format.md` for the full output spec (table vs heading template, column rules). TL;DR:
 
-- **≥ 4 cycles** → use **markdown table** (compact, scannable).
-- **≤ 3 cycles** → use **per-cycle `### Tn` headings** (more reading space for complex cases).
+- Global style: `appmaker/skills/output-style.md`.
+- **≥ 4 cycles** → markdown table.
+- **≤ 3 cycles** → per-cycle `### Tn` headings.
 - **Never:** ASCII separators (`────`), `#:` prefix, stacked RED/GREEN/Traces lines.
-
-#### Table template (4+ cycles)
-
-```markdown
-## TDD Plan: <slice-id-slug>
-
-**Interface:** `functionName(args) → returnType`
-**Module:** `path/to/module.js` — pure logic per constitution rule 3
-**Backlog:** `appmaker/backlog/NNN-slug.md`
-
-| # | Type | RED (failing test) | GREEN (minimal impl) | Traces |
-|---|---|---|---|---|
-| T1 | tracer | `fn({k:'v'}) === 'Low'` | Create module, terminal short-circuit | SC1 |
-| T2 | rule | All 4 terminal statuses → `'Low'` | Covered by T1 | SC1 |
-| T3 | edge | `fn(null)` no throw, returns `null` | Add `data = data \|\| {}` | ID4 |
-
-**Integration steps** (manual verification only — NOT TDD):
-- Wire into `<caller path>`
-- Verify happy path on real `<sample>` record
-```
-
-Column rules:
-- `#` — `T1`, `T2`, ... (T = test/cycle).
-- `Type` — `tracer` / `rule` / `edge` / `regression` / `integration-prep`.
-- `RED` — single-line executable-looking pseudo-code.
-- `GREEN` — single-line "what changes". "Covered by Tn" is valid.
-- `Traces` — AC IDs (canonical `pcrit-NNN` OR project format like `SC1`/`ID4`).
-
-#### Heading template (≤ 3 cycles)
-
-```markdown
-## TDD Plan: <slice-id-slug>
-
-**Interface:** `functionName(args) → returnType`
-**Backlog:** `appmaker/backlog/NNN-slug.md`
-
-### T1 — Tracer bullet
-
-- **RED:** `fn({k: 'v'}) === 'expected'`
-- **GREEN:** Create module, minimal early return
-- **Traces:** SC1
-- **Note:** establishes module shape; subsequent cycles extend.
-
-### T2 — Rule for X
-
-- **RED:** [single-line failing test]
-- **GREEN:** [what changes]
-- **Traces:** SC2, ID3
-```
 
 ### 3b. Execution Record — initial fields (v0.2.19)
 
@@ -184,11 +129,7 @@ RED:   Write next test → fails
 GREEN: Minimal code to pass → passes
 ```
 
-**AppMaker addition:** per cycle, mark AC checkbox in backlog item:
-```diff
-- - [ ] `useTheme()` returns ... (traces_to: pcrit-001)
-+ - [x] `useTheme()` returns ... (traces_to: pcrit-001)
-```
+**AppMaker addition:** per cycle, flip the matching AC checkbox in the backlog item (`- [ ]` → `- [x]`, preserving `traces_to: pcrit-NNN`).
 
 ### 6. Refactor (Matt 1:1)
 
@@ -207,14 +148,8 @@ If any fail → fix or escalate.
 
 ### 8. Glossary update (two-tier, v0.2.11)
 
-**Tier 1 — Deterministic stub extraction:**
-```bash
-# Run on the backlog item that just got TDD-completed (captures any new domain terms in test names / what-to-build)
-bash appmaker/hooks/glossary-extract.sh "appmaker/backlog/<NNN>-<slug>.md"
-```
-Verifiable bash. Idempotent.
-
-**Tier 2 — Semantic review:** If extraction surfaced new stubs AND TDD conversation has definitions, MAY invoke `/appmaker:glossary` via Skill tool. Otherwise leave stubs for explicit review. Best-effort, NOT deterministic.
+- **Tier 1 (deterministic, idempotent):** `bash appmaker/hooks/glossary-extract.sh "appmaker/backlog/<NNN>-<slug>.md"` — captures new domain terms from test names / what-to-build.
+- **Tier 2 (semantic, best-effort):** if Tier 1 surfaced new stubs AND TDD conversation has definitions, MAY invoke `/appmaker:glossary` via Skill tool. Otherwise leave stubs for explicit review.
 
 ### 9. Mark done + suggest next
 
@@ -230,17 +165,7 @@ fields:
 - **AC completed:** checked AC count / total AC count
 - **Drift notes:** `- (none)` unless files/tests/AC differed from the approved plan. Drift notes are human-written only when planned files/tests/AC differ; otherwise keep the field mechanical.
 
-Update front-matter: `status: done`, append `completed: <ISO date>`. Move file: `appmaker/backlog/NNN.md` → `appmaker/backlog/done/<YYYY-MM-DD>-NNN.md`.
-
-```
-✓ Backlog item 008: DONE
-✓ Tests: 4/4 pass
-✓ Lint + types: clean
-✓ ACs: 4/4 ✓
-✓ Glossary: +1 term
-
-Suggested next: /appmaker:tdd 009  (or /appmaker:review)
-```
+Update front-matter: `status: done`, append `completed: <ISO date>`. Move file: `appmaker/backlog/NNN.md` → `appmaker/backlog/done/<YYYY-MM-DD>-NNN.md`. Output summary: backlog id + DONE, tests pass/fail, lint+types status, AC count, glossary delta, suggested next (`/appmaker:tdd <next>` or `/appmaker:review`).
 
 ## Checklist Per Cycle (Matt 1:1)
 
