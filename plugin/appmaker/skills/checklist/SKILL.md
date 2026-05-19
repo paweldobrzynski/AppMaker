@@ -54,6 +54,7 @@ Required checks:
 | Execution class | backlog | missing or not `human_required|autonomous|conditional` |
 | AC test mapping | backlog | AC missing both `test:` and `human-review:` annotation |
 | AC checkbox coverage | backlog | item `done` with unchecked AC |
+| Approved TDD plan | backlog | done item missing non-empty `## Approved TDD Plan` = WARN |
 | Execution Record base | backlog | missing `Base ref` = FAIL |
 | Execution Record tests | backlog | missing `Tests run` = FAIL |
 | Execution Record drift | backlog | planned-vs-actual differs and `Drift notes` is empty = WARN |

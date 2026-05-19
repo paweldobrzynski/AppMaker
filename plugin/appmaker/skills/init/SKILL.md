@@ -58,7 +58,7 @@ The script does it all in one shot (idempotent):
 
 - reads plugin version via `jq -r '.version'` from `plugin.json` (single source of truth, v0.2.11)
 - creates `appmaker/` tree
-- copies templates, supporting skill files (`tdd/`, `plan-format.md`), memory wiki seeds
+- copies templates, supporting skill files (`tdd/`, `review/`, `status/`), memory wiki seeds
 - writes `appmaker/config.yaml` from template + auto-detects test/lint/typecheck commands
 - writes `appmaker/.appmaker-version` marker
 - installs `session-start.sh` + `glossary-extract.sh` hooks (per config flags)
@@ -149,7 +149,7 @@ Proceed? [Y/n]
 ✓ Context packets: appmaker/context/ (created empty)
 ✓ Gates/reports: appmaker/checklists/, appmaker/diagnostics/, appmaker/afk/, appmaker/reviews/
 ✓ Backlog: local markdown
-✓ Templates + supporting files (tdd/, plan-format.md)
+✓ Templates + supporting files (tdd/, review/, status/)
 ✓ Graphify: (installed or skipped per choice)
 ✓ Forest's CLAUDE.md: (installed or skipped)
 
@@ -178,7 +178,7 @@ Next: continue your workflow or check changelog if curious about new features.
 - **Don't treat Graphify as memory.** It is read-only code graph input. Persist only context packets derived from it.
 - **Don't run other skills mid-init.** Init only sets up scaffold. User invokes `/appmaker:start` after.
 - **Forest BEFORE materialize.** If installing Forest's `CLAUDE.md` baseline (`curl > CLAUDE.md`), it must run in step 2b — before the materialize script's pointer append in 2c — otherwise the AppMaker pointer is clobbered.
-- **Keep seed small.** Default constitution seed in `resources/appmaker/constitution.md.seed`; do not inline alternate seeds here.
+- **Keep seed bounded.** Default constitution seed has 10 rules in `resources/appmaker/constitution.md.seed`; do not expand casually or inline alternate seeds here.
 - **Upgrade preserves user-owned state.** constitution.md, glossary.md, memory/, backlog/, features/ — never overwrite.
 - **Upgrade refreshes plugin-owned files** (templates, supporting reference) — confirm if user customized.
 - **Version marker mandatory.** Without `.appmaker-version`, future upgrades can't detect drift.

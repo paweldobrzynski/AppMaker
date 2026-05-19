@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Smoke test for v0.2.19 pcrit-001: backlog template has ## Execution Record.
-# The section is capture-only MVP: one cohesive block with structured fields.
+# The section captures factual execution evidence: one cohesive block with structured fields.
 
 set -u
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

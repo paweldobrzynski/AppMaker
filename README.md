@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.21. 19 skills (15 core + afk + status + token-audit + next). Anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 12 smoke test suites, 90 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.21. 19 skills (15 core + afk + status + token-audit + next). Anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 16 smoke test suites, 126 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -31,7 +31,7 @@ claude --plugin-dir /Users/pawel/Projects/AppMaker/plugin/appmaker
 /help                # Verify /appmaker:* commands appear in menu
 /appmaker:init       # Materialize appmaker/ from plugin resources
                      # (creates constitution, glossary, config.yaml, .appmaker-version,
-                     #  templates/, skills/tdd/, memory/wiki/, context/, checklists/,
+                     #  templates/, skills/, memory/wiki/, context/, checklists/,
                      #  diagnostics/, afk/, backlog/, features/)
 ```
 
@@ -41,7 +41,19 @@ For permanent activation per project: add to `.claude/settings.json` (TBD — ma
 
 Future: publish to plugin marketplace for `/plugin install appmaker` style.
 
-## What it does
+## Everyday Workflow
+
+For a new user, treat AppMaker as one workflow:
+
+```text
+/appmaker:init
+/appmaker:start "<what you want to build or fix>"
+/appmaker:next
+```
+
+`/appmaker:start` routes feature, bug, refactor, research, review, prototype, or continuation intent. `/appmaker:next` advances the lifecycle with checkpoints. Most users should not need to memorize the full command list.
+
+## Command Reference
 
 ### Core (15 skills)
 
@@ -122,13 +134,17 @@ AppMaker/
 │   ├── .claude-plugin/plugin.json      ← manifest
 │   ├── hooks/
 │   │   └── session-start.sh            ← v0.2.6: prints 1-line status on session start
+│   ├── scripts/
+│   │   └── init-materialize.sh          ← fresh init/upgrade resource materializer
 │   ├── resources/                        ← packaged resources, materialized by /appmaker:init
 │   │   ├── appmaker/
 │   │   │   ├── config.yaml.template
 │   │   │   ├── memory/                  ← Karpathy-style wiki seed files
 │   │   │   ├── skills/
 │   │   │   │   ├── output-style.md     ← v0.2.3: global Compact report contract
-│   │   │   │   └── tdd/                 ← Matt Pocock supporting (deep-modules, mocking, ...)
+│   │   │   │   ├── tdd/                 ← Matt Pocock supporting (deep-modules, mocking, ...)
+│   │   │   │   ├── review/              ← review checklist/report contract
+│   │   │   │   └── status/              ← telemetry/refinement reference
 │   │   │   └── templates/
 │   │   │       ├── backlog-item-template.md
 │   │   │       ├── context-packet-template.md
@@ -168,7 +184,7 @@ your-project/
     ├── .appmaker-version                ← plugin resource version marker (current: "0.2.9")
     ├── hooks/session-start.sh           ← copied from plugin; prints status 1-liner
     ├── config.yaml                      ← project config (commands, providers, integrations)
-    ├── constitution.md                  ← 5-7 rules MAX (project principles, user-owned)
+    ├── constitution.md                  ← 10 bounded rules (project principles, user-owned)
     ├── glossary.md                      ← ubiquitous language (stubs auto-flagged by hooks, definitions explicit)
     ├── context/                         ← small context packets from Graphify/file discovery
     ├── templates/                       ← per-project overrides (materialized from plugin)

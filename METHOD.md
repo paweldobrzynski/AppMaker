@@ -32,7 +32,7 @@ A project has three durable knowledge surfaces:
 
 | Surface | Rule | Size limit |
 |---|---|---|
-| `constitution.md` | 5-7 rules the project NEVER breaks. Things hard-to-reverse if violated. | ≤7 lines worth of rules |
+| `constitution.md` | 10 bounded rules the project treats as hard governance. Things hard-to-reverse if violated. | short enough to scan before work |
 | `glossary.md` | Ubiquitous language. Every domain term defined once. Source of contradiction-free communication with AI. | Grows; lint for unused stubs |
 | `memory/wiki/*.md` | Compiled knowledge. Architecture, domain model, testing patterns, integration gotchas. Queried before generating, NOT after. | Lint: stale > 30 days = warn |
 
@@ -217,7 +217,7 @@ How to know you are following the Method, not LARPing:
 | `plan.md` and `evidence.md` differ — you investigate before next slice | Slice ships, next slice starts |
 | `glossary.md` has a definition for every project-specific term used in PRD | PRD uses "user", "system", "process" with no project anchoring |
 | Pre-flight read happens before every slice | Pre-flight happens only when you remember |
-| Constitution has ≤7 rules and you can recite them | Constitution has 23 rules and you read them once at init |
+| Constitution has 10 bounded rules and you can scan them before work | Constitution has 23 rules and you read them once at init |
 
 The Method's value is **prevention of drift**, not productivity. If you adopt all four disciplines and three contracts and the rhythm, your first slice will take longer than vibe-coding. Your tenth slice will take a fraction, because nothing is being relitigated.
 
@@ -228,7 +228,7 @@ The Method's value is **prevention of drift**, not productivity. If you adopt al
 Real production feature (May 2026, ~5h30min, 5/7 slices shipped, 4 library deploys, 21 unit tests).
 
 **Discipline 1 — Bounded context:**
-- `constitution.md`: 5 rules including "Apps Script library boundary — Mgc public API never breaks consumers"
+- `constitution.md`: 10 bounded rules including "Apps Script library boundary — Mgc public API never breaks consumers"
 - `glossary.md`: 5 domain terms (BPS, BPS Risk Score, Risk band, BPS rule, Aggregator-first BPS) each with `file:line` references — extraction Tier 1, semantic enrichment Tier 2
 - `memory/wiki/architecture.md`: Apps Script library deploy model, version bump semantics
 
@@ -302,7 +302,7 @@ The Method is current as of v0.2.19. Hypotheses still being validated:
 
    **Important — traceability direction:** PRD stays upstream source of product intent, NEVER a rollup of slices. Decomposition may be a rollup/index over slices. Slice is execution record, derived from PRD intent — never the originator of product intent. Inverting this direction would break traceability (slices could declare intent the PRD never asserted), creating circular dependency.
 
-2. **Plan-vs-actual drift detection is MVP under validation in v0.2.19.** The plugin now captures a slice-level `## Execution Record` in the backlog item: base ref, dirty-at-start state, planned files/tests, actual files, tests run, AC completed, and drift notes. This is capture-only. It does not implement review auto-diff or checklist enforcement; those remain v0.3+ candidates pending MVP evidence. Validation criteria: does the section get filled in real slices, do operators or future sessions use it when resuming work, and does feature-level review surface drift by reading it? If no, simplify or remove before automating.
+2. **Plan-vs-actual drift detection is MVP under validation.** The plugin now captures a slice-level `## Approved TDD Plan` plus `## Execution Record` in the backlog item: base ref, dirty-at-start state, planned files/tests, actual files, tests run, AC completed, and drift notes. Checklist warns when the approved plan is missing or drift is unexplained; review reads the same section for plan-vs-actual findings. Validation criteria: does the section get filled in real slices, do operators or future sessions use it when resuming work, and does review surface useful drift signals? If no, simplify before automating further.
 
 3. **Aviation metaphor unification.** Constitution = aircraft limitations, checklist = pre-flight, plan.md = filed flight plan, retro = post-flight debrief. Worth lifting into Method language as a learning aid, not just marketing.
 

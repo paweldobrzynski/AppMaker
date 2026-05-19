@@ -23,7 +23,7 @@ If no intent provided, ask via AskUserQuestion:
 ### 2. Detect project context (parallel reads OK)
 
 - `appmaker/` directory exists? If not → suggest `/appmaker:init` first.
-- `appmaker/constitution.md` present? Read 5-7 rules for downstream context.
+- `appmaker/constitution.md` present? Read 10 bounded rules for downstream context.
 - `appmaker/glossary.md` present? Read terms — use as anchors when classifying intent.
 - `appmaker/backlog/` has open items? Note count.
 - `appmaker/features/` has in-progress feature? Note newest.

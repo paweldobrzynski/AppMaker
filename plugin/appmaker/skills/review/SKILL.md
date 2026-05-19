@@ -9,6 +9,8 @@ Provider-agnostic — default `code-reviewer` subagent, configurable in `appmake
 
 **Output style:** Follow the **Compact report contract** in `appmaker/skills/output-style.md`. Review report = status line + bullet findings (1 line each). No prose, no multi-paragraph deep-dives, no separate "Constitution" / "Glossary" / "AC coverage" sub-sections when each has 0-1 finding — fold all findings into one table. Skip empty categories.
 
+Detailed checklist + report template: `appmaker/skills/review/review-contract.md`.
+
 ## When to invoke
 
 - Manual: `/appmaker:review <scope> [--mode=local|ultra]` where scope is:
@@ -54,7 +56,7 @@ Parse argument. Default to latest completed backlog item. Confirm via AskUserQue
 ### 2. Gather context for subagent
 
 Build context package:
-- Backlog item: backlog file + parent feature PRD + `context_packets` field values + diff
+- Backlog item: backlog file (`## Approved TDD Plan` + `## Execution Record`) + parent feature PRD + `context_packets` field values + diff
 - Feature: PRD + decomposition + all backlog items + all referenced `context_packets` + cumulative diff
 - Diff: current `git diff` output + relevant context packet if available
 
@@ -86,73 +88,17 @@ Agent(
 )
 ```
 
-Review checklist passed to subagent:
-1. Code quality (idiomatic, readable)
-2. Constitution rule compliance (rule 3 real boundaries, rule 7 promote green)
-3. Glossary term consistency (no synonyms invented)
-4. AC coverage (every AC has corresponding test or human-review)
-5. Test quality (behavior not implementation)
-6. Surgical changes (only what asked)
-7. Security flags
-8. Performance flags
-9. Graph context coverage (changed files match expected touched communities; important graph neighbors not silently ignored)
-10. Memory regression check (change does not repeat known gotcha/testing failure from memory wiki)
+Pass the checklist from `appmaker/skills/review/review-contract.md`. It includes code quality, constitution, glossary, AC coverage, Plan-vs-actual drift, test quality, surgical changes, security/performance, graph context, and memory regression.
 
 #### 3b. `--mode=ultra` (v0.2.12 delegation to Claude Code built-in)
 
-Claude Code 2.1.86+ ships `/ultra-review` — parallel reviewer fleet in cloud sandbox, each bug independently reproduced before reporting. Stronger bug detection than single subagent. **AppMaker delegates code-quality review to it + adds compliance layer on top.**
-
-Workflow:
-
-1. **Invoke built-in:** issue Claude Code command `/ultra-review` against current branch (Pawel must be on Claude Code Pro/Max + signed in with Claude account, not API key). Wait for completion (10-20 min, runs in background — user can keep working).
-
-2. **Capture `/ultra-review` output:** the reproduced bugs + confirmed findings. These cover layers 1, 5-8 of the local checklist (code quality, test quality, security, performance).
-
-3. **Run AppMaker compliance layer (always runs, even with ultra):** local subagent invocation focused ONLY on layers 2, 3, 4, 9, 10 — the AppMaker-specific spec compliance:
-   - Constitution rule compliance
-   - Glossary term consistency
-   - AC coverage (every AC has test or human-review)
-   - Graph context coverage (`context_packets`)
-   - Memory wiki gotcha regression
-
-4. **Combine findings** in the persisted review.md: `/ultra-review` reproduced bugs section + AppMaker compliance section. Status PASS only if BOTH pass.
-
-**Cost note:** `/ultra-review` is 3 free runs/month per Claude account, then ~$5-20/run depending on size. AppMaker compliance layer is tokens-only. Recommendation: use `--mode=ultra` for archive-gate reviews on critical features (payments, auth, migrations); `--mode=local` for routine slice reviews.
-
-**Fallback:** if `/ultra-review` unavailable (older Claude Code, API-key-only login, free run quota exceeded with no budget), fall back to `--mode=local` with explicit warning to user via AskUserQuestion (don't silently downgrade).
+Delegate bug-finding to `/ultra-review`, then run AppMaker compliance locally (constitution, glossary, AC coverage, graph context, memory regression, plan-vs-actual drift). Combine both in one persisted review. PASS only if both pass. Fallback to local review only with explicit warning. See `appmaker/skills/review/review-contract.md`.
 
 ### 4. Capture findings — **MANDATORY persistence**
 
 Subagent returns structured report. **Claude MUST persist via Bash tool** — DO NOT only print to chat. Past sessions showed 10 review invocations with 0 files persisted due to skipping this step.
 
-**Compact review template** (used for all 3 scopes — backlog, feature, diff):
-
-```markdown
-## Review
-
-**Status:** PASS | FAIL
-**Date:** 2026-05-11
-**Subagent:** code-reviewer
-**AC coverage:** 7/7
-
-### Findings
-
-| Severity | Category | File:Line | Description |
-|---|---|---|---|
-| critical | constitution | `domain/bps.js:42` | Rule 3 violation: mock used in integration test |
-| suggestion | quality | `tests/bps.test.js:88` | Extract `useTheme` hook to separate file |
-
-(omit table entirely if zero findings)
-
-### Notes
-- Glossary: 0 violations  ← single line, only if interesting
-- Memory wiki gotchas: 0 repeated  ← single line, only if relevant
-```
-
-**Forbidden:**
-- Separate `### Critical issues` + `### Suggestions` + `### Constitution compliance` + `### Glossary` + `### AC coverage` headings when each has 0-1 entry. Use single Findings table.
-- `[none]` filler under empty sub-headings — omit the sub-heading.
-- Prose paragraphs of any kind. If a finding needs > 120 chars, link to a separate note file.
+Use the compact review template in `appmaker/skills/review/review-contract.md` for all scopes. Do not print review-only detail in chat without persisting it.
 
 **Per scope — persistence command:**
 

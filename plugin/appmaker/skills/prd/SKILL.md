@@ -58,7 +58,7 @@ If `interview-result.md` readiness is `needs_more_input` or `reject` — refuse,
 - `appmaker/features/<NNN>/interview-result.md` — primary input
 - `appmaker/features/<NNN>/spike-output/` if exists (snippets for prototype exception)
 - `appmaker/glossary.md` — use canonical terms
-- `appmaker/constitution.md` — respect 5-7 rules
+- `appmaker/constitution.md` — respect 10 bounded rules
 - `appmaker/memory/index.md` + relevant `appmaker/memory/wiki/*.md` — durable project knowledge, lazy-read only pages related to feature
 - Codebase context via `/appmaker:context` (Graphify if available, else file reads). Save packet path in PRD.
 

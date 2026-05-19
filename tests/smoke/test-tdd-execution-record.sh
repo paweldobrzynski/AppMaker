@@ -53,6 +53,10 @@ DIRTY_WARN_COUNT=$(grep -cE 'Dirty.*WARN|WARN.*dirty|dirty.*WARN' "$TDD_SKILL" |
 [ "$DIRTY_WARN_COUNT" -ge 1 ] && DIRTY_WARN_PRESENT="yes" || DIRTY_WARN_PRESENT="no"
 assert_eq "dirty worktree behavior is capture + WARN" "yes" "$DIRTY_WARN_PRESENT"
 
+APPROVED_PLAN_COUNT=$(grep -cF "Approved TDD Plan" "$TDD_SKILL" || true)
+[ "$APPROVED_PLAN_COUNT" -ge 1 ] && APPROVED_PLAN_PRESENT="yes" || APPROVED_PLAN_PRESENT="no"
+assert_eq "tdd persists Approved TDD Plan before first RED" "yes" "$APPROVED_PLAN_PRESENT"
+
 for label in "Actual files" "Tests run" "AC completed" "Drift notes"; do
   COUNT=$(grep -cF "$label" "$TDD_SKILL" || true)
   [ "$COUNT" -ge 1 ] && PRESENT="yes" || PRESENT="no"

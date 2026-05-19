@@ -1,7 +1,7 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.21 — anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 12 smoke suites, 90 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), rigor config, checklist Execution Record gates.
-Last updated: 2026-05-18.
+Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.21 — anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 16 smoke suites, 126 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, rigor config, checklist Execution Record gates.
+Last updated: 2026-05-19.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
 
@@ -11,7 +11,7 @@ AppMaker NIE re-implementuje agent infrastructure. Claude Code dostarcza runtime
 
 - **Lifecycle discipline:** init → grill → interview → prd → decompose → tdd → review → archive
 - **Traceability:** PRD `pcrit-*` IDs → backlog `traces_to` → AC checkboxes → tests
-- **Governance:** constitution (5-7 rules) + glossary (ubiquitous language) + deterministic checklist gates
+- **Governance:** constitution (10 bounded rules) + glossary (ubiquitous language) + deterministic checklist gates
 - **Audit trail:** archive flow preserves all artifacts; retro feeds memory wiki; memory wiki is explicit + auditable (Karpathy-style, NOT automatic-invisible)
 
 **Delegation principle (v0.2.12):** when Claude Code ships a better primitive, AppMaker delegates. v0.2.12 introduces:
@@ -101,13 +101,17 @@ AppMaker/
 │   │   └── plugin.json                   ← manifest (name, description, version, author, license)
 │   ├── hooks/
 │   │   └── session-start.sh              ← v0.2.6: 1-line status print on session start
+│   ├── scripts/
+│   │   └── init-materialize.sh            ← resource materializer used by init skill
 │   ├── resources/                        ← packaged data materialized by /appmaker:init
 │   │   ├── appmaker/
 │   │   │   ├── memory/                   ← Karpathy-style wiki seed files
 │   │   │   ├── templates/                ← backlog-item, decomposition, context-packet templates
 │   │   │   ├── skills/
 │   │   │   │   ├── output-style.md       ← v0.2.3: global Compact report contract
-│   │   │   │   └── tdd/                  ← Matt Pocock supporting (deep-modules, mocking, ...)
+│   │   │   │   ├── tdd/                  ← Matt Pocock supporting (deep-modules, mocking, ...)
+│   │   │   │   ├── review/               ← review checklist/report contract
+│   │   │   │   └── status/               ← telemetry/refinement reference
 │   │   │   └── config.yaml.template      ← seed config (auto-detected fields filled at init)
 │   │   └── graphify/.graphifyignore.template
 │   └── skills/                           ← 19 dirs (15 core + afk + status + token-audit + next)
@@ -142,7 +146,7 @@ your-project/
 └── appmaker/                             ← project state (materialized by /appmaker:init from plugin resources)
     ├── .appmaker-version                 ← plugin resource version marker (current: "<version>")
     ├── config.yaml                       ← project config (commands, providers, integrations)
-    ├── constitution.md                   ← 5-7 rules MAX (project principles, user-owned)
+    ├── constitution.md                   ← 10 bounded rules (project principles, user-owned)
     ├── glossary.md                       ← ubiquitous language (deterministic stub extraction + explicit semantic review)
     ├── templates/                        ← per-project overrides (materialized from plugin)
     │   ├── backlog-item-template.md
@@ -370,7 +374,7 @@ Body sections (mandatory unless noted):
 
 ## Co świadomie NIE robimy
 
-- ❌ Constitution z 18 rules → 5-7 max
+- ❌ Constitution z 18 rules → 10 bounded default rules
 - ❌ 4-state readiness enum z propagation chain → każda skill ma swoje "ready/not-ready"
 - ❌ JSON Schemas (3 sztuki) → struktura w skill markdown
 - ❌ `decisions.jsonl` / `events.jsonl` / `lessons.jsonl` streams → markdown w `memory/`
@@ -408,7 +412,7 @@ Body sections (mandatory unless noted):
 - Plugin namespace `colon` separator (`/opsx:propose`) → adopted as `/appmaker:<name>`
 
 ### Ze Spec Kit
-- Constitution layer → adopted (5-7 rules)
+- Constitution layer → adopted (10 bounded default rules)
 - Optional deepening commands → adopted (4 opt-in)
 - Cross-artifact analyze pattern → adopted as `/appmaker:checklist`
 - (Świadomie NIE adopted: 5 sequential phases, Python runtime, extensions ecosystem)

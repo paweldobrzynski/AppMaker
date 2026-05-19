@@ -12,6 +12,8 @@ Status snapshot. Read-only filesystem inspection. Companion to the session-start
 
 **Output style:** Follow the **Compact report contract** in `appmaker/skills/output-style.md`. Status output = single phase table + 1-line "Next" suggestion. No prose, no nested headings, no version banner.
 
+Optional telemetry/refinement details: `appmaker/skills/status/telemetry-refinement.md`.
+
 ## When to invoke
 
 - Manual: `/appmaker:status`
@@ -87,35 +89,7 @@ fi
 
 ### 2.5. Token usage telemetry (best-effort, optional)
 
-**Caveat first:** this reads Claude Code internal session log format (`~/.claude/projects/<dashes>/*.jsonl`). The format is **not a stable public API** — Claude Code may change it. Treat as informational only. Requires `jq`. Failures degrade silently — status report still works.
-
-```bash
-# Compute project's session-log directory (Claude Code maps cwd to dashes)
-PROJ_LOG_DIR="$HOME/.claude/projects/$(pwd | sed 's|/|-|g')"
-TOKEN_DISPLAY=""
-SESSION_COUNT=""
-
-if command -v jq >/dev/null 2>&1 && [ -d "$PROJ_LOG_DIR" ]; then
-  TOTAL_TOKENS=$(find "$PROJ_LOG_DIR" -name '*.jsonl' -type f 2>/dev/null \
-    | xargs -I{} jq -r '.message.usage | select(.) | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0) + (.output_tokens // 0))' {} 2>/dev/null \
-    | awk '{s+=$1} END {print s+0}')
-  SESSION_COUNT=$(find "$PROJ_LOG_DIR" -name '*.jsonl' -type f 2>/dev/null | wc -l | tr -d ' ')
-
-  if [ -n "$TOTAL_TOKENS" ] && [ "$TOTAL_TOKENS" -gt 0 ]; then
-    if [ "$TOTAL_TOKENS" -ge 1000000 ]; then
-      TOKEN_DISPLAY="$(awk "BEGIN {printf \"%.1fM\", $TOTAL_TOKENS/1000000}")"
-    elif [ "$TOTAL_TOKENS" -ge 1000 ]; then
-      TOKEN_DISPLAY="$(awk "BEGIN {printf \"%dk\", $TOTAL_TOKENS/1000}")"
-    else
-      TOKEN_DISPLAY="$TOTAL_TOKENS"
-    fi
-  fi
-fi
-```
-
-If `jq` not installed or log dir missing or parse failed → leave `TOKEN_DISPLAY` empty and skip the row in the output table. Don't error on the user.
-
-**Sum formula:** `input_tokens + cache_creation_input_tokens + cache_read_input_tokens + output_tokens` per assistant message. This is **total tokens processed**, NOT cost — cache reads cost ~10% of fresh input, so dollar cost is much less than this number suggests. For accurate billing use `ccusage` or similar dedicated tool; this is a rough volume indicator.
+May compute project token volume from Claude Code jsonl logs if `jq` and logs are present. Omit the row on any failure; token usage is volume, not cost. See `appmaker/skills/status/telemetry-refinement.md`.
 
 ### 3. Print compact report
 
@@ -155,24 +129,7 @@ If `jq` not installed or log dir missing or parse failed → leave `TOKEN_DISPLA
 
 ### 3.5. Agent View hint (v0.2.12)
 
-If Claude Code 2.1.86+ (Agent View feature available) and there's signal that multiple AppMaker sessions might exist, surface a hint:
-
-```bash
-# Detect Agent View availability — heuristic: check Claude Code version if accessible, else assume modern
-# Best-effort: count session jsonl files modified in last 24h
-SESSION_LOG_DIR="$HOME/.claude/projects/$(pwd | sed 's|/|-|g')"
-RECENT_SESSIONS=0
-if [ -d "$SESSION_LOG_DIR" ]; then
-  RECENT_SESSIONS=$(find "$SESSION_LOG_DIR" -name '*.jsonl' -mtime -1 2>/dev/null | wc -l | tr -d ' ')
-fi
-
-# Show hint if user likely benefits (multiple recent sessions OR explicit Agent View)
-if [ "$RECENT_SESSIONS" -gt 1 ]; then
-  echo "**Multi-session view:** \`cloud agents\` (Agent View — see all $RECENT_SESSIONS recent sessions)"
-fi
-```
-
-Don't show hint if only 1 session — would be noise.
+If multiple Claude Code session logs were active in the last 24h, MAY show `cloud agents`. Omit if only one session. Details in `appmaker/skills/status/telemetry-refinement.md`.
 
 ### 4. Suggest next action
 
@@ -192,40 +149,7 @@ Only print 1 suggestion — the highest-priority next step. Don't list all optio
 
 ### 5. Refined suggestion (LLM-grounded, optional)
 
-After the deterministic table picks a candidate, the agent MAY refine it using additional context. Goal: catch cases where filesystem state alone misleads (e.g., slice 005 is `status: done` but the latest review FAILED and was overridden — strict heuristic says "next slice", richer context says "address review findings first").
-
-**Read for refinement (read-only, no LLM API call beyond current turn):**
-
-```bash
-# Recent commit signal — what's the user actually working on?
-git log --oneline -5 2>/dev/null || true
-
-# Recently modified backlog item — implicit "in flight" signal
-ls -t appmaker/backlog/*.md 2>/dev/null | head -1
-
-# Latest review findings — open critical issues should bump priority
-test -n "$FEATURE" && test -f "appmaker/features/$FEATURE/review.md" && \
-  grep -A 10 '^### Findings\|^### Critical' "appmaker/features/$FEATURE/review.md" 2>/dev/null
-```
-
-**Refinement rules:**
-
-| Signal | Action |
-|---|---|
-| Latest review has open `critical` finding | Suggest addressing review finding before next slice |
-| Recent commit message mentions slice ID different from deterministic suggestion | Suggest that slice (user signals their priority) |
-| Backlog item with most recent mtime ≠ deterministic suggestion | Mention the divergence (1 line), let user choose |
-| Git status shows unstaged changes touching slice X | Suggest `/appmaker:review diff` before moving on |
-| No divergence between deterministic + signals | **Omit refinement section entirely** — silence is the signal "they agree" |
-
-**Output format when refinement applies:**
-
-```
-**Next:** `/appmaker:tdd 006`  ← deterministic
-**Refined:** `/appmaker:review feature 001` first — slice 005's review has 1 unresolved critical finding (see `features/001/review.md:14`).
-```
-
-**Do NOT show refinement when deterministic + signals agree.** Variability hurts the compact contract — emit refinement only when there's something real to flag.
+Filesystem-derived `Next` is canonical. Optional refinement may add one line only when recent commits, modified backlog, unresolved critical review findings, or dirty git state contradict it. Agreement = no refinement section. Details in `appmaker/skills/status/telemetry-refinement.md`.
 
 ## Output format (canonical)
 

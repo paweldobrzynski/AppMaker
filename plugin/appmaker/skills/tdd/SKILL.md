@@ -95,8 +95,9 @@ See `appmaker/skills/tdd/plan-format.md` for the full output spec (table vs head
 ### 3b. Execution Record — initial fields (v0.2.19)
 
 After the user approves the TDD plan, and BEFORE the first RED test, materialize
-the initial `## Execution Record` fields in the backlog item. Preserve the
-existing approval gate; this step only writes the approved plan to disk.
+`## Approved TDD Plan` plus the initial `## Execution Record` fields in the
+backlog item. Preserve the existing approval gate; this step only persists the
+approved plan and factual start state.
 Anti-bureaucracy rule: auto-fill factual Execution Record fields wherever a
 shell command can prove the value. Human-written fields are for intent,
 AC status, and drift explanation — not for transcribing git facts.
@@ -108,6 +109,7 @@ DIRTY_STATUS=$(git status --short 2>/dev/null || true)
 ```
 
 Write/update these fields:
+- **Approved TDD Plan:** exact plan approved by user (table or headings from step 3a)
 - **Base ref:** `$BASE_REF`
 - **Dirty at start:** `yes` if `DIRTY_STATUS` non-empty, otherwise `no`
 - **Dirty files at start:** paths from `git status --short`
