@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 21 skills (17 core + afk + status + token-audit + next). v0.2.21 — governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and optional gstack browser runtime for QA/design evidence. 23 smoke suites, 344 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.22 — Phase dry-run patch: `/appmaker:phase <phase-id> --dry-run`, backlog phase metadata, write-scope conflict detection, persisted `appmaker/phase-plans/` evidence, explicit disabled `--execute` path, and optional gstack browser runtime still serving QA/design evidence. 24 smoke suites, 365 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, phase dry-run, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
 Last updated: 2026-05-21.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
@@ -41,7 +41,8 @@ LAYER 3: Optional Graphify pair (separate tool)
   convention (graphify-out/GRAPH_REPORT.md + graph.json), czyta Graphify CLI/report,
   zapisuje małe `appmaker/context/*.md` packets. Graphify remains read-only.
 
-LAYER 4: Optional AFK runner
+LAYER 4: Optional execution runners
+  /appmaker:phase — dry-run phase planner for future parallel subagent work.
   /appmaker:afk — bounded autonomous loop for explicit `execution_class: autonomous` backlog items.
 ```
 
@@ -91,6 +92,7 @@ Note: high-impact architecture choices are already covered by the embedded Archi
 
 | Skill | Inspiration | Purpose |
 |---|---|---|
+| `/appmaker:phase` | GSD phase execution adapted | Phase dry-run: parallel waves, write-scope conflicts, persisted plan; execute disabled |
 | `/appmaker:afk` | Matt's Sandcastle / Ralph loop | Bounded autonomous loop over autonomous backlog items |
 | `/appmaker:sync-github` | Custom adapter | TODO: push/pull backlog ↔ GitHub issues (optional) |
 
@@ -118,7 +120,7 @@ AppMaker/
 │   │   │   │   └── status/               ← telemetry/refinement reference
 │   │   │   └── config.yaml.template      ← seed config (auto-detected fields filled at init)
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                           ← 21 dirs (17 core + afk + status + token-audit + next)
+│   └── skills/                           ← 22 dirs (17 core + afk + status + token-audit + next + phase)
 │       ├── init/SKILL.md                 ← /appmaker:init
 │       ├── start/SKILL.md                ← /appmaker:start
 │       ├── grill/SKILL.md                ← /appmaker:grill
@@ -138,7 +140,8 @@ AppMaker/
 │       ├── glossary/SKILL.md             ← /appmaker:glossary
 │       ├── afk/SKILL.md                  ← /appmaker:afk
 │       ├── status/SKILL.md               ← /appmaker:status (v0.2.6)
-│       └── token-audit/SKILL.md          ← /appmaker:token-audit (v0.2.8)
+│       ├── token-audit/SKILL.md          ← /appmaker:token-audit (v0.2.8)
+│       └── phase/SKILL.md                ← /appmaker:phase (v0.2.22 dry-run)
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                              ← archived prior iterations (skill format, slash command format)
@@ -176,6 +179,7 @@ your-project/
     ├── checklists/                        ← PASS/FAIL/WARN gate reports
     ├── diagnostics/                       ← bug diagnosis reports
     ├── afk/                               ← bounded autonomous run reports
+    ├── phase-plans/                       ← /appmaker:phase dry-run plans
     └── features/
         ├── NNN-slug/                     ← per-feature artifacts (numbered)
         │   ├── interview-result.md
@@ -197,6 +201,12 @@ status: open                   # open | in_progress | done | blocked
 labels: [feature, ui]          # feature | bug | feedback | refactor | architecture
 execution_class: autonomous    # human_required | autonomous | conditional
 blocked_by: []                 # list of item IDs
+phase_id: 001-ui-shell          # optional /appmaker:phase group
+parallel_group: ui-foundation   # optional phase grouping hint
+agent_profile: frontend-specialist
+write_scope: [src/ui/, tests/ui/]
+depends_on: []                  # phase wave deps; complements blocked_by
+integration_risk: medium        # low | medium | high
 traces_to: [pcrit-001, ...]    # PRD acceptance criteria IDs
 feature: NNN-slug              # links to appmaker/features/<NNN>/
 created: 2026-05-11

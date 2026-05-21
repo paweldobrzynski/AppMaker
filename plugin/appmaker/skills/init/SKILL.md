@@ -116,7 +116,7 @@ If different (and current isn't `unknown`), proceed with upgrade flow (write ope
   - `appmaker/templates/*` — compare with plugin resources; if user has overrides, ask via AskUserQuestion before overwriting.
   - `appmaker/skills/tdd/*`, `appmaker/skills/output-style.md`, `appmaker/skills/tdd/plan-format.md` — pure reference (1:1 with plugin); safe to overwrite if user didn't customize (check `git diff` or filesize heuristic).
   - missing seed files under `appmaker/memory/index.md`, `schema.md`, `log.md`, `raw/`, `wiki/` — create only if absent, never overwrite.
-  - missing report dirs: `checklists/`, `diagnostics/`, `afk/`, `reviews/`.
+  - missing report dirs: `checklists/`, `diagnostics/`, `afk/`, `phase-plans/`, `reviews/`.
   - **session-start hook** (v0.2.11+) — install if missing: copy from `${CLAUDE_SKILL_DIR}/../../hooks/session-start.sh` to `appmaker/hooks/session-start.sh`, `chmod +x`, and merge `SessionStart` entry into `.claude/settings.json` (create file if missing, otherwise warn user to merge manually).
   - `.graphifyignore` — if created from AppMaker template, ask before refresh; user may customize heavily.
 - **Update version marker:** `echo "$PLUGIN_VERSION" > appmaker/.appmaker-version`.
@@ -133,6 +133,7 @@ Will add new config fields:
   - memory_wiki_enabled: true
   - checklist_report_dir: appmaker/checklists
   - afk_report_dir: appmaker/afk
+  - phase_plan_dir: appmaker/phase-plans
 Will NOT touch (user-owned):
   - appmaker/constitution.md
   - appmaker/glossary.md (12 terms)
@@ -153,7 +154,7 @@ Proceed? [Y/n]
 ✓ Version marker: appmaker/.appmaker-version
 ✓ Memory: architecture, decisions, lessons + wiki seed
 ✓ Context packets: appmaker/context/ (created empty)
-✓ Gates/reports: appmaker/checklists/, appmaker/diagnostics/, appmaker/afk/, appmaker/reviews/
+✓ Gates/reports: appmaker/checklists/, appmaker/diagnostics/, appmaker/afk/, appmaker/phase-plans/, appmaker/reviews/
 ✓ Backlog: local markdown
 ✓ Templates + supporting files (tdd/, review/, status/)
 ✓ Graphify: (installed or skipped per choice)

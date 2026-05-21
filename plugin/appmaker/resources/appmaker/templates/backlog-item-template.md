@@ -12,6 +12,14 @@ status: open                       # open | in_progress | done | blocked
 labels: [feature, ui]              # feature | bug | feedback | refactor | architecture
 execution_class: autonomous        # human_required | autonomous | conditional
 blocked_by: []                     # list of backlog item IDs
+phase_id: 003-ui-shell             # optional phase grouping for /appmaker:phase
+parallel_group: theme-foundation   # optional wave hint within phase
+agent_profile: frontend-specialist # suggested future subagent profile
+write_scope:                       # owned write areas for phase/subagent work
+  - src/theme/
+  - tests/theme/
+depends_on: []                     # phase wave deps; complements blocked_by
+integration_risk: medium           # low | medium | high
 traces_to: [pcrit-001, pcrit-003]  # PRD acceptance criteria IDs
 feature: 003-add-dark-mode         # links to appmaker/features/<NNN>/
 user_stories_covered: [1, 2, 5]    # PRD user story numbers
@@ -183,6 +191,12 @@ None — can start immediately.
 | `labels` | yes | At least one. Multiple OK. |
 | `execution_class` | yes | Per constitution rule 6. Default `autonomous`, escalate to `human_required` for non-delegable judgments. |
 | `blocked_by` | yes | Empty list `[]` if no blockers. Otherwise list of backlog IDs. Cycle detection mandatory. |
+| `phase_id` | optional | Groups items for `/appmaker:phase <phase-id> --dry-run`. Use one stable ID per planned execution phase. |
+| `parallel_group` | optional | Human-readable grouping hint inside a phase. Advisory only; `/appmaker:phase` still computes dependency-safe waves. |
+| `agent_profile` | optional | Suggested future subagent profile (`backend-specialist`, `frontend-specialist`, `test-engineer`, etc.). Required when item participates in phase dry-run. |
+| `write_scope` | optional | Owned write paths/globs for phase/subagent work. Required when item participates in phase dry-run. |
+| `depends_on` | optional | Phase wave ordering dependencies. `blocked_by` is lifecycle-level blocking; `depends_on` is phase execution ordering. Either one blocks execution until satisfied. |
+| `integration_risk` | optional | `low`, `medium`, or `high`. High risk should serialize or require explicit user approval before future execute. |
 | `traces_to` | yes (if from PRD) | List of PRD pcrit-IDs this slice addresses. Empty for ad-hoc items (e.g. feedback bugs). |
 | `feature` | optional | Links to feature folder. Empty for project-level items. |
 | `user_stories_covered` | optional | PRD user story numbers (1, 2, 5...). |
@@ -202,6 +216,8 @@ After completion (status flips to `done`), move file to `appmaker/backlog/done/<
 - **`What to build` describes end-to-end behavior.** Not layer-by-layer.
 - **Acceptance criteria checkbox list** with inline annotations: `traces_to:` mandatory (links AC → PRD `pcrit-*`); `test:` optional for executable tests (form `<file>::<name>`, e.g. `tests/theme.test.ts::useTheme_returns_theme`) — closes AC ↔ test name drift; `human-review:` optional for manual ACs — must include explicit criterion describing what reviewer checks.
 - **Implementation Decisions / Gray Areas comes before planning.** Unresolved gray areas that affect architecture/API/UI behavior must be resolved, deferred with risk, or marked `human_required` before `/appmaker:tdd` starts.
+- **Phase dry-run requires `write_scope`.** Items with `phase_id` must define `write_scope`, `agent_profile`, `depends_on`, and `integration_risk` before `/appmaker:phase <phase-id> --dry-run`; missing scope is a FAIL.
+- **`depends_on` complements `blocked_by`.** `blocked_by` captures lifecycle blockers and cycle checks. `depends_on` captures phase wave order. Do not let them contradict each other.
 - **Brownfield Impact Audit is mandatory for existing systems.** If `project_mode: brownfield`, the section starts as `pending` during decomposition and must be `complete` before the first RED test. It must show evidence from searches, not only prose. Greenfield work may mark `Mode: greenfield` and `Audit status: not_applicable`.
 - **Approved TDD Plan is durable.** `/appmaker:tdd` writes the user-approved plan before first RED test. Review/checklist compare this dry-run intent against `Execution Record` actual files/tests.
 - **TDD Plan Check is mandatory.** PASS or accepted WARN before first RED; FAIL means revise plan or escalate.

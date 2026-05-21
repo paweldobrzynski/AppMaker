@@ -77,6 +77,7 @@ Per slice, identify:
 - **touches** (Graphify communities + files from context packet, if relevant)
 - **context_packets** (packet paths that informed slice)
 - **Brownfield Impact Audit seed** when `project_mode: brownfield`: reuse/refactor-first candidates, visual system/CSS reuse candidates, design standards compliance checks, starting canonical values, likely hardcoded contracts, known UI mirrors, side-effect surfaces, and the first `rg` queries TDD must run. This is a seed, not final evidence; `/appmaker:tdd` completes it before RED.
+- **Phase metadata** for groups likely to benefit from parallel work: `phase_id`, `parallel_group`, `agent_profile`, `write_scope`, `depends_on`, and `integration_risk`. Conservative default: leave blank unless ownership boundaries are obvious.
 
 ### 4. Quiz user
 
@@ -140,6 +141,7 @@ Suggested next: /appmaker:tdd 008  (or autonomous via /appmaker:afk if Layer 4)
 - **Brownfield audit is not advisory.** Context packets and `touches` seed the audit; TDD must complete it before RED, and review/checklist verify coverage.
 - **Memory wiki is advisory.** Use durable lessons to shape slices; don't create scope not present in PRD.
 - **Cycle detection mandatory.** Refuse if cycle.
+- **Phase metadata is ownership, not permission.** `write_scope` limits future `/appmaker:phase`; it does not expand what TDD may touch without drift notes.
 - **Quiz user before writing.** Iterate until approved.
 - **Local default for output.** Optional `/appmaker:sync-github` adapter.
 - **Use glossary terms.**

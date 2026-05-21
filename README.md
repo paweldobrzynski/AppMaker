@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.21. 21 skills (17 core + afk + status + token-audit + next). Governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and optional gstack browser runtime for QA/design evidence. 23 smoke test suites, 344 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.22. 22 skills (17 core + afk + status + token-audit + next + phase). Phase dry-run patch: `/appmaker:phase <phase-id> --dry-run`, backlog phase metadata, write-scope conflict detection, and persisted `appmaker/phase-plans/` evidence. 24 smoke test suites, 365 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -32,7 +32,7 @@ claude --plugin-dir /Users/pawel/Projects/AppMaker/plugin/appmaker
 /appmaker:init       # Materialize appmaker/ from plugin resources
                      # (creates constitution, glossary, config.yaml, .appmaker-version,
                      #  templates/, skills/, memory/wiki/, context/, checklists/,
-                     #  diagnostics/, afk/, backlog/, features/)
+                     #  diagnostics/, afk/, phase-plans/, backlog/, features/)
 ```
 
 **Re-running `/appmaker:init` on existing project = UPGRADE mode.** Refreshes plugin-owned resources (templates, supporting files) while preserving user-owned state (constitution, glossary, memory, backlog, features, config). Detected via `appmaker/.appmaker-version` marker.
@@ -79,7 +79,7 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:glossary              → ubiquitous language (deterministic stub extraction + best-effort semantic review)
 ```
 
-21 written: 17 core (above) + 4 supporting (afk, status, token-audit, next).
+22 written: 17 core (above) + 5 supporting (afk, status, token-audit, next, phase).
 
 ### Opt-in deepening (4 skills, all TODO)
 
@@ -90,9 +90,10 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:plan                  → durable plan artifacts for large work units (multi-phase)
 ```
 
-### Layer 4 — AFK runner
+### Layer 4 — phase planner + AFK runner
 
 ```
+/appmaker:phase <phase-id> --dry-run → plan parallel waves, detect write-scope conflicts
 /appmaker:afk                   → controlled autonomous loop for autonomous backlog items
 /appmaker:sync-github           → push/pull backlog ↔ GitHub issues (optional adapter) [TODO]
 ```
@@ -127,6 +128,7 @@ tool; routers such as `/appmaker:start` and `/appmaker:next` must show the exact
 | glossary | `true` | Side effect: writes glossary.md (v0.2.9 fix — was `false`; now explicit user slash command only) |
 | status | `true` | Read-only filesystem inspection (no writes, but explicit user trigger) |
 | token-audit | `true` | Read-only diagnostic (parses session logs, no writes) |
+| phase | `true` | Side effect: writes phase dry-run plan; future execute remains disabled |
 | afk | `true` | Side effect: runs bounded autonomous work loop |
 
 **Why some skills keep `false` (intentional, not oversight):**
@@ -161,7 +163,7 @@ AppMaker/
 │   │   │       ├── context-packet-template.md
 │   │   │       └── decomposition-template.md
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                          ← 21 dirs (17 core + afk + status + token-audit + next)
+│   └── skills/                          ← 22 dirs (17 core + afk + status + token-audit + next + phase)
 │       ├── init/SKILL.md
 │       ├── start/SKILL.md
 │       ├── grill/SKILL.md
@@ -182,7 +184,8 @@ AppMaker/
 │       ├── afk/SKILL.md
 │       ├── status/SKILL.md             ← v0.2.6: compact state snapshot
 │       ├── token-audit/SKILL.md        ← v0.2.8: session log diagnostic
-│       └── next/SKILL.md               ← v0.2.13: lifecycle orchestrator (user-explicit chain trigger)
+│       ├── next/SKILL.md               ← v0.2.13: lifecycle orchestrator (user-explicit chain trigger)
+│       └── phase/SKILL.md              ← v0.2.22: dry-run phase planner for future subagent execution
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                             ← archived prior iterations
@@ -221,6 +224,7 @@ your-project/
     ├── checklists/                       ← PASS/FAIL/WARN gate reports
     ├── diagnostics/                      ← bug diagnosis reports
     ├── afk/                              ← bounded autonomous run reports
+    ├── phase-plans/                      ← /appmaker:phase dry-run plans
     └── features/
         ├── NNN-slug/                    ← per-feature artifacts
         └── archive/                     ← completed features
@@ -231,7 +235,7 @@ your-project/
 1. **Plugin skills** (Matt Pocock-style markdown) — work standalone via `--plugin-dir`
 2. **Orchestrator** (`/appmaker:start`) — smart routing for the above
 3. **Graphify pair** — optional context layer. AppMaker reads Graphify data and writes small context packets.
-4. **AFK runner** — bounded autonomous execution loop over `execution_class: autonomous` items
+4. **Execution runners** — `/appmaker:phase` dry-runs parallel waves; `/appmaker:afk` executes bounded autonomous loops
 
 Profile A = only Layer 1. Profile E = all 4 layers ("wszystko zepnie").
 
@@ -251,7 +255,7 @@ Earlier heavyweight iteration (5 ADRs, 18 constitutional rules, 3 JSON Schemas, 
 ## Inspirations
 
 - **[Matt Pocock Skills](https://github.com/mattpocock/skills)** (canonical) — markdown skills, single-purpose, "Skills for Real Engineers". AppMaker adopts: `grill`, `grill-with-docs`, `to-prd`, `to-issues`, `tdd` (with 5 supporting files), `diagnose`, `caveman` (style guide), `prototype`, `deprecated/ubiquitous-language` (format).
-- **[GSD / get-shit-done](https://github.com/gsd-build/get-shit-done)** — planning discipline reference. AppMaker adopts: TDD plan-check before execution, package/dependency legitimacy, context-budget awareness, gray-area surfacing, and verification beyond existence checks.
+- **[GSD / get-shit-done](https://github.com/gsd-build/get-shit-done)** — planning discipline reference. AppMaker adopts: TDD plan-check before execution, phase dry-run before parallel subagent work, package/dependency legitimacy, context-budget awareness, gray-area surfacing, and verification beyond existence checks.
 - **[gstack](https://github.com/garrytan/gstack)** by `garrytan/gstack` — sprint lifecycle + optional gstack browser runtime reference. AppMaker adopts: review readiness dashboard, QA plan handoff, diff-aware QA, design review, root-cause-first diagnosis, doc staleness checks, edit-scope guardrails, optional adversarial review, and `$B` browser evidence when configured.
 - **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** — per-feature folder + archive flow + fluid iteration philosophy + slash command form factor (`/opsx:*`)
 - **[Spec Kit](https://github.com/github/spec-kit)** — constitution layer + opt-in deepening commands + cross-artifact analyze pattern + slash command form factor (`/speckit.*`)
