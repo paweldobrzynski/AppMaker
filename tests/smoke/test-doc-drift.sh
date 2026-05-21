@@ -2,12 +2,12 @@
 # Smoke test for v0.2.18 pcrit-003, pcrit-004, pcrit-007, pcrit-008: doc drift batch.
 #
 # Codex review criteria (scoped regexes, not global bans):
-#   - Layout block drift uses `←` arrow form: `← 19 dirs (...)`. Target this,
+#   - Layout block drift uses `←` arrow form: `← 21 dirs (...)`. Target this,
 #     not raw "19 dirs" or "18 dirs" strings (those appear in historical changelogs).
 #   - Stale `.appmaker-version` example uses `(current: "...")` form. Target this,
 #     not raw "0.2.X" version strings (those appear as historical decision labels).
 #   - README skill count narrative: bare "15 written." line is the drift marker;
-#     replacement asserts explicit total via "19 written:" form.
+#     replacement asserts explicit total via "21 written:" form.
 #
 # Historical references preserved (NOT a drift):
 #   - DESIGN.md:296 v0.2.11 changelog narrative mentions "0.2.0"/"0.2.9"/"18 dirs"
@@ -29,9 +29,9 @@ assert_file_exists "DESIGN.md present" "$DESIGN"
 
 # --- README layout (pcrit-003) ---
 
-README_19=$(grep -cE '← 19 dirs \(15 core \+ afk \+ status \+ token-audit \+ next\)' "$README" || true)
-[ "$README_19" -ge 1 ] && README_19_OK="yes" || README_19_OK="no"
-assert_eq "README layout shows ← 19 dirs (15 core + afk + status + token-audit + next)" "yes" "$README_19_OK"
+README_21=$(grep -cE '← 21 dirs \(17 core \+ afk \+ status \+ token-audit \+ next\)' "$README" || true)
+[ "$README_21" -ge 1 ] && README_21_OK="yes" || README_21_OK="no"
+assert_eq "README layout shows ← 21 dirs (17 core + afk + status + token-audit + next)" "yes" "$README_21_OK"
 
 README_18=$(grep -cE '← 18 dirs' "$README" || true)
 [ "$README_18" -eq 0 ] && README_18_GONE="yes" || README_18_GONE="no"
@@ -43,15 +43,15 @@ README_BARE=$(grep -cE '^15 written\.$' "$README" || true)
 [ "$README_BARE" -eq 0 ] && README_BARE_GONE="yes" || README_BARE_GONE="no"
 assert_eq "README narrative no longer bare '15 written.' (incomplete count)" "yes" "$README_BARE_GONE"
 
-README_TOTAL=$(grep -cE '^19 written:' "$README" || true)
+README_TOTAL=$(grep -cE '^21 written:' "$README" || true)
 [ "$README_TOTAL" -ge 1 ] && README_TOTAL_OK="yes" || README_TOTAL_OK="no"
-assert_eq "README narrative explicit '19 written:' total" "yes" "$README_TOTAL_OK"
+assert_eq "README narrative explicit '21 written:' total" "yes" "$README_TOTAL_OK"
 
 # --- DESIGN layout (pcrit-004) ---
 
-DESIGN_19=$(grep -cE '← 19 dirs \(15 core \+ afk \+ status \+ token-audit \+ next\)' "$DESIGN" || true)
-[ "$DESIGN_19" -ge 1 ] && DESIGN_19_OK="yes" || DESIGN_19_OK="no"
-assert_eq "DESIGN layout shows ← 19 dirs (15 core + afk + status + token-audit + next)" "yes" "$DESIGN_19_OK"
+DESIGN_21=$(grep -cE '← 21 dirs \(17 core \+ afk \+ status \+ token-audit \+ next\)' "$DESIGN" || true)
+[ "$DESIGN_21" -ge 1 ] && DESIGN_21_OK="yes" || DESIGN_21_OK="no"
+assert_eq "DESIGN layout shows ← 21 dirs (17 core + afk + status + token-audit + next)" "yes" "$DESIGN_21_OK"
 
 DESIGN_18=$(grep -cE '← 18 dirs' "$DESIGN" || true)
 [ "$DESIGN_18" -eq 0 ] && DESIGN_18_GONE="yes" || DESIGN_18_GONE="no"

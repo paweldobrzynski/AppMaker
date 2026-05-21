@@ -1,7 +1,7 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.21 — governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, and TDD Plan Check before first RED. 21 smoke suites, 272 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD-inspired planning gates, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
-Last updated: 2026-05-19.
+Status: 21 skills (17 core + afk + status + token-audit + next). v0.2.21 — governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and gstack-inspired QA/design lifecycle gates. 22 smoke suites, 306 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Last updated: 2026-05-21.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
 
@@ -54,7 +54,7 @@ Profile:
 
 ## Skills
 
-### Core (15 skills, 15 written)
+### Core (17 skills, 17 written)
 
 | Skill | Status | `disable-model-invocation` | Inspiration | Purpose |
 |---|---|---|---|---|
@@ -68,6 +68,8 @@ Profile:
 | `/appmaker:tdd` | ✓ | true | Matt Pocock `tdd` (5 supporting files) + AppMaker | Test-first per slice, AC checkbox tracking |
 | `/appmaker:diagnose` | ✓ | true | Matt Pocock `diagnose` 1:1 | Bug investigation flow |
 | `/appmaker:review` | ✓ | true | Custom (subagent invocation) | Critic gate, invokes code-reviewer subagent + writes review.md (v0.2.9: was `false`, fixed) |
+| `/appmaker:qa` | ✓ | true | gstack `/qa` adapted | Diff-aware QA + smoke report with browser/screenshot evidence |
+| `/appmaker:design-review` | ✓ | true | gstack `/design-review` adapted | Visual/design compliance review for UI changes |
 | `/appmaker:checklist` | ✓ | true | Spec Kit `/speckit.analyze` | Deterministic cross-artifact gate |
 | `/appmaker:archive` | ✓ | true | OpenSpec `/opsx:archive` + AppMaker retro | Close out feature, optional retro |
 | `/appmaker:context` | ✓ | true | Custom (Graphify-aware) | Codebase context packet retrieval |
@@ -116,7 +118,7 @@ AppMaker/
 │   │   │   │   └── status/               ← telemetry/refinement reference
 │   │   │   └── config.yaml.template      ← seed config (auto-detected fields filled at init)
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                           ← 19 dirs (15 core + afk + status + token-audit + next)
+│   └── skills/                           ← 21 dirs (17 core + afk + status + token-audit + next)
 │       ├── init/SKILL.md                 ← /appmaker:init
 │       ├── start/SKILL.md                ← /appmaker:start
 │       ├── grill/SKILL.md                ← /appmaker:grill
@@ -127,6 +129,8 @@ AppMaker/
 │       ├── tdd/SKILL.md                  ← /appmaker:tdd
 │       ├── diagnose/SKILL.md             ← /appmaker:diagnose
 │       ├── review/SKILL.md               ← /appmaker:review
+│       ├── qa/SKILL.md                   ← /appmaker:qa
+│       ├── design-review/SKILL.md        ← /appmaker:design-review
 │       ├── checklist/SKILL.md            ← /appmaker:checklist
 │       ├── archive/SKILL.md              ← /appmaker:archive
 │       ├── context/SKILL.md              ← /appmaker:context
@@ -405,6 +409,23 @@ Body sections (mandatory unless noted):
 - Caveman style → adopted as mandatory writing style
 - Multi-file pattern (improve-codebase-architecture, prototype, tdd) → adopted w project tree `appmaker/skills/<name>/`
 
+### Z GSD / get-shit-done
+- Plan-check before execution → adopted as `appmaker/skills/tdd/plan-check.md`
+- Dependency/package legitimacy gate → adopted in Architecture Options Research
+- Context budget / MCP audit → adopted as `appmaker/skills/context-budget.md`
+- Verification shape: exists / substantive / wired / functional → adopted in review + checklist
+- Implementation Decisions / Gray Areas before TDD assumptions → adopted in backlog template + TDD refusal rule
+
+### Z gstack
+- Review Readiness Dashboard → adopted in `/appmaker:status`
+- QA / Smoke Plan handoff → adopted from `/appmaker:tdd` into `/appmaker:qa` and review
+- Diff-aware QA → adopted as `/appmaker:qa`
+- Visual/design review with screenshot evidence → adopted as `/appmaker:design-review`
+- Root-cause-first investigation → strengthened in `/appmaker:diagnose`
+- Documentation staleness checks → adopted in review/checklist
+- Edit-scope guardrails → adopted via backlog `edit_scope`
+- Adversarial review mode → adopted as `/appmaker:review --mode=adversarial`
+
 ### Z OpenSpec
 - Per-change folder → adopted jako per-feature folder
 - Archive flow → adopted jako `/appmaker:archive`
@@ -457,7 +478,7 @@ Body sections (mandatory unless noted):
 ## Status snapshot
 
 ```
-Plugin skills written: 15/15 core
+Plugin skills written: 17/17 core
 Plugin skills TODO: 0
 Opt-in skills TODO: 4 (clarify, research, spike, plan)
 Layer 4 implemented: afk

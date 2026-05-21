@@ -21,6 +21,9 @@ touches:
   communities: [theme-state]
   files:
     - src/theme/provider.tsx
+edit_scope:
+  allow: [src/theme/, tests/theme/]
+  forbid: [src/billing/, migrations/]
 created: 2026-05-10
 source: decompose                  # decompose | feedback | manual
 ---
@@ -137,6 +140,10 @@ Pending — filled by `/appmaker:tdd` after plan approval and before first RED t
 
 Pending — filled by `/appmaker:tdd` before first RED test. Required result: PASS or WARN with explicit accepted risk; FAIL blocks implementation.
 
+## QA / Smoke Plan
+
+Pending — filled by `/appmaker:tdd` before completion. Must name affected surfaces, manual/browser checks, screenshot requirements for UI, and rollback/refresh checks where relevant.
+
 ## Execution Record
 
 **Base ref:** <sha | no_base_ref>
@@ -181,6 +188,7 @@ None — can start immediately.
 | `user_stories_covered` | optional | PRD user story numbers (1, 2, 5...). |
 | `context_packets` | optional | `appmaker/context/*.md` snapshots used to plan this item. |
 | `touches` | optional | Graphify-derived communities/files expected to be touched. Advisory, not scope expansion. |
+| `edit_scope` | optional | Guard/freeze boundary. `allow` lists intended write areas; `forbid` lists paths that require explicit user approval or drift notes. |
 | `created` | yes | ISO date. |
 | `source` | yes | `decompose` (from PRD), `feedback` (from QA), `manual` (user-added). |
 

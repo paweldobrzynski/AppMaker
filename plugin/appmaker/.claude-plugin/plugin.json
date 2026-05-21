@@ -1,6 +1,6 @@
 {
   "name": "appmaker",
-  "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → Archive. Inspired by Matt Pocock skills, OpenSpec, Spec Kit. Pairs with Graphify (optional context layer) and Forest's CLAUDE.md (universal agent baseline).",
+  "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → QA → Archive. Inspired by Matt Pocock skills, GSD, gstack, OpenSpec, Spec Kit. Pairs with Graphify and Forest's CLAUDE.md.",
   "version": "0.2.21",
   "author": {
     "name": "Paweł Dobrzyński",

@@ -52,7 +52,7 @@ Cite as `per wiki/testing.md: <pattern>` in the TDD plan when a test seam/loop p
 
 Load `appmaker/backlog/NNN-slug.md`. If no backlog item exists, refuse TDD and tell the user to run `/appmaker:decompose` (standard/strict) or create a light backlog item first. Do not infer a slice directly from `interview-result.md`.
 
-Read backlog fields: `What to build`, `Acceptance criteria`, `Implementation Decisions / Gray Areas`, `execution_class`, and `blocked_by`. If blockers remain, refuse. If unresolved gray areas affect architecture/API/UI behavior, pause until resolved, deferred with risk, or `human_required`.
+Read backlog fields: `What to build`, `Acceptance criteria`, `Implementation Decisions / Gray Areas`, `execution_class`, `blocked_by`, and `edit_scope`. If blockers remain, refuse. If unresolved gray areas affect architecture/API/UI behavior, pause until resolved, deferred with risk, or `human_required`.
 
 ### 2. Read context (parallel reads OK)
 
@@ -87,10 +87,11 @@ Matt Pocock checklist + AppMaker addition:
 - [ ] Design interfaces for testability (see `appmaker/skills/tdd/interface-design.md`)
 - [ ] List behaviors to test
 - [ ] **AppMaker:** each behavior maps to AC `traces_to: pcrit-id`. Cover all backlog ACs.
-- [ ] **AppMaker:** use context packet key files/communities; prefer reuse/extend/extract/replace over add-new.
+- [ ] **AppMaker:** use context packet key files/communities, respect `edit_scope`, and prefer reuse/extend/extract/replace over add-new.
 - [ ] **AppMaker:** UI changes use reusable CSS/component primitives; no new hardcoded visual styling without documented exception.
 - [ ] **AppMaker:** every touched visual element follows existing design standards for tokens, states, accessibility, and responsive behavior.
 - [ ] **AppMaker:** TDD cycles cover every non-deferred dependency from the Brownfield Impact Audit.
+- [ ] **AppMaker:** draft `QA / Smoke Plan` for affected surfaces, including browser/screenshot checks for UI.
 - [ ] **AppMaker:** run `TDD Plan Check` from `appmaker/skills/tdd/plan-check.md`; revise until PASS/WARN, escalate after 2 failed revisions.
 - [ ] Get user approval
 
@@ -122,9 +123,9 @@ Write/update these fields:
 - **Dirty files at start:** paths from `git status --short`
 - **Planned files:** from the approved TDD plan
 - **Planned tests:** from the approved TDD plan
+- **QA / Smoke Plan:** manual/browser checks needed after implementation
 
-Dirty worktree behavior: capture + WARN, never refuse. The warning exists so
-reviewers can separate pre-existing edits from slice drift later.
+Dirty worktree behavior: capture + WARN, never refuse. The warning lets reviewers separate pre-existing edits from slice drift later.
 
 ### 4. Tracer Bullet (Matt 1:1)
 

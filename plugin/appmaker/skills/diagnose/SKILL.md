@@ -84,7 +84,7 @@ Probe one hypothesis at a time.
 
 Perf branch: measure baseline first, then change.
 
-### 6. Fix + regression
+### 6. Root cause gate, fix + regression
 
 If correct seam exists:
 1. turn repro into failing test
@@ -94,6 +94,8 @@ If correct seam exists:
 5. rerun original loop
 
 If no correct seam exists, document architecture gap and create backlog item via `/appmaker:feedback`.
+
+no fixes before root cause. If 3 failed hypotheses happen in a row, stop, summarize what was disproved, and ask for a revised investigation plan instead of trying a fourth patch.
 
 ### 7. Cleanup + memory
 
@@ -122,6 +124,8 @@ If no correct seam exists, document architecture gap and create backlog item via
 ## Guardrails
 
 - **Feedback loop before fix.** No loop, no diagnosis.
+- **No fixes before root cause.** The fix must name the confirmed cause and evidence.
+- **Stop after 3 failed hypotheses.** Re-plan before another patch.
 - **Falsifiable hypotheses only.** No vague theories.
 - **One variable at a time.**
 - **Regression test before fix** when correct seam exists.

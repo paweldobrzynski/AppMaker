@@ -21,6 +21,7 @@ Detailed checklist + report template: `appmaker/skills/review/review-contract.md
 - Mode flag (v0.2.12):
   - `--mode=local` (default) — invoke configured subagent (`code-reviewer`) locally; tokens-only cost
   - `--mode=ultra` — invoke Claude Code's `/ultra-review` (parallel reviewer fleet, bugs reproduced before reporting). AppMaker layers compliance checks (AC coverage, constitution, glossary, traceability) ON TOP of `/ultra-review` findings. **Best for critical features (payments, auth, migrations).** Cost: 3 free/month then $5-20 per run (Claude Code Pro/Max).
+  - `--mode=adversarial` — local review plus second-opinion/adversarial challenge for high-risk diffs.
 - Auto: by `tdd` (suggests post-completion), by `archive` (pre-archive gate)
 - AFK-safe: yes — subagent runs autonomously, gates pass/fail
 - Required state: scope target exists; for `--mode=ultra` requires Claude Code 2.1.86+ and Claude account (not API key alone)
@@ -56,7 +57,7 @@ Parse argument. Default to latest completed backlog item. Confirm via AskUserQue
 ### 2. Gather context for subagent
 
 Build context package:
-- Backlog item: backlog file (`## Approved TDD Plan` + `## Execution Record`) + parent feature PRD + `context_packets` field values + diff
+- Backlog item: backlog file (`## Approved TDD Plan` + `## QA / Smoke Plan` + `## Execution Record`) + parent feature PRD + `context_packets` field values + diff
 - Feature: PRD + decomposition + all backlog items + all referenced `context_packets` + cumulative diff
 - Diff: current `git diff` output + relevant context packet if available
 
@@ -88,11 +89,15 @@ Agent(
 )
 ```
 
-Pass the checklist from `appmaker/skills/review/review-contract.md`. It includes code quality, constitution, glossary, AC coverage, Plan-vs-actual drift, TDD Plan Check, Architecture Options Research/package legitimacy, Brownfield Impact Audit coverage, reuse/refactor-first rationale, visual/design compliance, exists/substantive/wired/functional verification, test quality, surgical scope, security/performance, graph context, and memory regression.
+Pass the checklist from `appmaker/skills/review/review-contract.md`. It includes code quality, constitution, glossary, AC coverage, Plan-vs-actual drift, TDD Plan Check, Architecture Options Research/package legitimacy, Brownfield Impact Audit, QA / Smoke Plan, reuse/refactor-first, visual/design compliance, documentation staleness, `edit_scope`, adversarial review, verification shape, tests, scope, security/performance, graph, and memory.
 
 #### 3b. `--mode=ultra` (v0.2.12 delegation to Claude Code built-in)
 
 Delegate bug-finding to `/ultra-review`, then run AppMaker compliance locally (constitution, glossary, AC coverage, graph context, memory regression, plan-vs-actual drift). Combine both in one persisted review. PASS only if both pass. Fallback to local review only with explicit warning. See `appmaker/skills/review/review-contract.md`.
+
+#### 3c. `--mode=adversarial`
+
+Run normal local review, then a separate adversarial prompt over `git diff`: find race conditions, stale reads, trust-boundary bugs, silent data corruption, missing enum/status handlers, and documentation staleness. Persist both results in one review file. If Codex/other model is configured, use it as second opinion; otherwise use a fresh subagent context.
 
 ### 4. Capture findings — **MANDATORY persistence**
 

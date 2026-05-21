@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "appmaker",
-      "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → Archive. Inspired by Matt Pocock, OpenSpec, Spec Kit. Pairs with Graphify + Forest's CLAUDE.md.",
+      "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → QA → Archive. Inspired by Matt Pocock, GSD, gstack, OpenSpec, Spec Kit. Pairs with Graphify + Forest's CLAUDE.md.",
       "source": "./plugin/appmaker",
       "strict": false
     }

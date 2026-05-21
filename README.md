@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.21. 19 skills (15 core + afk + status + token-audit + next). Governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, and TDD Plan Check before first RED. 21 smoke test suites, 272 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.21. 21 skills (17 core + afk + status + token-audit + next). Governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and gstack-inspired QA/design lifecycle gates. 22 smoke test suites, 306 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -57,7 +57,7 @@ High-impact architecture choices use an embedded **Architecture Options Research
 
 ## Command Reference
 
-### Core (15 skills)
+### Core (17 skills)
 
 ```
 /appmaker:init                  → bootstrap appmaker/ in fresh project
@@ -70,6 +70,8 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:tdd <backlog-id>      → test-first implementation per slice
 /appmaker:diagnose              → bug/perf diagnosis loop with repro + hypotheses + regression
 /appmaker:review <scope>        → invokes critic subagent (code-reviewer)
+/appmaker:qa                    → diff-aware QA + smoke report with browser/screenshot evidence
+/appmaker:design-review         → visual/design compliance review for UI changes
 /appmaker:checklist             → deterministic PASS/FAIL/WARN gate across artifacts
 /appmaker:archive               → close out feature, move to features/archive/
 /appmaker:context "<topic>"     → Graphify-aware context packet, fallback to file reads
@@ -77,7 +79,7 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:glossary              → ubiquitous language (deterministic stub extraction + best-effort semantic review)
 ```
 
-19 written: 15 core (above) + 4 supporting (afk, status, token-audit, next).
+21 written: 17 core (above) + 4 supporting (afk, status, token-audit, next).
 
 ### Opt-in deepening (4 skills, all TODO)
 
@@ -116,6 +118,8 @@ tool; routers such as `/appmaker:start` and `/appmaker:next` must show the exact
 | tdd | `true` | Side effect: writes code/tests, big change |
 | diagnose | `true` | Side effect: writes diagnostics, may add tests/instrumentation |
 | review | `true` | Side effect: writes review.md / appends to backlog (v0.2.9 fix — was `false`, caused silent-write risk) |
+| qa | `true` | Side effect: writes QA report and may run browser/manual verification |
+| design-review | `true` | Side effect: writes design review report, may run screenshot/browser checks |
 | checklist | `true` | Side effect: writes checklist report |
 | archive | `true` | Side effect: moves files (irreversible) |
 | context | `true` | Side effect: writes context packet snapshots |
@@ -157,7 +161,7 @@ AppMaker/
 │   │   │       ├── context-packet-template.md
 │   │   │       └── decomposition-template.md
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                          ← 19 dirs (15 core + afk + status + token-audit + next)
+│   └── skills/                          ← 21 dirs (17 core + afk + status + token-audit + next)
 │       ├── init/SKILL.md
 │       ├── start/SKILL.md
 │       ├── grill/SKILL.md
@@ -168,6 +172,8 @@ AppMaker/
 │       ├── tdd/SKILL.md
 │       ├── diagnose/SKILL.md
 │       ├── review/SKILL.md
+│       ├── qa/SKILL.md                  ← diff-aware QA report
+│       ├── design-review/SKILL.md       ← visual/design compliance gate
 │       ├── checklist/SKILL.md
 │       ├── archive/SKILL.md
 │       ├── context/SKILL.md
@@ -245,6 +251,8 @@ Earlier heavyweight iteration (5 ADRs, 18 constitutional rules, 3 JSON Schemas, 
 ## Inspirations
 
 - **[Matt Pocock Skills](https://github.com/mattpocock/skills)** (canonical) — markdown skills, single-purpose, "Skills for Real Engineers". AppMaker adopts: `grill`, `grill-with-docs`, `to-prd`, `to-issues`, `tdd` (with 5 supporting files), `diagnose`, `caveman` (style guide), `prototype`, `deprecated/ubiquitous-language` (format).
+- **[GSD / get-shit-done](https://github.com/gsd-build/get-shit-done)** — planning discipline reference. AppMaker adopts: TDD plan-check before execution, package/dependency legitimacy, context-budget awareness, gray-area surfacing, and verification beyond existence checks.
+- **[gstack](https://github.com/garrytan/gstack)** by `garrytan/gstack` — sprint lifecycle reference. AppMaker adopts: review readiness dashboard, QA plan handoff, diff-aware QA, design review, root-cause-first diagnosis, doc staleness checks, edit-scope guardrails, and optional adversarial review.
 - **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** — per-feature folder + archive flow + fluid iteration philosophy + slash command form factor (`/opsx:*`)
 - **[Spec Kit](https://github.com/github/spec-kit)** — constitution layer + opt-in deepening commands + cross-artifact analyze pattern + slash command form factor (`/speckit.*`)
 - **[Graphify](https://github.com/safishamsi/graphify)** — context layer (optional pair)

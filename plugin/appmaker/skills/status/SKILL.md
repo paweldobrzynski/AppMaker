@@ -121,6 +121,7 @@ May compute project token volume from Claude Code jsonl logs if `jq` and logs ar
 | TDD | 5/7 done (open: 006, 007) |
 | Checklist | WARN (latest: 2026-05-11-feature-001-...post-archive.md) |
 | Review | feature-level: PASS |
+| Review Readiness Dashboard | Architecture Research / Brownfield Audit / TDD Plan Check / QA / Smoke Plan / Design Review / Documentation staleness / Archive |
 | Archive | not archived |
 
 **Next:** `/appmaker:tdd 006`
@@ -142,6 +143,7 @@ Heuristic, in priority order:
 | Decomposition but no slices done | `/appmaker:checklist` then `/appmaker:tdd <first-open-slice>` |
 | Slices partially done | `/appmaker:tdd <lowest-open-slice-id>` |
 | All slices done, no review | `/appmaker:review feature <NNN>` |
+| Review PASS but QA / Smoke Plan or Design Review missing for touched UI | `/appmaker:qa` or `/appmaker:design-review diff` |
 | Review PASS, not archived | `/appmaker:archive <NNN-slug>` |
 | Active feature is force-archived with open slices | `/appmaker:tdd <open-slice>` (finish work) OR move slice to `done/` if completed externally |
 
