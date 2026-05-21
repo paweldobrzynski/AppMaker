@@ -93,6 +93,11 @@ related_backlog_item: <NNN or empty>
 |---|---|---|
 | `path/to/file.ts` | ... | yes/no |
 
+## Architecture Options Research
+| Source | Query / URL | Why used | Key finding |
+|---|---|---|---|
+| local / Ref / GitHub | `rg -n "..."` / `ref_search_documentation: "..."` / URL | architecture/library/vendor/storage/auth/design-system decision | ... |
+
 ## Canonical Values / Hardcoded Contracts
 | Value or contract | Search evidence | Consumers / mirrors | Confidence |
 |---|---|---|---|
@@ -107,6 +112,16 @@ related_backlog_item: <NNN or empty>
 | Existing code | Why candidate | Reuse / extend / extract / replace / add-new? | Confidence |
 |---|---|---|---|
 | ... | ... | ... | high/medium/low |
+
+## Visual System / CSS Reuse
+| Visual primitive | Existing CSS/component | Hardcoded visuals found | Confidence |
+|---|---|---|---|
+| button / card / row / modal / badge | ... | `style=`, `cssText`, inline colors/sizes | high/medium/low |
+
+## Design Standards Compliance
+| Element | Existing standard / pattern | States to verify | Gap |
+|---|---|---|---|
+| button / card / row / modal / badge | tokens, component inventory, UI pattern docs | hover/focus/disabled/loading/error/responsive | none / describe |
 
 ## Graph Relationships (Graphify mode only)
 | Relationship | Evidence | Confidence |
@@ -134,9 +149,12 @@ Packet captures:
 - Graphify commands or file-search operations used
 - relevant communities
 - key files
+- architecture options research sources when the topic touches high-impact architecture/library/vendor/storage/auth/design-system choices
 - canonical values / hardcoded contracts when the topic touches brownfield behavior
 - dependency surfaces across domain/API/UI/jobs/tests/docs
 - reuse / refactor-first candidates so new code is justified instead of automatic
+- visual system / CSS reuse candidates so UI is not hardcoded inline
+- design standards compliance checks for touched visual elements
 - graph relationships
 - risks/constraints
 - open questions

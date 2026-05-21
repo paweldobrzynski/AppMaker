@@ -41,6 +41,8 @@ for phrase in \
   "Canonical values / hardcoded contracts" \
   "Dependency surface map" \
   "Reuse / refactor-first decision" \
+  "Visual system / CSS reuse" \
+  "Design standards compliance" \
   "Side-effect order" \
   "Duplicate logic / mirrors" \
   "Test and lint guards" \
@@ -66,9 +68,12 @@ for phrase in \
   "refuse the first RED cycle" \
   "use \`rg\` first" \
   "reuse / refactor-first decisions" \
+  "visual system / CSS reuse" \
+  "design standards compliance" \
   "canonical values / hardcoded contracts" \
   "side-effect order" \
   "prefer reuse/extend/extract/replace over add-new" \
+  "no new hardcoded visual styling" \
   "TDD cycles cover every non-deferred dependency"
 do
   COUNT=$(grep -cF "$phrase" "$TDD_SKILL" || true)
@@ -82,6 +87,12 @@ for phrase in \
   "UI / client mirrors" \
   "Reuse / Refactor-First Decision" \
   "\`add-new\` requires a written rationale" \
+  "Visual System / CSS Reuse" \
+  "visual elements must be reusable and CSS-defined" \
+  "Color, typography, spacing, border, radius, shadow, and hover/focus visuals belong in CSS" \
+  "Design Standards Compliance" \
+  "For every touched or newly introduced visual element" \
+  "default, hover, focus, active/selected, disabled, loading, error, empty, responsive/mobile" \
   "Tests / lint / docs / memory" \
   "Backward compatibility / rollout" \
   "exact search query" \
@@ -109,18 +120,26 @@ CTX_VALUES_COUNT=$(grep -cF "Canonical Values / Hardcoded Contracts" "$CONTEXT_T
 CTX_SKILL_VALUES_COUNT=$(grep -cF "Canonical Values / Hardcoded Contracts" "$CONTEXT_SKILL" || true)
 CTX_REUSE_COUNT=$(grep -cF "Reuse / Refactor-First Candidates" "$CONTEXT_TEMPLATE" || true)
 CTX_SKILL_REUSE_COUNT=$(grep -cF "Reuse / Refactor-First Candidates" "$CONTEXT_SKILL" || true)
-if [ "$CTX_VALUES_COUNT" -gt 0 ] && [ "$CTX_SKILL_VALUES_COUNT" -gt 0 ] && [ "$CTX_REUSE_COUNT" -gt 0 ] && [ "$CTX_SKILL_REUSE_COUNT" -gt 0 ]; then CONTEXT_VALUES_PRESENT=yes; else CONTEXT_VALUES_PRESENT=no; fi
-assert_eq "context packets capture canonical values plus reuse/refactor candidates" "yes" "$CONTEXT_VALUES_PRESENT"
+CTX_VISUAL_COUNT=$(grep -cF "Visual System / CSS Reuse" "$CONTEXT_TEMPLATE" || true)
+CTX_SKILL_VISUAL_COUNT=$(grep -cF "Visual System / CSS Reuse" "$CONTEXT_SKILL" || true)
+CTX_DESIGN_COUNT=$(grep -cF "Design Standards Compliance" "$CONTEXT_TEMPLATE" || true)
+CTX_SKILL_DESIGN_COUNT=$(grep -cF "Design Standards Compliance" "$CONTEXT_SKILL" || true)
+if [ "$CTX_VALUES_COUNT" -gt 0 ] && [ "$CTX_SKILL_VALUES_COUNT" -gt 0 ] && [ "$CTX_REUSE_COUNT" -gt 0 ] && [ "$CTX_SKILL_REUSE_COUNT" -gt 0 ] && [ "$CTX_VISUAL_COUNT" -gt 0 ] && [ "$CTX_SKILL_VISUAL_COUNT" -gt 0 ] && [ "$CTX_DESIGN_COUNT" -gt 0 ] && [ "$CTX_SKILL_DESIGN_COUNT" -gt 0 ]; then CONTEXT_VALUES_PRESENT=yes; else CONTEXT_VALUES_PRESENT=no; fi
+assert_eq "context packets capture canonical values, reuse/refactor, visual CSS, and design standards candidates" "yes" "$CONTEXT_VALUES_PRESENT"
 
 REVIEW_COUNT=$(grep -cF "Brownfield impact audit coverage" "$REVIEW_CONTRACT" || true)
 REVIEW_REUSE_COUNT=$(grep -cF "Reuse/refactor-first rationale" "$REVIEW_CONTRACT" || true)
-if [ "$REVIEW_COUNT" -gt 0 ] && [ "$REVIEW_REUSE_COUNT" -gt 0 ]; then REVIEW_PRESENT=yes; else REVIEW_PRESENT=no; fi
-assert_eq "review contract checks audit coverage and reuse/refactor rationale" "yes" "$REVIEW_PRESENT"
+REVIEW_VISUAL_COUNT=$(grep -cF "Visual system compliance" "$REVIEW_CONTRACT" || true)
+REVIEW_DESIGN_COUNT=$(grep -cF "Design standards compliance" "$REVIEW_CONTRACT" || true)
+if [ "$REVIEW_COUNT" -gt 0 ] && [ "$REVIEW_REUSE_COUNT" -gt 0 ] && [ "$REVIEW_VISUAL_COUNT" -gt 0 ] && [ "$REVIEW_DESIGN_COUNT" -gt 0 ]; then REVIEW_PRESENT=yes; else REVIEW_PRESENT=no; fi
+assert_eq "review contract checks audit, reuse/refactor, visual system, and design standards compliance" "yes" "$REVIEW_PRESENT"
 
 CHECKLIST_COUNT=$(grep -cF "Brownfield Impact Audit" "$CHECKLIST_SKILL" || true)
 CHECKLIST_COMPLETE_COUNT=$(grep -cF "Audit status: complete" "$CHECKLIST_SKILL" || true)
 CHECKLIST_REUSE_COUNT=$(grep -cF "missing reuse/refactor-first decision" "$CHECKLIST_SKILL" || true)
-if [ "$CHECKLIST_COUNT" -gt 0 ] && [ "$CHECKLIST_COMPLETE_COUNT" -gt 0 ] && [ "$CHECKLIST_REUSE_COUNT" -gt 0 ]; then CHECKLIST_PRESENT=yes; else CHECKLIST_PRESENT=no; fi
-assert_eq "checklist gates missing/incomplete audit and missing reuse decision" "yes" "$CHECKLIST_PRESENT"
+CHECKLIST_VISUAL_COUNT=$(grep -cF "missing visual system/CSS reuse decision" "$CHECKLIST_SKILL" || true)
+CHECKLIST_DESIGN_COUNT=$(grep -cF "missing design standards compliance check" "$CHECKLIST_SKILL" || true)
+if [ "$CHECKLIST_COUNT" -gt 0 ] && [ "$CHECKLIST_COMPLETE_COUNT" -gt 0 ] && [ "$CHECKLIST_REUSE_COUNT" -gt 0 ] && [ "$CHECKLIST_VISUAL_COUNT" -gt 0 ] && [ "$CHECKLIST_DESIGN_COUNT" -gt 0 ]; then CHECKLIST_PRESENT=yes; else CHECKLIST_PRESENT=no; fi
+assert_eq "checklist gates missing/incomplete audit plus missing reuse/visual/design decisions" "yes" "$CHECKLIST_PRESENT"
 
 print_summary

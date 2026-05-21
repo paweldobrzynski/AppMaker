@@ -138,6 +138,8 @@ LONG numbered list. Format: "As an <actor>, I want <feature>, so that <benefit>"
 
 For each decision, mark **verification**: `auto-check` OR `human-review-with-criteria`.
 
+For high-impact architectural choices, complete `Architecture Options Research`: read `appmaker/skills/architecture-options-research.md` and finish an options matrix before finalizing the decision. Use local context first, then Ref (`ref_search_documentation` + `ref_read_url`) for official docs/private indexed docs/GitHub resources, with targeted web fallback only when Ref lacks coverage.
+
 **Do NOT include file paths or code snippets** — they age fast.
 
 **Exception (per Matt Pocock canonical to-prd):** if `/appmaker:spike` produced a snippet (state machine, reducer, schema, type shape) encoding a decision more precisely than prose, inline within the relevant decision and note "from prototype". Trim to decision-rich parts only.
@@ -199,6 +201,7 @@ Optional: /appmaker:checklist (cross-artifact consistency check pre-decompose)
 - **Use glossary terms.** Don't invent synonyms.
 - **Module sketch first, confirm with user.** Don't write PRD with unconfirmed modules.
 - **Verification per Implementation Decision mandatory.** Each marked `auto-check` or `human-review-with-criteria`.
+- **Architecture options research mandatory for high-impact decisions.** No source-free library/framework/vendor/storage/auth/design-system choice.
 - **Context packet reference mandatory for brownfield.** If codebase context used, link packet path under Existing System Context.
 - **Use memory wiki lazily.** Read relevant pages; do not dump whole memory into PRD.
 - **Understanding section mandatory.** All 7 subsections present (even if "N/A").

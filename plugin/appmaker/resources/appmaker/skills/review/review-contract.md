@@ -9,13 +9,16 @@ Pass this checklist to the configured reviewer:
 3. Glossary consistency: no invented synonyms for canonical terms.
 4. AC coverage: every AC has corresponding `test:` or `human-review:`.
 5. Plan-vs-actual drift: compare `## Approved TDD Plan`, planned files/tests, actual files/tests, and drift notes.
-6. Brownfield impact audit coverage: every changed canonical value, hardcoded contract, UI/client mirror, side-effect path, and dependency found in `## Brownfield Impact Audit` is either implemented, tested, lint-guarded, or explicitly deferred with rationale. Missing dependency sweep = review FAIL for brownfield work.
-7. Reuse/refactor-first rationale: new helpers, modules, UI components, statuses, schemas, or parallel paths must show why existing code could not be reused, extended, extracted, or replaced. Unjustified add-new = review FAIL for brownfield work.
-8. Test quality: behavior through public interface, not implementation details.
-9. Surgical changes: changed lines trace back to the requested scope.
-10. Security and performance flags.
-11. Graph context coverage: changed files match expected touched communities/files, or drift is justified.
-12. Memory regression: change does not repeat a known testing or integration gotcha.
+6. Architecture Options Research: high-impact architecture/library/vendor/storage/auth/design-system decisions cite local context plus Ref/GitHub/official docs, include an options matrix, rejected options, and reversal cost. Source-free architecture decision = review FAIL.
+7. Brownfield impact audit coverage: every changed canonical value, hardcoded contract, UI/client mirror, side-effect path, and dependency found in `## Brownfield Impact Audit` is either implemented, tested, lint-guarded, or explicitly deferred with rationale. Missing dependency sweep = review FAIL for brownfield work.
+8. Reuse/refactor-first rationale: new helpers, modules, UI components, statuses, schemas, or parallel paths must show why existing code could not be reused, extended, extracted, or replaced. Unjustified add-new = review FAIL for brownfield work.
+9. Visual system compliance: UI changes use reusable CSS/component primitives; new visual variants are defined in CSS, not hardcoded via inline `style`, `cssText`, one-off colors, one-off spacing, one-off radii, or feature-specific visual families without rationale. Unjustified hardcoded visual = review FAIL.
+10. Design standards compliance: every touched visual element follows existing tokens, component patterns, sizing/radius/spacing/typography conventions, interactive states, accessibility basics, and responsive behavior. Unexplained visual drift = review FAIL.
+11. Test quality: behavior through public interface, not implementation details.
+12. Surgical changes: changed lines trace back to the requested scope.
+13. Security and performance flags.
+14. Graph context coverage: changed files match expected touched communities/files, or drift is justified.
+15. Memory regression: change does not repeat a known testing or integration gotcha.
 
 ## Ultra mode
 
@@ -42,8 +45,11 @@ Fallback to local review only with an explicit warning if `/ultra-review` is una
 
 ### Notes
 - Glossary: 0 violations
+- Architecture Options Research: complete when required; decision sources cited
 - Brownfield impact audit: complete; 0 unexplained dependencies
 - Reuse/refactor-first: add-new decisions justified
+- Visual system: no hardcoded visuals
+- Design standards: touched elements follow existing patterns
 - Memory wiki gotchas: 0 repeated
 ```
 

@@ -72,9 +72,10 @@ Per slice, identify:
 - **blocked_by** (other slice IDs)
 - **traces_to** (PRD pcrit-id list)
 - **user_stories_covered** (from PRD)
+- **Architecture Options Research** requirement for slices making high-impact architecture/library/vendor/storage/auth/design-system decisions; seed from PRD/context and mark pending if not complete.
 - **touches** (Graphify communities + files from context packet, if relevant)
 - **context_packets** (packet paths that informed slice)
-- **Brownfield Impact Audit seed** when `project_mode: brownfield`: reuse/refactor-first candidates, starting canonical values, likely hardcoded contracts, known UI mirrors, side-effect surfaces, and the first `rg` queries TDD must run. This is a seed, not final evidence; `/appmaker:tdd` completes it before RED.
+- **Brownfield Impact Audit seed** when `project_mode: brownfield`: reuse/refactor-first candidates, visual system/CSS reuse candidates, design standards compliance checks, starting canonical values, likely hardcoded contracts, known UI mirrors, side-effect surfaces, and the first `rg` queries TDD must run. This is a seed, not final evidence; `/appmaker:tdd` completes it before RED.
 
 ### 4. Quiz user
 

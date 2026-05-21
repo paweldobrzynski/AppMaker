@@ -40,6 +40,14 @@ related_backlog_item:
 | `src/scoring/rules.ts` | Rule evaluator | yes |
 | `src/signals/claim-signals.ts` | Signal extraction | yes |
 
+## Architecture Options Research
+
+| Source | Query / URL | Why used | Key finding |
+|---|---|---|---|
+| local | `rg -n "..."` | existing project context | ... |
+| Ref | `ref_search_documentation: "..."` | official docs / indexed resources | ... |
+| GitHub | `<repo/example>` | mature implementation | ... |
+
 ## Canonical Values / Hardcoded Contracts
 
 | Value or contract | Search evidence | Consumers / mirrors | Confidence |
@@ -57,6 +65,18 @@ related_backlog_item:
 | Existing code | Why candidate | Reuse / extend / extract / replace / add-new? | Confidence |
 |---|---|---|---|
 | `src/scoring/rules.ts` | owns adjacent scoring behavior | extend | medium |
+
+## Visual System / CSS Reuse
+
+| Visual primitive | Existing CSS/component | Hardcoded visuals found | Confidence |
+|---|---|---|---|
+| button / card / row / modal / badge | `.app-btn`, `.app-card`, etc. | `style=`, `cssText`, inline colors/sizes | medium |
+
+## Design Standards Compliance
+
+| Element | Existing standard / pattern | States to verify | Gap |
+|---|---|---|---|
+| button / card / row / modal / badge | tokens, component inventory, UI pattern docs | hover/focus/disabled/loading/error/responsive | none / describe |
 
 ## Graph Relationships
 

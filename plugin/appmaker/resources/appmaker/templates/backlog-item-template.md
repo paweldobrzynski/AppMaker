@@ -43,6 +43,32 @@ Avoid file paths — they go stale. **Exception (per Matt Pocock canonical to-is
 - [ ] `setTheme('dark')` updates context, triggers re-render (traces_to: pcrit-003, test: tests/theme.test.ts::setTheme_triggers_rerender)
 - [ ] Toggle visual feedback feels responsive on Safari + Chrome (traces_to: pcrit-004, human-review: no flicker, < 300ms perceived latency)
 
+## Architecture Options Research
+
+**Required:** yes | no
+**Status:** pending | complete | not_applicable
+**Trigger:** architecture | library | storage | auth | billing | security | AI | design-system | migration | not_applicable
+
+**Sources checked**
+| Source | Query / URL | Why used | Key finding |
+|---|---|---|---|
+| local | `rg -n "theme|Theme" src tests` | existing owner | theme state already centralized |
+| Ref | `ref_search_documentation: "React context theme provider"` | official docs / indexed resources | ... |
+| GitHub | `<repo/example>` | mature implementation | ... |
+
+**Options matrix**
+| Option | Evidence | Pros | Cons / risks | Fit |
+|---|---|---|---|---|
+| Reuse existing provider | local evidence | least code | may need small extension | best |
+| Add new provider | ... | isolated | duplicates state owner | reject |
+
+**Decision**
+- Chosen:
+- Why:
+- Rejected options:
+- Reversal cost:
+- Follow-up validation:
+
 ## Brownfield Impact Audit
 
 **Mode:** brownfield | greenfield | not_applicable
@@ -64,6 +90,16 @@ Avoid file paths — they go stale. **Exception (per Matt Pocock canonical to-is
 | Existing code candidate | Current responsibility | Can be extended/generalized? | Decision |
 |---|---|---|---|
 | `src/theme/provider.tsx` | owns theme state | yes/no/unknown | reuse/extend/extract/replace/add-new + rationale |
+
+**Visual system / CSS reuse**
+| Visual element | Existing CSS/component primitive | Hardcoded styling found? | Decision |
+|---|---|---|---|
+| button / row / card / modal / badge | `.app-btn`, `.app-card`, etc. | `style=`, `cssText`, inline colors/sizes | reuse class / add variant / extract primitive / forbid inline |
+
+**Design standards compliance**
+| Element touched | Existing standard / pattern | States checked | Result |
+|---|---|---|---|
+| button / row / card / modal / badge | tokens, UI patterns, component inventory | default/hover/focus/disabled/loading/error/responsive | pass/gap + fix |
 
 **Side-effect order**
 - Guards before side effects:

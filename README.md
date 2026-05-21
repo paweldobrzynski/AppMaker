@@ -53,6 +53,8 @@ For a new user, treat AppMaker as one workflow:
 
 `/appmaker:start` routes feature, bug, refactor, research, review, prototype, or continuation intent. `/appmaker:next` advances the lifecycle with checkpoints. Most users should not need to memorize the full command list.
 
+High-impact architecture choices use an embedded **Architecture Options Research** gate before PRD finalization or TDD. It applies to greenfield and brownfield work and expects local context plus Ref/GitHub/official-source evidence before choosing frameworks, storage, auth, vendors, AI integrations, design-system primitives, or cross-cutting abstractions.
+
 ## Command Reference
 
 ### Core (15 skills)

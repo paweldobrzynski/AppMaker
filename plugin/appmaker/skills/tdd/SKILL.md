@@ -5,7 +5,7 @@ disable-model-invocation: true
 
 Test-driven dev per slice. Adopts Matt Pocock `tdd` (canonical) plus AppMaker extensions.
 
-Supporting reference files in project tree (`appmaker/skills/tdd/`): Matt Pocock files (`deep-modules.md`, `interface-design.md`, `mocking.md`, `refactoring.md`, `tests.md`) plus `plan-format.md` and `brownfield-impact-audit.md`.
+Supporting refs: `appmaker/skills/tdd/*` plus `appmaker/skills/architecture-options-research.md`.
 
 ## When to invoke
 
@@ -19,11 +19,7 @@ Invocation boundary: this skill has `disable-model-invocation: true`, so it cann
 
 ## Philosophy (Matt Pocock 1:1)
 
-Tests verify behavior through public interfaces, not implementation details. Code can change entirely; tests shouldn't.
-
-**Good tests** are integration-style. **Bad tests** are coupled to implementation.
-
-See `appmaker/skills/tdd/tests.md` and `appmaker/skills/tdd/mocking.md`.
+Tests verify behavior through public interfaces, not implementation details. Good tests are integration-style; bad tests are coupled to implementation. See `appmaker/skills/tdd/tests.md` and `appmaker/skills/tdd/mocking.md`.
 
 ## Anti-Pattern: Horizontal Slices (Matt Pocock 1:1)
 
@@ -56,26 +52,26 @@ Cite as `per wiki/testing.md: <pattern>` in the TDD plan when a test seam/loop p
 
 Load `appmaker/backlog/NNN-slug.md`. If no backlog item exists, refuse TDD and tell the user to run `/appmaker:decompose` (standard/strict) or create a light backlog item first. Do not infer a slice directly from `interview-result.md`.
 
-Read:
-- Read `What to build`
-- Read `Acceptance criteria` (each has `traces_to: pcrit-id`)
-- Check `execution_class`: if `human_required`, ask user per AC
-- Check `blocked_by`: if non-empty, refuse start until blockers `status: done`
+Read backlog fields: `What to build`, `Acceptance criteria` (`traces_to: pcrit-id`), `execution_class`, and `blocked_by`. If `human_required`, ask user per AC. If blockers remain, refuse start until they are `status: done`.
 
 ### 2. Read context (parallel reads OK)
 
 - `appmaker/glossary.md` — canonical terms
 - `appmaker/constitution.md` — rule 3 (real boundaries), rule 7 (promote green)
 - `appmaker/features/<NNN>/prd.md` — user-facing behavior context
-- `appmaker/memory/wiki/testing.md` + `integration-gotchas.md` when relevant
+- `appmaker/memory/wiki/testing.md` + `integration-gotchas.md`
 - `appmaker/skills/tdd/*.md` — supporting reference on demand
 - Context packet paths from backlog item `context_packets`. If absent/stale and codebase context needed, run `/appmaker:context "<backlog topic>"`.
+
+### 2a. Architecture Options Research (MANDATORY for high-impact choices)
+
+If the slice makes a high-impact architecture/library/vendor/storage/auth/design-system decision, read `appmaker/skills/architecture-options-research.md` and complete `## Architecture Options Research` before planning and RED. Applies to greenfield and brownfield; greenfield often needs it more.
 
 ### 2b. Brownfield Impact Audit (MANDATORY for brownfield)
 
 Read `appmaker/skills/tdd/brownfield-impact-audit.md`. If `project_mode: brownfield`, or the item touches existing production code, complete `## Brownfield Impact Audit` before the TDD plan and before the first RED test.
 
-The audit must use `rg` first and cover reuse / refactor-first decisions, canonical values / hardcoded contracts, data read/write paths, API / caller graph, UI / client mirrors, side-effect order, tests / lint / docs / memory, and backward compatibility / rollout. If the section is missing, add it from `appmaker/templates/backlog-item-template.md`. If it remains `pending`, refuse the first RED cycle.
+The audit must use `rg` first and cover reuse / refactor-first decisions, visual system / CSS reuse, design standards compliance, canonical values / hardcoded contracts, data read/write paths, API / caller graph, UI / client mirrors, side-effect order, tests / lint / docs / memory, and backward compatibility / rollout. If the section is missing, add it from `appmaker/templates/backlog-item-template.md`. If it remains `pending`, refuse the first RED cycle.
 
 Every discovered dependency must be added to the TDD plan/tests or listed under `Deferred / intentionally not touched` with a concrete reason and risk.
 
@@ -84,13 +80,15 @@ Every discovered dependency must be added to the TDD plan/tests or listed under 
 Matt Pocock checklist + AppMaker addition:
 
 - [ ] Confirm interface changes with user via AskUserQuestion
+- [ ] **AppMaker:** verify `Architecture Options Research` is complete when required.
 - [ ] Confirm which behaviors to test
 - [ ] Identify deep modules (see `appmaker/skills/tdd/deep-modules.md`)
 - [ ] Design interfaces for testability (see `appmaker/skills/tdd/interface-design.md`)
 - [ ] List behaviors to test
 - [ ] **AppMaker:** each behavior maps to AC `traces_to: pcrit-id`. Cover all backlog ACs.
-- [ ] **AppMaker:** use context packet key files/communities to choose starting files.
-- [ ] **AppMaker:** prefer reuse/extend/extract/replace over add-new; any new parallel code has audit rationale.
+- [ ] **AppMaker:** use context packet key files/communities; prefer reuse/extend/extract/replace over add-new.
+- [ ] **AppMaker:** UI changes use reusable CSS/component primitives; no new hardcoded visual styling without documented exception.
+- [ ] **AppMaker:** every touched visual element follows existing design standards for tokens, states, accessibility, and responsive behavior.
 - [ ] **AppMaker:** TDD cycles cover every non-deferred dependency from the Brownfield Impact Audit.
 - [ ] Get user approval
 

@@ -83,6 +83,8 @@ Profile:
 | `/appmaker:spike` | Matt Pocock `prototype` (SKILL+LOGIC+UI) | Throwaway prototypes (logic OR ui variant) |
 | `/appmaker:plan` | Future-scope: Multi-Phase Execution | Durable plan artifacts for large work units |
 
+Note: high-impact architecture choices are already covered by the embedded Architecture Options Research gate in PRD/decompose/TDD/review/checklist. The future `/appmaker:research` skill is for standalone reusable research caches, not for replacing that gate.
+
 ### Layer 4 — AFK runner
 
 | Skill | Inspiration | Purpose |
