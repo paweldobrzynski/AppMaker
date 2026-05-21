@@ -103,6 +103,11 @@ related_backlog_item: <NNN or empty>
 |---|---|---|---|---|
 | domain / API / UI / jobs / tests / docs | ... | ... | ... | ... |
 
+## Reuse / Refactor-First Candidates
+| Existing code | Why candidate | Reuse / extend / extract / replace / add-new? | Confidence |
+|---|---|---|---|
+| ... | ... | ... | high/medium/low |
+
 ## Graph Relationships (Graphify mode only)
 | Relationship | Evidence | Confidence |
 |---|---|---|
@@ -131,6 +136,7 @@ Packet captures:
 - key files
 - canonical values / hardcoded contracts when the topic touches brownfield behavior
 - dependency surfaces across domain/API/UI/jobs/tests/docs
+- reuse / refactor-first candidates so new code is justified instead of automatic
 - graph relationships
 - risks/constraints
 - open questions

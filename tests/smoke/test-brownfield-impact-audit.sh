@@ -40,6 +40,7 @@ assert_eq "template places Brownfield Impact Audit between ACs and TDD plan" "ye
 for phrase in \
   "Canonical values / hardcoded contracts" \
   "Dependency surface map" \
+  "Reuse / refactor-first decision" \
   "Side-effect order" \
   "Duplicate logic / mirrors" \
   "Test and lint guards" \
@@ -64,8 +65,10 @@ assert_eq "tdd runs impact audit after context and before planning" "yes" "$TDD_
 for phrase in \
   "refuse the first RED cycle" \
   "use \`rg\` first" \
+  "reuse / refactor-first decisions" \
   "canonical values / hardcoded contracts" \
   "side-effect order" \
+  "prefer reuse/extend/extract/replace over add-new" \
   "TDD cycles cover every non-deferred dependency"
 do
   COUNT=$(grep -cF "$phrase" "$TDD_SKILL" || true)
@@ -77,6 +80,8 @@ for phrase in \
   "Data model and read/write paths" \
   "API / caller graph" \
   "UI / client mirrors" \
+  "Reuse / Refactor-First Decision" \
+  "\`add-new\` requires a written rationale" \
   "Tests / lint / docs / memory" \
   "Backward compatibility / rollout" \
   "exact search query" \
@@ -102,16 +107,20 @@ assert_eq "grill-brownfield builds audit seed before questions" "yes" "$GRILL_SE
 
 CTX_VALUES_COUNT=$(grep -cF "Canonical Values / Hardcoded Contracts" "$CONTEXT_TEMPLATE" || true)
 CTX_SKILL_VALUES_COUNT=$(grep -cF "Canonical Values / Hardcoded Contracts" "$CONTEXT_SKILL" || true)
-if [ "$CTX_VALUES_COUNT" -gt 0 ] && [ "$CTX_SKILL_VALUES_COUNT" -gt 0 ]; then CONTEXT_VALUES_PRESENT=yes; else CONTEXT_VALUES_PRESENT=no; fi
-assert_eq "context packets capture canonical values and hardcoded contracts" "yes" "$CONTEXT_VALUES_PRESENT"
+CTX_REUSE_COUNT=$(grep -cF "Reuse / Refactor-First Candidates" "$CONTEXT_TEMPLATE" || true)
+CTX_SKILL_REUSE_COUNT=$(grep -cF "Reuse / Refactor-First Candidates" "$CONTEXT_SKILL" || true)
+if [ "$CTX_VALUES_COUNT" -gt 0 ] && [ "$CTX_SKILL_VALUES_COUNT" -gt 0 ] && [ "$CTX_REUSE_COUNT" -gt 0 ] && [ "$CTX_SKILL_REUSE_COUNT" -gt 0 ]; then CONTEXT_VALUES_PRESENT=yes; else CONTEXT_VALUES_PRESENT=no; fi
+assert_eq "context packets capture canonical values plus reuse/refactor candidates" "yes" "$CONTEXT_VALUES_PRESENT"
 
 REVIEW_COUNT=$(grep -cF "Brownfield impact audit coverage" "$REVIEW_CONTRACT" || true)
-if [ "$REVIEW_COUNT" -gt 0 ]; then REVIEW_PRESENT=yes; else REVIEW_PRESENT=no; fi
-assert_eq "review contract checks Brownfield Impact Audit coverage" "yes" "$REVIEW_PRESENT"
+REVIEW_REUSE_COUNT=$(grep -cF "Reuse/refactor-first rationale" "$REVIEW_CONTRACT" || true)
+if [ "$REVIEW_COUNT" -gt 0 ] && [ "$REVIEW_REUSE_COUNT" -gt 0 ]; then REVIEW_PRESENT=yes; else REVIEW_PRESENT=no; fi
+assert_eq "review contract checks audit coverage and reuse/refactor rationale" "yes" "$REVIEW_PRESENT"
 
 CHECKLIST_COUNT=$(grep -cF "Brownfield Impact Audit" "$CHECKLIST_SKILL" || true)
 CHECKLIST_COMPLETE_COUNT=$(grep -cF "Audit status: complete" "$CHECKLIST_SKILL" || true)
-if [ "$CHECKLIST_COUNT" -gt 0 ] && [ "$CHECKLIST_COMPLETE_COUNT" -gt 0 ]; then CHECKLIST_PRESENT=yes; else CHECKLIST_PRESENT=no; fi
-assert_eq "checklist gates missing or incomplete Brownfield Impact Audit" "yes" "$CHECKLIST_PRESENT"
+CHECKLIST_REUSE_COUNT=$(grep -cF "missing reuse/refactor-first decision" "$CHECKLIST_SKILL" || true)
+if [ "$CHECKLIST_COUNT" -gt 0 ] && [ "$CHECKLIST_COMPLETE_COUNT" -gt 0 ] && [ "$CHECKLIST_REUSE_COUNT" -gt 0 ]; then CHECKLIST_PRESENT=yes; else CHECKLIST_PRESENT=no; fi
+assert_eq "checklist gates missing/incomplete audit and missing reuse decision" "yes" "$CHECKLIST_PRESENT"
 
 print_summary

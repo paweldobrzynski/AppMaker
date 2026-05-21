@@ -60,6 +60,11 @@ Avoid file paths — they go stale. **Exception (per Matt Pocock canonical to-is
 |---|---|---|---|---|
 | UI / API / domain / tests / docs | ... | ... | ... | ... |
 
+**Reuse / refactor-first decision**
+| Existing code candidate | Current responsibility | Can be extended/generalized? | Decision |
+|---|---|---|---|
+| `src/theme/provider.tsx` | owns theme state | yes/no/unknown | reuse/extend/extract/replace/add-new + rationale |
+
 **Side-effect order**
 - Guards before side effects:
 - Side effects touched:

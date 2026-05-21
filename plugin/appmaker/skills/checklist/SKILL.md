@@ -54,7 +54,7 @@ Required checks:
 | Execution class | backlog | missing or not `human_required|autonomous|conditional` |
 | AC test mapping | backlog | AC missing both `test:` and `human-review:` annotation |
 | AC checkbox coverage | backlog | item `done` with unchecked AC |
-| Brownfield Impact Audit | brownfield/backlog | `in_progress`/`done` brownfield item missing `## Brownfield Impact Audit`, missing `Audit status: complete`, or complete audit with no search evidence |
+| Brownfield Impact Audit | brownfield/backlog | `in_progress`/`done` brownfield item missing `## Brownfield Impact Audit`, missing `Audit status: complete`, missing reuse/refactor-first decision, or complete audit with no search evidence |
 | Approved TDD plan | backlog | done item missing non-empty `## Approved TDD Plan` = WARN |
 | Execution Record base | backlog | missing `Base ref` = FAIL |
 | Execution Record tests | backlog | missing `Tests run` = FAIL |
@@ -75,7 +75,7 @@ Prefer concrete commands:
 - `test -f <path>` for required files
 - `rg -no 'pcrit-[0-9]+|SC[0-9]+|ID[0-9]+'` for criteria/traces (project may use any stable ID format — `pcrit-*` is suggested, NOT required)
 - `rg -n 'status:|execution_class:|blocked_by:|traces_to:' appmaker/backlog`
-- `rg -n '^## Brownfield Impact Audit|Audit status:|rg -n|Search evidence|Dependency surface map' appmaker/backlog`
+- `rg -n '^## Brownfield Impact Audit|Audit status:|rg -n|Search evidence|Dependency surface map|Reuse / refactor-first' appmaker/backlog`
 - `find appmaker/context -type f`
 - `git status --short` and `git log -1 --format=%ct -- graphify-out/GRAPH_REPORT.md` if git repo
 - Memory checks (scope=memory or project):

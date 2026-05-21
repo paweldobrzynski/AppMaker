@@ -75,7 +75,7 @@ Read:
 
 Read `appmaker/skills/tdd/brownfield-impact-audit.md`. If `project_mode: brownfield`, or the item touches existing production code, complete `## Brownfield Impact Audit` before the TDD plan and before the first RED test.
 
-The audit must use `rg` first and cover canonical values / hardcoded contracts, data read/write paths, API / caller graph, UI / client mirrors, side-effect order, tests / lint / docs / memory, and backward compatibility / rollout. If the section is missing, add it from `appmaker/templates/backlog-item-template.md`. If it remains `pending`, refuse the first RED cycle.
+The audit must use `rg` first and cover reuse / refactor-first decisions, canonical values / hardcoded contracts, data read/write paths, API / caller graph, UI / client mirrors, side-effect order, tests / lint / docs / memory, and backward compatibility / rollout. If the section is missing, add it from `appmaker/templates/backlog-item-template.md`. If it remains `pending`, refuse the first RED cycle.
 
 Every discovered dependency must be added to the TDD plan/tests or listed under `Deferred / intentionally not touched` with a concrete reason and risk.
 
@@ -90,6 +90,7 @@ Matt Pocock checklist + AppMaker addition:
 - [ ] List behaviors to test
 - [ ] **AppMaker:** each behavior maps to AC `traces_to: pcrit-id`. Cover all backlog ACs.
 - [ ] **AppMaker:** use context packet key files/communities to choose starting files.
+- [ ] **AppMaker:** prefer reuse/extend/extract/replace over add-new; any new parallel code has audit rationale.
 - [ ] **AppMaker:** TDD cycles cover every non-deferred dependency from the Brownfield Impact Audit.
 - [ ] Get user approval
 

@@ -75,6 +75,7 @@ Recommendation: keep thresholds insurer-owned; add handler override as separate 
 Before asking implementation-shaping questions, assemble the first-pass dependency map. This prevents the common brownfield failure mode: changing the obvious file and missing hardcoded dependents elsewhere.
 
 Cover these angles and cite evidence:
+- **Reuse / refactor-first candidates:** existing owners/helpers/components that could be reused, extended, extracted, or replaced before adding new code.
 - **Canonical values / hardcoded contracts:** exact strings, aliases, enum-ish lists, column names, route/action names, CSS classes, ScriptProperties.
 - **Read/write/derive/display paths:** readers, writers, validators, migrations, caches, UI renderers.
 - **Mirrors and duplicate logic:** client-side mirrors, Apps Script HTML inline JS, tests, docs examples, agent/tool schemas.
@@ -133,7 +134,7 @@ override_reason: brownfield grilling covered all dimensions interview would; no 
 
 ## Existing System Context (brownfield-specific)
 - Code regions touched: [from grill conversation + context packets]
-- Brownfield impact audit seed: [canonical values, hardcoded contracts, mirrors, side-effect surfaces, first grep queries]
+- Brownfield impact audit seed: [reuse/refactor-first candidates, canonical values, hardcoded contracts, mirrors, side-effect surfaces, first grep queries]
 - Glossary terms resolved during grill: [list]
 - Architectural decisions surfaced: [list with wiki/architecture.md candidate notes]
 - Open risks: [from step 4]

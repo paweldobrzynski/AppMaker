@@ -52,6 +52,12 @@ related_backlog_item:
 |---|---|---|---|---|
 | domain / API / UI / jobs / tests / docs | ... | ... | ... | ... |
 
+## Reuse / Refactor-First Candidates
+
+| Existing code | Why candidate | Reuse / extend / extract / replace / add-new? | Confidence |
+|---|---|---|---|
+| `src/scoring/rules.ts` | owns adjacent scoring behavior | extend | medium |
+
 ## Graph Relationships
 
 | Relationship | Evidence | Confidence |
