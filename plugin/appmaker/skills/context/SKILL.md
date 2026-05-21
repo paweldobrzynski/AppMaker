@@ -93,6 +93,16 @@ related_backlog_item: <NNN or empty>
 |---|---|---|
 | `path/to/file.ts` | ... | yes/no |
 
+## Canonical Values / Hardcoded Contracts
+| Value or contract | Search evidence | Consumers / mirrors | Confidence |
+|---|---|---|---|
+| ... | `rg -n "..." ...` | ... | high/medium/low |
+
+## Dependency Surfaces
+| Surface | Reads | Writes | Side effects | Notes |
+|---|---|---|---|---|
+| domain / API / UI / jobs / tests / docs | ... | ... | ... | ... |
+
 ## Graph Relationships (Graphify mode only)
 | Relationship | Evidence | Confidence |
 |---|---|---|
@@ -119,6 +129,8 @@ Packet captures:
 - Graphify commands or file-search operations used
 - relevant communities
 - key files
+- canonical values / hardcoded contracts when the topic touches brownfield behavior
+- dependency surfaces across domain/API/UI/jobs/tests/docs
 - graph relationships
 - risks/constraints
 - open questions

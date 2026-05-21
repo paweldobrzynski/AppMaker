@@ -175,7 +175,7 @@ Scans the just-written PRD for bold-uppercase candidate domain terms, appends st
 
 **Tier 2 — Semantic review** (best-effort, agent-driven, NOT deterministic):
 
-If extraction surfaced stubs AND the current conversation has enough context to define them, MAY invoke `/appmaker:glossary` via Skill tool to resolve stubs. Otherwise leave stubs for user's explicit `/appmaker:glossary` invocation later.
+If extraction surfaced stubs AND the current conversation has enough context to define them, suggest `/appmaker:glossary` to resolve stubs. Otherwise leave stubs for user's explicit invocation later.
 
 Honest framing: extraction is deterministic, definition is not. Stubs are a verifiable artifact; resolved entries depend on agent reasoning + user confirmation.
 

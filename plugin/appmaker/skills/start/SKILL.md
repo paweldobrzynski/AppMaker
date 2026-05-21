@@ -1,9 +1,9 @@
 ---
-description: Entry point for AppMaker workflow. Classifies user intent as macro action (feature, bug, prototype, refactor, research, review). Detects project context (appmaker/ setup, Graphify, backlog). Suggests command chain and optionally invokes first. Use when starting any new task — feature, bug, refactor, research, prototype, review.
+description: Entry point for AppMaker workflow. Classifies user intent as macro action (feature, bug, prototype, refactor, research, review). Detects project context (appmaker/ setup, Graphify, backlog). Suggests command chain and hands off exact slash commands for side-effect skills. Use when starting any new task.
 disable-model-invocation: false
 ---
 
-Entry point. User describes intent, AppMaker routes to appropriate workflow. Macro action paradigm — user delegates work, AppMaker orchestrates commands.
+Entry point. User describes intent, AppMaker routes to appropriate workflow. Macro action paradigm — user delegates work, AppMaker suggests the command path.
 
 ## When to invoke
 
@@ -44,7 +44,7 @@ If no intent provided, ask via AskUserQuestion:
 | **continue** | "continue", "next", "what's left" | List open backlog items, suggest top-priority |
 | **unclear** | none match | `grill` (sharpen idea), reclassify after |
 
-### 4. Suggest workflow + optionally invoke
+### 4. Suggest workflow + hand off
 
 Output:
 
@@ -58,10 +58,13 @@ Suggested chain:
   2. /appmaker:<second> — [purpose]
   3. ...
 
-Auto-invoke /appmaker:<first> now? [Y/n]
+Next command: /appmaker:<first> <args>
 ```
 
-Use AskUserQuestion tool for confirmation.
+Use AskUserQuestion for confirmation. If the next skill has
+`disable-model-invocation: true`, show the exact slash command and stop; do not
+call it via Skill tool. Only non-mutating conversational skills (`grill`,
+`grill-brownfield`) may be invoked directly by the model.
 
 ### 5. Note parallel opportunities (Layer 4)
 
@@ -87,12 +90,12 @@ AppMaker.start:
     4. /appmaker:review — critic pass
     5. /appmaker:archive — close out
   
-  Auto-invoke /appmaker:diagnose now? [Y/n]
+  Next command: /appmaker:diagnose
 ```
 
 ## Guardrails
 
-- **Don't pretend to be done.** Output suggested chain + ask to invoke. Don't auto-execute full chain.
+- **Don't pretend to be done.** Output suggested chain + hand off the next command. Don't auto-execute full chain.
 - **Surface context loudly.** User must see what AppMaker detected. No silent assumptions.
 - **Suggest only, don't enforce.** User can override.
 - **Reference glossary terms in classification.**

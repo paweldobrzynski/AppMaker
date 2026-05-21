@@ -5,18 +5,17 @@ disable-model-invocation: true
 
 Test-driven dev per slice. Adopts Matt Pocock `tdd` (canonical) plus AppMaker extensions.
 
-Supporting reference files in project tree (`appmaker/skills/tdd/`):
-
-- `deep-modules.md`, `interface-design.md`, `mocking.md`, `refactoring.md`, `tests.md` — Matt Pocock 1:1 (MIT).
-- `plan-format.md` — TDD-plan output format (table vs heading template, column rules).
+Supporting reference files in project tree (`appmaker/skills/tdd/`): Matt Pocock files (`deep-modules.md`, `interface-design.md`, `mocking.md`, `refactoring.md`, `tests.md`) plus `plan-format.md` and `brownfield-impact-audit.md`.
 
 ## When to invoke
 
-- Manual: `/appmaker:tdd <backlog-id>` (e.g., `/appmaker:tdd 008`)
-- Auto: by `start` on implementation phase, or by Layer 4 AFK runner (autonomous slices only)
+- Manual slash command only: `/appmaker:tdd <backlog-id>` (e.g., `/appmaker:tdd 008`)
+- Suggested by `start`/`next`, or by Layer 4 AFK runner (autonomous slices only)
 - AFK-safe: yes (for `execution_class: autonomous`), NO (for `human_required` — needs user confirmation per AC)
 - Required state: `appmaker/backlog/NNN-slug.md` exists with status `open`, blockers done
 - Required input: backlog item ID
+
+Invocation boundary: this skill has `disable-model-invocation: true`, so it cannot be used with the Skill tool. If another skill reaches TDD, it must emit the exact slash command; do not continue with inline "manual TDD" after a Skill-tool failure.
 
 ## Philosophy (Matt Pocock 1:1)
 
@@ -55,7 +54,9 @@ Cite as `per wiki/testing.md: <pattern>` in the TDD plan when a test seam/loop p
 
 ### 1. Read backlog item
 
-Load `appmaker/backlog/NNN-slug.md`:
+Load `appmaker/backlog/NNN-slug.md`. If no backlog item exists, refuse TDD and tell the user to run `/appmaker:decompose` (standard/strict) or create a light backlog item first. Do not infer a slice directly from `interview-result.md`.
+
+Read:
 - Read `What to build`
 - Read `Acceptance criteria` (each has `traces_to: pcrit-id`)
 - Check `execution_class`: if `human_required`, ask user per AC
@@ -70,6 +71,14 @@ Load `appmaker/backlog/NNN-slug.md`:
 - `appmaker/skills/tdd/*.md` — supporting reference on demand
 - Context packet paths from backlog item `context_packets`. If absent/stale and codebase context needed, run `/appmaker:context "<backlog topic>"`.
 
+### 2b. Brownfield Impact Audit (MANDATORY for brownfield)
+
+Read `appmaker/skills/tdd/brownfield-impact-audit.md`. If `project_mode: brownfield`, or the item touches existing production code, complete `## Brownfield Impact Audit` before the TDD plan and before the first RED test.
+
+The audit must use `rg` first and cover canonical values / hardcoded contracts, data read/write paths, API / caller graph, UI / client mirrors, side-effect order, tests / lint / docs / memory, and backward compatibility / rollout. If the section is missing, add it from `appmaker/templates/backlog-item-template.md`. If it remains `pending`, refuse the first RED cycle.
+
+Every discovered dependency must be added to the TDD plan/tests or listed under `Deferred / intentionally not touched` with a concrete reason and risk.
+
 ### 3. Planning
 
 Matt Pocock checklist + AppMaker addition:
@@ -81,6 +90,7 @@ Matt Pocock checklist + AppMaker addition:
 - [ ] List behaviors to test
 - [ ] **AppMaker:** each behavior maps to AC `traces_to: pcrit-id`. Cover all backlog ACs.
 - [ ] **AppMaker:** use context packet key files/communities to choose starting files.
+- [ ] **AppMaker:** TDD cycles cover every non-deferred dependency from the Brownfield Impact Audit.
 - [ ] Get user approval
 
 ### 3a. Plan output format
@@ -94,13 +104,9 @@ See `appmaker/skills/tdd/plan-format.md` for the full output spec (table vs head
 
 ### 3b. Execution Record — initial fields (v0.2.19)
 
-After the user approves the TDD plan, and BEFORE the first RED test, materialize
-`## Approved TDD Plan` plus the initial `## Execution Record` fields in the
-backlog item. Preserve the existing approval gate; this step only persists the
-approved plan and factual start state.
-Anti-bureaucracy rule: auto-fill factual Execution Record fields wherever a
-shell command can prove the value. Human-written fields are for intent,
-AC status, and drift explanation — not for transcribing git facts.
+After plan approval and BEFORE first RED, materialize `## Approved TDD Plan`
+plus initial `## Execution Record` fields. Preserve the approval gate.
+Anti-bureaucracy rule: auto-fill factual Execution Record fields wherever a shell command can prove the value. Human-written fields are for intent, AC status, and drift explanation — not for transcribing git facts.
 
 Required capture:
 ```bash
@@ -151,7 +157,7 @@ If any fail → fix or escalate.
 ### 8. Glossary update (two-tier, v0.2.11)
 
 - **Tier 1 (deterministic, idempotent):** `bash appmaker/hooks/glossary-extract.sh "appmaker/backlog/<NNN>-<slug>.md"` — captures new domain terms from test names / what-to-build.
-- **Tier 2 (semantic, best-effort):** if Tier 1 surfaced new stubs AND TDD conversation has definitions, MAY invoke `/appmaker:glossary` via Skill tool. Otherwise leave stubs for explicit review.
+- **Tier 2 (semantic, best-effort):** if Tier 1 surfaced new stubs AND TDD conversation has definitions, suggest `/appmaker:glossary`. Otherwise leave stubs for explicit review.
 
 ### 9. Mark done + suggest next
 
@@ -171,13 +177,7 @@ Update front-matter: `status: done`, append `completed: <ISO date>`. Move file: 
 
 ## Checklist Per Cycle (Matt 1:1)
 
-```
-[ ] Test describes behavior, not implementation
-[ ] Test uses public interface only
-[ ] Test would survive internal refactor
-[ ] Code is minimal for this test
-[ ] No speculative features added
-```
+Use `appmaker/skills/tdd/tests.md`: public behavior, minimal code, no speculative features.
 
 ## Guardrails
 

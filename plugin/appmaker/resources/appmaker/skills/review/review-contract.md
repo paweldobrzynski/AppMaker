@@ -9,11 +9,12 @@ Pass this checklist to the configured reviewer:
 3. Glossary consistency: no invented synonyms for canonical terms.
 4. AC coverage: every AC has corresponding `test:` or `human-review:`.
 5. Plan-vs-actual drift: compare `## Approved TDD Plan`, planned files/tests, actual files/tests, and drift notes.
-6. Test quality: behavior through public interface, not implementation details.
-7. Surgical changes: changed lines trace back to the requested scope.
-8. Security and performance flags.
-9. Graph context coverage: changed files match expected touched communities/files, or drift is justified.
-10. Memory regression: change does not repeat a known testing or integration gotcha.
+6. Brownfield impact audit coverage: every changed canonical value, hardcoded contract, UI/client mirror, side-effect path, and dependency found in `## Brownfield Impact Audit` is either implemented, tested, lint-guarded, or explicitly deferred with rationale. Missing dependency sweep = review FAIL for brownfield work.
+7. Test quality: behavior through public interface, not implementation details.
+8. Surgical changes: changed lines trace back to the requested scope.
+9. Security and performance flags.
+10. Graph context coverage: changed files match expected touched communities/files, or drift is justified.
+11. Memory regression: change does not repeat a known testing or integration gotcha.
 
 ## Ultra mode
 
@@ -40,6 +41,7 @@ Fallback to local review only with an explicit warning if `/ultra-review` is una
 
 ### Notes
 - Glossary: 0 violations
+- Brownfield impact audit: complete; 0 unexplained dependencies
 - Memory wiki gotchas: 0 repeated
 ```
 

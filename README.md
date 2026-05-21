@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.21. 19 skills (15 core + afk + status + token-audit + next). Anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 16 smoke test suites, 126 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.21. 19 skills (15 core + afk + status + token-audit + next). Anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 17 smoke test suites, 136 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -97,6 +97,11 @@ For a new user, treat AppMaker as one workflow:
 
 Each skill declares `disable-model-invocation` in frontmatter:
 
+Important boundary: side-effect skills are manual slash-command handoffs. A
+skill with `disable-model-invocation: true` cannot be invoked through the Skill
+tool; routers such as `/appmaker:start` and `/appmaker:next` must show the exact
+`/appmaker:<name>` command and stop.
+
 | Skill | `disable-model-invocation` | Why |
 |---|---|---|
 | init | `true` | Side effect: creates files |
@@ -113,7 +118,7 @@ Each skill declares `disable-model-invocation` in frontmatter:
 | archive | `true` | Side effect: moves files (irreversible) |
 | context | `true` | Side effect: writes context packet snapshots |
 | feedback | `true` | Side effect: writes backlog item |
-| glossary | `true` | Side effect: writes glossary.md (v0.2.9 fix — was `false`; now invoked explicitly by parents via Skill tool) |
+| glossary | `true` | Side effect: writes glossary.md (v0.2.9 fix — was `false`; now explicit user slash command only) |
 | status | `true` | Read-only filesystem inspection (no writes, but explicit user trigger) |
 | token-audit | `true` | Read-only diagnostic (parses session logs, no writes) |
 | afk | `true` | Side effect: runs bounded autonomous work loop |
@@ -121,7 +126,7 @@ Each skill declares `disable-model-invocation` in frontmatter:
 **Why some skills keep `false` (intentional, not oversight):**
 
 - `start` is the **entry point** — model auto-routing user intent to it is the entire point. It only classifies + suggests; no writes.
-- `grill` / `grill-brownfield` are **conversational thinking aids**. Auto-invocation when user says "let's discuss X" / "I'm planning a refactor" is the feature, not a risk. Neither writes to filesystem directly — they may call `/appmaker:glossary` via Skill tool when new terms surface (and glossary is `true`, so that write is explicit).
+- `grill` / `grill-brownfield` are **conversational thinking aids**. Auto-invocation when user says "let's discuss X" / "I'm planning a refactor" is the feature, not a risk. Neither writes to filesystem directly — they may suggest `/appmaker:glossary` when new terms surface.
 - Any **side-effect skill** (writes files, moves files, runs subagent that writes) must be `true`. Audit-flagged on v0.2.8: `review` and `glossary` were incorrectly `false` → fixed in v0.2.9.
 
 ## File layout

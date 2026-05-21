@@ -74,6 +74,7 @@ Per slice, identify:
 - **user_stories_covered** (from PRD)
 - **touches** (Graphify communities + files from context packet, if relevant)
 - **context_packets** (packet paths that informed slice)
+- **Brownfield Impact Audit seed** when `project_mode: brownfield`: starting canonical values, likely hardcoded contracts, known UI mirrors, side-effect surfaces, and the first `rg` queries TDD must run. This is a seed, not final evidence; `/appmaker:tdd` completes it before RED.
 
 ### 4. Quiz user
 
@@ -98,6 +99,8 @@ Plus write `appmaker/features/<NNN>/decomposition.md` (using `appmaker/templates
 
 Publish in **dependency order** (blockers first).
 
+For brownfield projects, every backlog item must contain `## Brownfield Impact Audit` with `Mode: brownfield` and `Audit status: pending` unless the slice is truly greenfield-only. Seed the section with known context packet evidence and starting searches so TDD cannot begin from a blank page.
+
 ### 7. Glossary update (two-tier, v0.2.11)
 
 **Tier 1 — Deterministic stub extraction:**
@@ -106,7 +109,7 @@ bash appmaker/hooks/glossary-extract.sh "appmaker/features/<NNN>/decomposition.m
 ```
 Verifiable bash that appends candidate-term stubs to glossary. Idempotent.
 
-**Tier 2 — Semantic review:** MAY invoke `/appmaker:glossary` via Skill tool if conversation context can resolve stubs. Otherwise stubs remain for user's explicit `/appmaker:glossary` invocation. Best-effort, NOT deterministic.
+**Tier 2 — Semantic review:** if conversation context can resolve stubs, suggest `/appmaker:glossary`. Otherwise stubs remain for user's explicit invocation. Best-effort, NOT deterministic.
 
 ### 8. Output summary
 
@@ -132,6 +135,7 @@ Suggested next: /appmaker:tdd 008  (or autonomous via /appmaker:afk if Layer 4)
 - **`execution_class` per slice mandatory.** Default `autonomous` unless constitution rule 6.
 - **`traces_to` per AC mandatory.** Every AC traces to PRD criterion. No orphans.
 - **Graph context is advisory.** Use context packets to avoid missing touched areas, but don't turn graph neighbors into scope without PRD/AC support.
+- **Brownfield audit is not advisory.** Context packets and `touches` seed the audit; TDD must complete it before RED, and review/checklist verify coverage.
 - **Memory wiki is advisory.** Use durable lessons to shape slices; don't create scope not present in PRD.
 - **Cycle detection mandatory.** Refuse if cycle.
 - **Quiz user before writing.** Iterate until approved.

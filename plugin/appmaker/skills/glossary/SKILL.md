@@ -1,19 +1,19 @@
 ---
-description: Maintain project ubiquitous language at appmaker/glossary.md. Invoked explicitly by user (`/appmaker:glossary`) OR by interview/prd/decompose/grill via Skill tool when they detect new terms. Writes are visible to user (no autonomous invocation). Format adopted from Matt Pocock deprecated/ubiquitous-language skill.
+description: Maintain project ubiquitous language at appmaker/glossary.md. Invoked explicitly by user (`/appmaker:glossary`) after deterministic stub extraction flags candidate terms. Writes are visible to user (no autonomous invocation). Format adopted from Matt Pocock deprecated/ubiquitous-language skill.
 disable-model-invocation: true
 ---
 
 Bridge human-domain-expert ↔ LLM-developer language. Shared vocabulary for project. **Two-tier maintenance:**
 
 1. **Deterministic stub extraction** (v0.2.11) — `appmaker/hooks/glossary-extract.sh <artifact>` scans bold-uppercase patterns in generated artifacts (PRD, decomposition, etc.) and appends stubs for new candidate terms. **Verifiable bash, no agent trust.** Called by parent skills (prd, decompose, tdd, grill) as a post-step.
-2. **Semantic review** (this skill) — explicit invocation by user OR by parent skill via Skill tool. Resolves stubs (define / reject / merge with existing / flag ambiguity). **Best-effort agent reasoning, NOT deterministic.**
+2. **Semantic review** (this skill) — explicit user slash-command invocation. Resolves stubs (define / reject / merge with existing / flag ambiguity). **Best-effort agent reasoning, NOT deterministic.**
 
 Adopted from Matt Pocock's `deprecated/ubiquitous-language` skill (format) plus AppMaker two-tier pattern. Replaces the prior "auto-maintained byproduct" framing (v0.2.8 and earlier) which was misleading — extraction is now bash, semantic update remains agent-driven and explicit.
 
 ## When to invoke
 
 - Explicit user: `/appmaker:glossary` — review stubs, define / reject / merge / fix ambiguity
-- Parent skill via Skill tool: prd/decompose/tdd/grill MAY invoke after running `glossary-extract.sh`, to convert stubs into resolved entries (best-effort, depends on conversation context being rich enough)
+- Suggested by parent skills after `glossary-extract.sh` appends stubs (best-effort, depends on conversation context being rich enough)
 - AFK-safe: NO — semantic review needs user judgment for ambiguous cases
 - Required state: `appmaker/glossary.md` exists (created by `/appmaker:init`); typically stubs present from extraction step
 - Required input: glossary file (extracted stubs); conversation context for definitions

@@ -1,19 +1,19 @@
 ---
-description: AppMaker lifecycle orchestrator. Detects current feature state, determines next phase deterministically, and (with explicit user confirmation per phase) invokes the appropriate side-effect skill via the Skill tool. Solves the "side-effect skills are disable-model-invocation:true so agent can't chain them" friction without reverting the v0.2.9 audit fix. Single user trigger; chained phased execution with checkpoint gates.
+description: AppMaker lifecycle dispatcher. Detects current feature state, determines next phase deterministically, and emits the exact slash command for the user to run. Side-effect skills keep disable-model-invocation:true and MUST NOT be called through the Skill tool.
 disable-model-invocation: true
 ---
 
-Lifecycle orchestrator. User explicit entry point; chained execution. Preserves audit-safe property (side-effect skills stay `disable-model-invocation: true`) by being the SINGLE explicit trigger that owns the chain.
+Lifecycle dispatcher. User explicit entry point; read-only state detection + exact next command. Preserves audit-safe property: side-effect skills stay `disable-model-invocation: true`, so `/appmaker:next` MUST NOT use the Skill tool to call them.
 
-**Output style:** Compact tables per `appmaker/skills/output-style.md`. One-line state + one AskUserQuestion + one Skill-tool invocation per cycle.
+**Output style:** Compact tables per `appmaker/skills/output-style.md`. One-line state + one AskUserQuestion + one slash-command handoff.
 
 ## When to invoke
 
-- Manual: `/appmaker:next [--auto]`
-  - default: confirm each phase via AskUserQuestion before invoking next skill
-  - `--auto`: invoke next phase without confirmation; STILL stops on FAIL gate (review/checklist FAIL)
+- Manual: `/appmaker:next`
+  - confirms the proposed phase via AskUserQuestion
+  - emits the exact slash command the user should run next
 - Suggested by hook output OR after any phase completes when user wants to keep moving
-- AFK-safe: only with `--auto` AND `afk_enabled: true` in config (same constraint as `/appmaker:afk`)
+- AFK-safe: NO — this dispatcher does not execute work; use `/appmaker:afk` for autonomous loops
 - Required state: `appmaker/` initialized, ≥ 1 feature folder OR explicit user intent to start new feature
 - Required input: none (state-driven)
 
@@ -120,28 +120,18 @@ Proceed?
 
 AskUserQuestion options:
 - **Yes** → step 4
-- **Yes, then continue chain** → step 4 + loop back to step 1 after target completes
 - **No, show alternatives** → list other valid phases (e.g., "tdd next open slice", "manual checklist run") + AskUserQuestion
 - **Stop** → exit, no action
 
-With `--auto` flag: skip AskUserQuestion, go directly to step 4 + loop. **Still stops on FAIL.**
+### 4. Hand off target slash command
 
-### 4. Invoke target skill via Skill tool
+Always emit the exact slash command, for example:
 
+```text
+Next command: /appmaker:tdd 008
 ```
-Skill(skill: "<target-name>", args: "<computed args>")
-```
 
-Wait for completion. Read target's output/exit signal.
-
-**On target FAIL** (review FAIL, checklist FAIL, tdd test failure):
-- Stop chain regardless of mode (`--auto` or default).
-- Surface findings to user via AskUserQuestion: fix / override / abandon.
-- Do NOT invoke next phase silently.
-
-**On target PASS:**
-- If user chose "Yes, then continue chain" or `--auto`: re-enter step 1.
-- Else: stop, show "✓ <phase> complete. Run /appmaker:next when ready for next phase."
+Then stop. Do not simulate the target skill inline. If the user wants to proceed, they type the command. If a previous command failed, surface the failed artifact and suggest `/appmaker:review`, `/appmaker:checklist`, or a fix command as appropriate.
 
 ### 5. Report
 
@@ -152,21 +142,17 @@ Compact summary per cycle:
 [2/?] prd          → ✓ done
 [3/?] decompose    → ✓ done
 [4/?] checklist    → ✓ PASS
-[5/?] tdd 001      → ✓ done
-[6/?] review 001   → ✓ PASS (0 critical, 1 suggestion)
-[7/?] tdd 002      → ✓ done
-[8/?] review 002   → ⏸ stopped at user request
+[5/?] next         → handoff `/appmaker:tdd 001`
 
-Resume: /appmaker:next
+Run: /appmaker:tdd 001
 ```
 
 ## Guardrails
 
 - **User-explicit single entry.** `disable-model-invocation: true` — Claude never auto-invokes this; user types `/appmaker:next` explicitly.
-- **Per-phase confirmation by default.** `--auto` is opt-in and only valid when `afk_enabled: true` in config.
-- **Stop on FAIL.** No silent failure passthrough. Review FAIL or checklist FAIL ends the chain immediately.
+- **Manual handoff.** Side-effect skills are manual slash-command handoffs; do not call them with Skill tool.
+- **Stop on FAIL.** No silent failure passthrough. Review FAIL or checklist FAIL changes the next handoff to remediation.
 - **Idempotent.** Re-running `/appmaker:next` is safe — detects current state, picks up where last cycle stopped.
-- **No state mutation by `next` itself.** All writes happen INSIDE invoked target skills. `/appmaker:next` only reads + orchestrates.
+- **No state mutation by `next` itself.** All writes happen inside the slash command the user runs next. `/appmaker:next` only reads + dispatches.
 - **Honest about ambiguity.** When state is unclear (e.g., force-archived feature with open slices, or multiple non-archived features), surface via AskUserQuestion rather than picking silently.
-- **Respects existing config.** `afk_enabled`, `afk_max_iterations`, `afk_cost_cap_usd` apply to `--auto` mode.
-- **Don't skip checklist.** Even in `--auto`, checklist must run before each tdd and review must run before each archive.
+- **Don't skip checklist.** Checklist must run before TDD and review must run before archive.

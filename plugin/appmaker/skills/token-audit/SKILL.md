@@ -10,7 +10,7 @@ Token usage diagnostic. Best-effort parser of Claude Code internal session log f
 **Caveats up front:**
 - Reads `~/.claude/projects/<dashes-path>/*.jsonl` — Claude Code internal format, not public-stable.
 - **Volume ≠ cost.** Cache reads cost ~10% of input. Output tokens ~5× input. Numbers reported are gross volume.
-- Per-skill attribution: implemented (v0.2.11) via jsonl walk with skill-window tracking. Heuristic — only catches USER-typed `/appmaker:*` slash commands. Sub-skills invoked via Skill tool from within another skill count toward the originating user invocation (skill chains bleed by design).
+- Per-skill attribution: implemented (v0.2.11) via jsonl walk with skill-window tracking. Heuristic — only catches USER-typed `/appmaker:*` slash commands. Suggested follow-up slash commands count only when the user invokes them.
 
 ## When to invoke
 
@@ -70,9 +70,9 @@ TOOL_BREAKDOWN=$(cat "$PROJ_LOG_DIR"/*.jsonl 2>/dev/null \
 Walks each jsonl in order: detects `/appmaker:<name>` in user-role text, opens a "skill window", sums assistant `usage` tokens until next user message (or file end). Bucket `__none__` captures tokens during non-AppMaker work.
 
 **Caveats:**
-- Skill chains bleed: if `/appmaker:prd` chains into glossary update via Skill tool, tokens for the inner call count toward `prd` (the originating user invocation), not `glossary`.
+- Slash-command handoffs split attribution: if `/appmaker:prd` suggests `/appmaker:glossary`, glossary tokens count only when the user runs that command.
 - Tool_result user-messages count as "user message boundary" — this means a long Bash output mid-skill-execution will NOT split the window. Correct behavior.
-- Detects only USER-typed `/appmaker:*` patterns. Skills invoked via Skill tool internally are NOT detected (Pawel-typed slash commands only).
+- Detects only USER-typed `/appmaker:*` patterns.
 
 ```bash
 # Per-skill attribution: walk jsonl, track current skill window, sum usage
@@ -99,7 +99,7 @@ END {
 
 Output rows: `<skill>  <turns-attributed>  <total-tokens>`.
 
-If only `__none__` bucket present, surface honestly: "no /appmaker:* invocations detected — this project hasn't been used through AppMaker workflow yet, or all skill calls were via Skill tool not slash commands."
+If only `__none__` bucket present, surface honestly: "no /appmaker:* invocations detected — this project hasn't been used through AppMaker workflow yet, or commands were not typed as slash commands."
 
 ### 4. Top largest tool results (where bytes go)
 

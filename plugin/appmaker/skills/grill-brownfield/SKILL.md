@@ -70,6 +70,21 @@ Your glossary defines "Policy Threshold" as insurer-owned config, but this plan 
 Recommendation: keep thresholds insurer-owned; add handler override as separate audited concept.
 ```
 
+### 2b. Build Brownfield Impact Audit seed
+
+Before asking implementation-shaping questions, assemble the first-pass dependency map. This prevents the common brownfield failure mode: changing the obvious file and missing hardcoded dependents elsewhere.
+
+Cover these angles and cite evidence:
+- **Canonical values / hardcoded contracts:** exact strings, aliases, enum-ish lists, column names, route/action names, CSS classes, ScriptProperties.
+- **Read/write/derive/display paths:** readers, writers, validators, migrations, caches, UI renderers.
+- **Mirrors and duplicate logic:** client-side mirrors, Apps Script HTML inline JS, tests, docs examples, agent/tool schemas.
+- **Side-effect order:** guards before writes, Drive/DB/Sheets/Calendar/email/audit/cache effects, idempotency/lock behavior.
+- **Rollout/backward compatibility:** existing data, legacy aliases, old deployments, browser/App Script cache, manual smoke surfaces.
+
+Use `rg` searches when the project is locally available. If Graphify/context packet evidence is inference-only, label it as a hypothesis until code confirms it.
+
+Carry the seed into `interview-result.md` and later backlog items. It does not need to be complete during grilling, but it must be specific enough that `/appmaker:tdd` can finish the audit without rediscovering the whole project.
+
 ### 3. Ask one question at a time
 
 Pattern:
@@ -118,6 +133,7 @@ override_reason: brownfield grilling covered all dimensions interview would; no 
 
 ## Existing System Context (brownfield-specific)
 - Code regions touched: [from grill conversation + context packets]
+- Brownfield impact audit seed: [canonical values, hardcoded contracts, mirrors, side-effect surfaces, first grep queries]
 - Glossary terms resolved during grill: [list]
 - Architectural decisions surfaced: [list with wiki/architecture.md candidate notes]
 - Open risks: [from step 4]

@@ -88,7 +88,7 @@ bash appmaker/hooks/glossary-extract.sh "<artifact-path-if-any>"
 ```
 
 **Tier 2 — Semantic review** (primary path for `grill` since conversations rarely write artifacts):
-Invoke `/appmaker:glossary` via Skill tool with conversation context. New domain terms surface as resolved entries (best-effort, depends on conversation richness). NOT deterministic — user confirms ambiguous cases.
+Suggest `/appmaker:glossary` with conversation context. New domain terms surface as resolved entries only when the user invokes it (best-effort, depends on conversation richness). NOT deterministic — user confirms ambiguous cases.
 
 ```
 Glossary: +N terms (X, Y, Z), M ambiguities flagged.

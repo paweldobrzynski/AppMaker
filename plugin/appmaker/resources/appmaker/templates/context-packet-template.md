@@ -40,6 +40,18 @@ related_backlog_item:
 | `src/scoring/rules.ts` | Rule evaluator | yes |
 | `src/signals/claim-signals.ts` | Signal extraction | yes |
 
+## Canonical Values / Hardcoded Contracts
+
+| Value or contract | Search evidence | Consumers / mirrors | Confidence |
+|---|---|---|---|
+| `PolicyThreshold` | `rg -n "PolicyThreshold|policy threshold" src tests` | scoring, admin UI, docs | medium |
+
+## Dependency Surfaces
+
+| Surface | Reads | Writes | Side effects | Notes |
+|---|---|---|---|---|
+| domain / API / UI / jobs / tests / docs | ... | ... | ... | ... |
+
 ## Graph Relationships
 
 | Relationship | Evidence | Confidence |
