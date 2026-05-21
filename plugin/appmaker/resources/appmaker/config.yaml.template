@@ -15,6 +15,11 @@ github_repo:                         # owner/repo if backlog_provider: github
 github_label_decompose: ready-for-decompose
 github_label_archive: archived
 
+# External tooling available to AppMaker workflows (optional but highly recommended)
+github_cli_enabled: false            # true after `gh auth status --hostname github.com` succeeds
+ref_tools_enabled: false             # true after Ref MCP is configured in the active agent client
+ref_tools_mcp_server: ref            # expected MCP server name for Ref docs/search
+
 # Project commands (auto-detected by /appmaker:init or set manually)
 test_command:                        # e.g. "npm test", "pytest", "cargo test"
 lint_command:                        # e.g. "npm run lint", "ruff check"

@@ -37,6 +37,7 @@ assert_file_exists "CLAUDE.md materialized" "$TMP_PROJECT/CLAUDE.md"
 assert_file_exists ".claude/settings.json materialized" "$TMP_PROJECT/.claude/settings.json"
 assert_file_exists "review contract materialized" "$TMP_PROJECT/appmaker/skills/review/review-contract.md"
 assert_file_exists "status telemetry guide materialized" "$TMP_PROJECT/appmaker/skills/status/telemetry-refinement.md"
+assert_file_exists "init tooling integrations guide materialized" "$TMP_PROJECT/appmaker/skills/init/tooling-integrations.md"
 
 assert_eq "version marker matches plugin.json" "$PLUGIN_VERSION" "$PROJECT_VERSION"
 
@@ -49,5 +50,10 @@ assert_contains "CLAUDE.md pointer includes constitution" "$POINTER" "appmaker/c
 
 SETTINGS=$(cat "$TMP_PROJECT/.claude/settings.json")
 assert_contains "settings wires session-start hook" "$SETTINGS" "bash appmaker/hooks/session-start.sh"
+
+CONFIG=$(cat "$TMP_PROJECT/appmaker/config.yaml")
+assert_contains "config includes github_cli_enabled flag" "$CONFIG" "github_cli_enabled: false"
+assert_contains "config includes ref_tools_enabled flag" "$CONFIG" "ref_tools_enabled: false"
+assert_contains "config includes ref MCP server name" "$CONFIG" "ref_tools_mcp_server: ref"
 
 print_summary
