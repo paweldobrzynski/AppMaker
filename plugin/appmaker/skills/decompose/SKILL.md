@@ -72,6 +72,7 @@ Per slice, identify:
 - **blocked_by** (other slice IDs)
 - **traces_to** (PRD pcrit-id list)
 - **user_stories_covered** (from PRD)
+- **Implementation Decisions / Gray Areas** from PRD/interview/context; mark unresolved gray areas `human_required` or seed the exact decision question.
 - **Architecture Options Research** requirement for slices making high-impact architecture/library/vendor/storage/auth/design-system decisions; seed from PRD/context and mark pending if not complete.
 - **touches** (Graphify communities + files from context packet, if relevant)
 - **context_packets** (packet paths that informed slice)

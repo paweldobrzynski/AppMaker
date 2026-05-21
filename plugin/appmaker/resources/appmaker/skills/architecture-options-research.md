@@ -49,6 +49,11 @@ Minimum artifact:
 | Library A | ... | ... | ... | ... |
 | Custom build | ... | ... | ... | ... |
 
+**Package / dependency legitimacy**
+| Package / service | Registry / source | Legitimacy evidence | Decision |
+|---|---|---|---|
+| `<name>` | npm / PyPI / crate / GitHub / vendor | official docs, source repo, install command, maintainer signal | approved / reject / human_required |
+
 **Decision**
 - Chosen:
 - Why:
@@ -63,5 +68,7 @@ Minimum artifact:
 - Prefer official docs and source repos over generic advice.
 - Prefer boring, well-supported choices over novel options unless the feature specifically needs novelty.
 - Custom build requires a rationale against existing libraries/framework primitives.
+- New packages require Package / dependency legitimacy evidence. Guard against slopsquatting, abandoned packages, unofficial forks, and near-name substitutions.
+- If a package failed install, stop and investigate. Do not install a similarly named replacement unless the options matrix is updated and a human approves.
 - New abstraction requires a real second use case or clear removal of meaningful duplication.
 - If evidence is weak or sources disagree, mark the slice `human_required` or run a spike.

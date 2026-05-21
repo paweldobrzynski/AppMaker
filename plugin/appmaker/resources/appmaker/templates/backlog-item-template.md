@@ -43,6 +43,13 @@ Avoid file paths — they go stale. **Exception (per Matt Pocock canonical to-is
 - [ ] `setTheme('dark')` updates context, triggers re-render (traces_to: pcrit-003, test: tests/theme.test.ts::setTheme_triggers_rerender)
 - [ ] Toggle visual feedback feels responsive on Safari + Chrome (traces_to: pcrit-004, human-review: no flicker, < 300ms perceived latency)
 
+## Implementation Decisions / Gray Areas
+
+| Gray area | Decision | Evidence | Status |
+|---|---|---|---|
+| State owner | Use existing `src/theme/provider.tsx` | context packet + `rg -n "useTheme"` | resolved |
+| Error behavior | ... | ... | resolved / Unresolved gray area / human_required |
+
 ## Architecture Options Research
 
 **Required:** yes | no
@@ -126,6 +133,10 @@ Avoid file paths — they go stale. **Exception (per Matt Pocock canonical to-is
 
 Pending — filled by `/appmaker:tdd` after plan approval and before first RED test.
 
+## TDD Plan Check
+
+Pending — filled by `/appmaker:tdd` before first RED test. Required result: PASS or WARN with explicit accepted risk; FAIL blocks implementation.
+
 ## Execution Record
 
 **Base ref:** <sha | no_base_ref>
@@ -182,8 +193,10 @@ After completion (status flips to `done`), move file to `appmaker/backlog/done/<
 - **Front-matter mandatory.** All required fields present.
 - **`What to build` describes end-to-end behavior.** Not layer-by-layer.
 - **Acceptance criteria checkbox list** with inline annotations: `traces_to:` mandatory (links AC → PRD `pcrit-*`); `test:` optional for executable tests (form `<file>::<name>`, e.g. `tests/theme.test.ts::useTheme_returns_theme`) — closes AC ↔ test name drift; `human-review:` optional for manual ACs — must include explicit criterion describing what reviewer checks.
+- **Implementation Decisions / Gray Areas comes before planning.** Unresolved gray areas that affect architecture/API/UI behavior must be resolved, deferred with risk, or marked `human_required` before `/appmaker:tdd` starts.
 - **Brownfield Impact Audit is mandatory for existing systems.** If `project_mode: brownfield`, the section starts as `pending` during decomposition and must be `complete` before the first RED test. It must show evidence from searches, not only prose. Greenfield work may mark `Mode: greenfield` and `Audit status: not_applicable`.
 - **Approved TDD Plan is durable.** `/appmaker:tdd` writes the user-approved plan before first RED test. Review/checklist compare this dry-run intent against `Execution Record` actual files/tests.
+- **TDD Plan Check is mandatory.** PASS or accepted WARN before first RED; FAIL means revise plan or escalate.
 - **Execution Record captures planned-vs-actual work.** Prefer auto-filled factual fields. Human writes only intent, AC status, and drift explanation. `Base ref` anchors the slice start, dirty fields document pre-existing worktree state, planned fields declare intended files/tests, actual fields record verified outcome, `AC completed` summarizes checkbox progress, and `Drift notes` explains deviations or says `(none)`.
 - **Context packet links if used.** Don't paste Graphify output into backlog item.
 - **Touches are advisory.** Confirm in code; don't implement graph neighbors unless AC requires it.

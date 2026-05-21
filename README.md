@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.21. 19 skills (15 core + afk + status + token-audit + next). Anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 17 smoke test suites, 136 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.21. 19 skills (15 core + afk + status + token-audit + next). Governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, and TDD Plan Check before first RED. 21 smoke test suites, 272 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 

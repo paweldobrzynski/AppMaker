@@ -88,7 +88,7 @@ Agent(
 )
 ```
 
-Pass the checklist from `appmaker/skills/review/review-contract.md`. It includes code quality, constitution, glossary, AC coverage, Plan-vs-actual drift, architecture options research, Brownfield Impact Audit coverage, reuse/refactor-first rationale, visual system compliance, design standards compliance, test quality, surgical changes, security/performance, graph context, and memory regression.
+Pass the checklist from `appmaker/skills/review/review-contract.md`. It includes code quality, constitution, glossary, AC coverage, Plan-vs-actual drift, TDD Plan Check, Architecture Options Research/package legitimacy, Brownfield Impact Audit coverage, reuse/refactor-first rationale, visual/design compliance, exists/substantive/wired/functional verification, test quality, surgical scope, security/performance, graph context, and memory regression.
 
 #### 3b. `--mode=ultra` (v0.2.12 delegation to Claude Code built-in)
 

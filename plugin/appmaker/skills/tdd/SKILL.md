@@ -5,7 +5,7 @@ disable-model-invocation: true
 
 Test-driven dev per slice. Adopts Matt Pocock `tdd` (canonical) plus AppMaker extensions.
 
-Supporting refs: `appmaker/skills/tdd/*` plus `appmaker/skills/architecture-options-research.md`.
+Supporting refs: `appmaker/skills/tdd/*`, `appmaker/skills/architecture-options-research.md`, `appmaker/skills/context-budget.md`.
 
 ## When to invoke
 
@@ -52,7 +52,7 @@ Cite as `per wiki/testing.md: <pattern>` in the TDD plan when a test seam/loop p
 
 Load `appmaker/backlog/NNN-slug.md`. If no backlog item exists, refuse TDD and tell the user to run `/appmaker:decompose` (standard/strict) or create a light backlog item first. Do not infer a slice directly from `interview-result.md`.
 
-Read backlog fields: `What to build`, `Acceptance criteria` (`traces_to: pcrit-id`), `execution_class`, and `blocked_by`. If `human_required`, ask user per AC. If blockers remain, refuse start until they are `status: done`.
+Read backlog fields: `What to build`, `Acceptance criteria`, `Implementation Decisions / Gray Areas`, `execution_class`, and `blocked_by`. If blockers remain, refuse. If unresolved gray areas affect architecture/API/UI behavior, pause until resolved, deferred with risk, or `human_required`.
 
 ### 2. Read context (parallel reads OK)
 
@@ -62,6 +62,7 @@ Read backlog fields: `What to build`, `Acceptance criteria` (`traces_to: pcrit-i
 - `appmaker/memory/wiki/testing.md` + `integration-gotchas.md`
 - `appmaker/skills/tdd/*.md` — supporting reference on demand
 - Context packet paths from backlog item `context_packets`. If absent/stale and codebase context needed, run `/appmaker:context "<backlog topic>"`.
+- For large/agent-heavy/MCP-heavy work, read `appmaker/skills/context-budget.md` and run the Pre-flight MCP audit before adding more context.
 
 ### 2a. Architecture Options Research (MANDATORY for high-impact choices)
 
@@ -90,6 +91,7 @@ Matt Pocock checklist + AppMaker addition:
 - [ ] **AppMaker:** UI changes use reusable CSS/component primitives; no new hardcoded visual styling without documented exception.
 - [ ] **AppMaker:** every touched visual element follows existing design standards for tokens, states, accessibility, and responsive behavior.
 - [ ] **AppMaker:** TDD cycles cover every non-deferred dependency from the Brownfield Impact Audit.
+- [ ] **AppMaker:** run `TDD Plan Check` from `appmaker/skills/tdd/plan-check.md`; revise until PASS/WARN, escalate after 2 failed revisions.
 - [ ] Get user approval
 
 ### 3a. Plan output format

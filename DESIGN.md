@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.21 — anti-bureaucracy patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, checklist gates limited to invariant breakage, and METHOD.md field rule for new artifacts. 17 smoke suites, 136 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Status: 19 skills (15 core + afk + status + token-audit + next). v0.2.21 — governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, and TDD Plan Check before first RED. 21 smoke suites, 272 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD-inspired planning gates, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
 Last updated: 2026-05-19.
 
 ## Esencja (v0.2.12+ pozycjonowanie)

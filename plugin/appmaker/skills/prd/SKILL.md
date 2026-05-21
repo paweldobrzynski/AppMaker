@@ -138,6 +138,8 @@ LONG numbered list. Format: "As an <actor>, I want <feature>, so that <benefit>"
 
 For each decision, mark **verification**: `auto-check` OR `human-review-with-criteria`.
 
+Capture gray areas explicitly: API shape, data ownership, UI states, error handling, external services, and dependency choices. Unresolved gray areas must become PRD questions or `human_required` slice notes; don't let them silently become TDD assumptions.
+
 For high-impact architectural choices, complete `Architecture Options Research`: read `appmaker/skills/architecture-options-research.md` and finish an options matrix before finalizing the decision. Use local context first, then Ref (`ref_search_documentation` + `ref_read_url`) for official docs/private indexed docs/GitHub resources, with targeted web fallback only when Ref lacks coverage.
 
 **Do NOT include file paths or code snippets** — they age fast.

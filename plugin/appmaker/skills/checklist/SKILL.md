@@ -54,9 +54,13 @@ Required checks:
 | Execution class | backlog | missing or not `human_required|autonomous|conditional` |
 | AC test mapping | backlog | AC missing both `test:` and `human-review:` annotation |
 | AC checkbox coverage | backlog | item `done` with unchecked AC |
+| Implementation gray areas | backlog | unresolved gray areas without a decision, explicit deferral/risk, or `human_required` |
 | Architecture Options Research | feature/backlog | high-impact architecture/library/vendor/storage/auth/design-system item missing complete `## Architecture Options Research`, source evidence, options matrix, or decision rationale |
+| Package legitimacy | feature/backlog | new package/service dependency missing legitimacy evidence, or failed install substituted with a near-name package without human approval |
+| Context budget / MCP audit | feature/backlog | large, agent-heavy, or MCP-heavy work missing context budget / Pre-flight MCP audit notes |
 | Brownfield Impact Audit | brownfield/backlog | `in_progress`/`done` brownfield item missing `## Brownfield Impact Audit`, missing `Audit status: complete`, missing reuse/refactor-first decision, missing visual system/CSS reuse decision, missing design standards compliance check, or complete audit with no search evidence |
 | Approved TDD plan | backlog | done item missing non-empty `## Approved TDD Plan` = WARN |
+| TDD Plan Check | backlog | done item missing non-FAIL `## TDD Plan Check` result |
 | Execution Record base | backlog | missing `Base ref` = FAIL |
 | Execution Record tests | backlog | missing `Tests run` = FAIL |
 | Execution Record drift | backlog | planned-vs-actual differs and `Drift notes` is empty = WARN |
@@ -76,7 +80,9 @@ Prefer concrete commands:
 - `test -f <path>` for required files
 - `rg -no 'pcrit-[0-9]+|SC[0-9]+|ID[0-9]+'` for criteria/traces (project may use any stable ID format — `pcrit-*` is suggested, NOT required)
 - `rg -n 'status:|execution_class:|blocked_by:|traces_to:' appmaker/backlog`
+- `rg -n '^## Implementation Decisions / Gray Areas|Unresolved gray area|human_required' appmaker/backlog`
 - `rg -n '^## Architecture Options Research|Options matrix|Sources checked|ref_search_documentation|ref_read_url|Decision' appmaker/features appmaker/backlog appmaker/context`
+- `rg -n 'Package / dependency legitimacy|slopsquatting|failed install|Context budget / MCP audit|Pre-flight MCP audit|## TDD Plan Check|exists / substantive / wired / functional' appmaker/features appmaker/backlog appmaker/context appmaker/reviews`
 - `rg -n '^## Brownfield Impact Audit|Audit status:|rg -n|Search evidence|Dependency surface map|Reuse / refactor-first|Visual system / CSS reuse|Design standards compliance' appmaker/backlog`
 - `find appmaker/context -type f`
 - `git status --short` and `git log -1 --format=%ct -- graphify-out/GRAPH_REPORT.md` if git repo

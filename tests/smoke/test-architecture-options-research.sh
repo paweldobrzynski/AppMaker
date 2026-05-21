@@ -47,8 +47,11 @@ for phrase in \
   "ref_read_url" \
   "GitHub indexed resources" \
   "Options matrix" \
+  "Package / dependency legitimacy" \
   "At least two credible options" \
-  "Custom build requires a rationale"
+  "Custom build requires a rationale" \
+  "slopsquatting" \
+  "failed install"
 do
   COUNT=$(grep -cF "$phrase" "$ARCH_REF" || true)
   if [ "$COUNT" -gt 0 ]; then PRESENT=yes; else PRESENT=no; fi

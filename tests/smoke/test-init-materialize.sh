@@ -38,6 +38,8 @@ assert_file_exists ".claude/settings.json materialized" "$TMP_PROJECT/.claude/se
 assert_file_exists "review contract materialized" "$TMP_PROJECT/appmaker/skills/review/review-contract.md"
 assert_file_exists "status telemetry guide materialized" "$TMP_PROJECT/appmaker/skills/status/telemetry-refinement.md"
 assert_file_exists "init tooling integrations guide materialized" "$TMP_PROJECT/appmaker/skills/init/tooling-integrations.md"
+assert_file_exists "TDD plan check materialized" "$TMP_PROJECT/appmaker/skills/tdd/plan-check.md"
+assert_file_exists "context budget guide materialized" "$TMP_PROJECT/appmaker/skills/context-budget.md"
 
 assert_eq "version marker matches plugin.json" "$PLUGIN_VERSION" "$PROJECT_VERSION"
 
