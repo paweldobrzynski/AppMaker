@@ -1,5 +1,5 @@
 ---
-description: Bootstrap or upgrade AppMaker setup in current project. Materializes plugin resources (templates, supporting files) into appmaker/ project tree, creates appmaker/config.yaml + .appmaker-version, seeds constitution. Detects fresh-init vs upgrade; upgrade preserves user-owned files. Optional integrations (Graphify, Forest's CLAUDE.md, hooks). Use when starting new project, migrating existing project, or upgrading plugin resources.
+description: Bootstrap or upgrade AppMaker setup in current project. Materializes plugin resources, creates appmaker/config.yaml + .appmaker-version, seeds constitution, and configures optional integrations. Upgrade preserves user-owned files.
 disable-model-invocation: true
 ---
 
@@ -37,9 +37,10 @@ Check filesystem (parallel reads OK):
    - Warn: pass-3 sends docs/PDFs to LLM API once at build (~$X).
 4. Connect GitHub CLI (`gh`) now? [Y/n, highly recommended but optional] — enables GitHub issues/backlog and GitHub-backed research.
 5. Connect Ref Tools MCP now? [Y/n, highly recommended but optional] — enables Architecture Options Research against current docs/private indexed docs.
-6. Install Forest's CLAUDE.md baseline? [y/N]
-7. Configure pre-commit hook?
-8. Multi-project inheritance? (`~/Projects/CLAUDE.md`)
+6. Connect gstack browser runtime? [Y/n, optional, highly recommended for UI QA/design review] — enables fast browser evidence for `/appmaker:qa` and `/appmaker:design-review`.
+7. Install Forest's CLAUDE.md baseline? [y/N]
+8. Configure pre-commit hook?
+9. Multi-project inheritance? (`~/Projects/CLAUDE.md`)
 
 **Note:** the session-start hook is **default-on** as of v0.2.11 (prints a 1-line AppMaker status when sessions begin in an `appmaker/`-enabled folder). It is a silent read-only filesystem check, never blocks the session. To disable: delete `appmaker/hooks/session-start.sh` after init or remove the hook entry from `.claude/settings.json`.
 
@@ -85,6 +86,7 @@ If `.claude/settings.json` exists without `jq` available, the script prints a gu
   - Graphify outputs are read-only input for AppMaker. AppMaker writes only small context packets to `appmaker/context/`.
 - **GitHub CLI:** follow `appmaker/skills/init/tooling-integrations.md`: check `gh`, run/guide `gh auth login` only after user consent, verify `gh auth status --hostname github.com`, then set `github_cli_enabled: true`; never store tokens in project files.
 - **Ref Tools MCP:** follow `appmaker/skills/init/tooling-integrations.md`: configure user-level MCP for the active client (Codex: `~/.codex/config.toml`), verify availability, then set `ref_tools_enabled: true`; never store Ref API keys in the project.
+- **gstack browser runtime:** follow `appmaker/skills/init/tooling-integrations.md`: verify `bun`, install/guide gstack only after consent, verify `$B status`, then set `gstack_enabled: true` and `gstack_browse_bin: <path>`. Do not run gstack `--team` by default.
 - **Pre-commit hook:** write `.git/hooks/pre-commit` (or `.husky/pre-commit`) with detected `lint_command` + `typecheck_command` from `appmaker/config.yaml`.
 - **Multi-project:** instruct user about parent `~/Projects/CLAUDE.md`.
 
@@ -157,6 +159,7 @@ Proceed? [Y/n]
 ✓ Graphify: (installed or skipped per choice)
 ✓ GitHub CLI: (connected or skipped)
 ✓ Ref Tools MCP: (connected or skipped)
+✓ gstack browser runtime: (connected or skipped)
 ✓ Forest's CLAUDE.md: (installed or skipped)
 
 Next: /appmaker:start "<your first intent>"
@@ -181,7 +184,7 @@ Next: continue your workflow or check changelog if curious about new features.
 - **Confirm before destructive.** If `appmaker/` exists with custom content, ask before any modification.
 - **No silent defaults.** User sees every choice and confirms.
 - **Don't auto-pair Graphify.** Privacy implications require explicit user opt-in with cost note.
-- **Don't auto-login external tools.** GitHub CLI and Ref Tools MCP require explicit opt-in; store only capability flags in config, never tokens/API keys.
+- **Don't auto-login external tools.** GitHub CLI, Ref Tools MCP, and gstack browser runtime require explicit opt-in; store only capability flags/paths in config, never tokens/API keys.
 - **Don't treat Graphify as memory.** It is read-only code graph input. Persist only context packets derived from it.
 - **Don't run other skills mid-init.** Init only sets up scaffold. User invokes `/appmaker:start` after.
 - **Forest BEFORE materialize.** If installing Forest's `CLAUDE.md` baseline (`curl > CLAUDE.md`), it must run in step 2b — before the materialize script's pointer append in 2c — otherwise the AppMaker pointer is clobbered.

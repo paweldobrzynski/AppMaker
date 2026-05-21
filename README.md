@@ -11,12 +11,12 @@ When Claude Code ships a better primitive — Agent View, `/goal`, `/ultra-revie
 - **AppMaker layer adds:** PRD/decompose/checklist/archive lifecycle, `traces_to` AC linkage, constitution + glossary governance, retro → memory wiki, context packets, deterministic gates
 - **Above AppMaker (your project):** Concrete features built with the discipline
 
-Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for read-only codebase intelligence and [Forest's andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) for universal agent baseline.
+Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for read-only codebase intelligence, [Forest's andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) for universal agent baseline, and an optional gstack browser runtime for UI QA/design evidence.
 
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.21. 21 skills (17 core + afk + status + token-audit + next). Governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and gstack-inspired QA/design lifecycle gates. 22 smoke test suites, 306 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.21. 21 skills (17 core + afk + status + token-audit + next). Governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and optional gstack browser runtime for QA/design evidence. 23 smoke test suites, 344 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -252,7 +252,7 @@ Earlier heavyweight iteration (5 ADRs, 18 constitutional rules, 3 JSON Schemas, 
 
 - **[Matt Pocock Skills](https://github.com/mattpocock/skills)** (canonical) — markdown skills, single-purpose, "Skills for Real Engineers". AppMaker adopts: `grill`, `grill-with-docs`, `to-prd`, `to-issues`, `tdd` (with 5 supporting files), `diagnose`, `caveman` (style guide), `prototype`, `deprecated/ubiquitous-language` (format).
 - **[GSD / get-shit-done](https://github.com/gsd-build/get-shit-done)** — planning discipline reference. AppMaker adopts: TDD plan-check before execution, package/dependency legitimacy, context-budget awareness, gray-area surfacing, and verification beyond existence checks.
-- **[gstack](https://github.com/garrytan/gstack)** by `garrytan/gstack` — sprint lifecycle reference. AppMaker adopts: review readiness dashboard, QA plan handoff, diff-aware QA, design review, root-cause-first diagnosis, doc staleness checks, edit-scope guardrails, and optional adversarial review.
+- **[gstack](https://github.com/garrytan/gstack)** by `garrytan/gstack` — sprint lifecycle + optional gstack browser runtime reference. AppMaker adopts: review readiness dashboard, QA plan handoff, diff-aware QA, design review, root-cause-first diagnosis, doc staleness checks, edit-scope guardrails, optional adversarial review, and `$B` browser evidence when configured.
 - **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** — per-feature folder + archive flow + fluid iteration philosophy + slash command form factor (`/opsx:*`)
 - **[Spec Kit](https://github.com/github/spec-kit)** — constitution layer + opt-in deepening commands + cross-artifact analyze pattern + slash command form factor (`/speckit.*`)
 - **[Graphify](https://github.com/safishamsi/graphify)** — context layer (optional pair)

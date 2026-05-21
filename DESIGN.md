@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 21 skills (17 core + afk + status + token-audit + next). v0.2.21 — governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and gstack-inspired QA/design lifecycle gates. 22 smoke suites, 306 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Status: 21 skills (17 core + afk + status + token-audit + next). v0.2.21 — governance hardening patch: `rigor_level` config, Execution Record factual-field auto-fill guidance, persisted Approved TDD Plan, architecture/package legitimacy gates, context budget/MCP audit, TDD Plan Check before first RED, and optional gstack browser runtime for QA/design evidence. 23 smoke suites, 344 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
 Last updated: 2026-05-21.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
@@ -421,6 +421,7 @@ Body sections (mandatory unless noted):
 - QA / Smoke Plan handoff → adopted from `/appmaker:tdd` into `/appmaker:qa` and review
 - Diff-aware QA → adopted as `/appmaker:qa`
 - Visual/design review with screenshot evidence → adopted as `/appmaker:design-review`
+- Optional gstack browser runtime → adopted via `gstack_enabled`, `gstack_browse_bin`, and `$B` commands in QA/design-review
 - Root-cause-first investigation → strengthened in `/appmaker:diagnose`
 - Documentation staleness checks → adopted in review/checklist
 - Edit-scope guardrails → adopted via backlog `edit_scope`

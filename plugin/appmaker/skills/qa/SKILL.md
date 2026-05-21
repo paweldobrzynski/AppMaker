@@ -30,10 +30,30 @@ git diff --stat
 
 Classify touched surfaces: UI/browser, API, domain logic, data/schema, docs, build/deploy. For UI/browser work, QA must include browser execution and screenshot evidence unless impossible; if impossible, write the blocker.
 
+### 2a. gstack browser adapter
+
+If `appmaker/config.yaml` has `gstack_enabled: true`, use `gstack_browse_bin` as `$B`.
+
+```bash
+B="$(grep '^gstack_browse_bin:' appmaker/config.yaml | sed 's/^gstack_browse_bin:[[:space:]]*//')"
+[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+$B status
+```
+
+For UI/browser QA, prefer:
+- `$B goto <url>`
+- `$B snapshot -i`
+- `$B screenshot --full-page --path appmaker/qa/<scope>.png`
+- `$B responsive <url>`
+- `$B console --errors`
+- `$B network`
+
+If `gstack_required_for_ui_qa: true` and `$B status` fails, mark QA BLOCKED rather than falling back silently.
+
 ### 3. Run checks
 
 - Execute the project's configured test/lint commands when relevant.
-- For UI: open the app or provided URL, exercise the changed flow, capture screenshot evidence for default/hover/focus/active/disabled/error/responsive states touched by the diff.
+- For UI: open the app or provided URL, exercise the changed flow, capture screenshot evidence for default/hover/focus/active/disabled/error/responsive states touched by the diff. Use gstack when enabled.
 - For API/domain: run the narrowest command proving changed behavior plus one backward-compat check.
 - For docs-only: verify links/commands/examples that changed.
 

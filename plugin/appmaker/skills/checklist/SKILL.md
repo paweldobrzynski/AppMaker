@@ -63,6 +63,7 @@ Required checks:
 | TDD Plan Check | backlog | done item missing non-FAIL `## TDD Plan Check` result |
 | QA / Smoke Plan | backlog/review | operator-visible, API, or integration item missing `## QA / Smoke Plan` evidence or explicit deferral |
 | Design Review | UI/backlog | UI/CSS item missing design-review evidence or hardcoded visual exception |
+| gstack browser evidence | UI/backlog | `gstack_required_for_ui_qa: true` but UI QA/design review lacks `$B status`, screenshot, or responsive evidence |
 | Documentation staleness | feature/review | code changes affect documented commands/workflows/APIs/UI but docs were not updated or marked not_applicable |
 | Edit scope | backlog/review | actual changed files violate `edit_scope.allow` / `edit_scope.forbid` without drift notes or user approval |
 | Adversarial review | strict/review | high-risk diff lacks adversarial/ultra review or explicit deferral |
@@ -89,7 +90,7 @@ Prefer concrete commands:
 - `rg -n '^## Architecture Options Research|Options matrix|Sources checked|ref_search_documentation|ref_read_url|Decision' appmaker/features appmaker/backlog appmaker/context`
 - `rg -n 'Package / dependency legitimacy|slopsquatting|failed install|Context budget / MCP audit|Pre-flight MCP audit|## TDD Plan Check|exists / substantive / wired / functional' appmaker/features appmaker/backlog appmaker/context appmaker/reviews`
 - `rg -n '^## Brownfield Impact Audit|Audit status:|rg -n|Search evidence|Dependency surface map|Reuse / refactor-first|Visual system / CSS reuse|Design standards compliance' appmaker/backlog`
-- `rg -n '^## QA / Smoke Plan|Documentation staleness|edit_scope|Design Review|Adversarial review' appmaker/backlog appmaker/features appmaker/reviews appmaker/checklists`
+- `rg -n '^## QA / Smoke Plan|Documentation staleness|edit_scope|Design Review|Adversarial review|gstack browser evidence|\\$B status|screenshot|responsive' appmaker/backlog appmaker/features appmaker/reviews appmaker/checklists appmaker/qa`
 - `find appmaker/context -type f`
 - `git status --short` and `git log -1 --format=%ct -- graphify-out/GRAPH_REPORT.md` if git repo
 - Memory checks (scope=memory or project):

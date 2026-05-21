@@ -29,3 +29,4 @@ venv/
 # AppMaker user-project state (this repo distributes the plugin; users create their own appmaker/ in their projects)
 # Should NOT contain appmaker/ but guarded just in case:
 /appmaker/
+.gstack/

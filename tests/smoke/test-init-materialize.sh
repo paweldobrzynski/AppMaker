@@ -57,5 +57,7 @@ CONFIG=$(cat "$TMP_PROJECT/appmaker/config.yaml")
 assert_contains "config includes github_cli_enabled flag" "$CONFIG" "github_cli_enabled: false"
 assert_contains "config includes ref_tools_enabled flag" "$CONFIG" "ref_tools_enabled: false"
 assert_contains "config includes ref MCP server name" "$CONFIG" "ref_tools_mcp_server: ref"
+assert_contains "config includes gstack_enabled flag" "$CONFIG" "gstack_enabled: false"
+assert_contains "config includes gstack browse path" "$CONFIG" "gstack_browse_bin:"
 
 print_summary

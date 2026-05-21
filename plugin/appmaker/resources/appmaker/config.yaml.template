@@ -19,6 +19,9 @@ github_label_archive: archived
 github_cli_enabled: false            # true after `gh auth status --hostname github.com` succeeds
 ref_tools_enabled: false             # true after Ref MCP is configured in the active agent client
 ref_tools_mcp_server: ref            # expected MCP server name for Ref docs/search
+gstack_enabled: false                # true when optional gstack browser runtime is installed/verified
+gstack_browse_bin:                   # e.g. ~/.claude/skills/gstack/browse/dist/browse
+gstack_required_for_ui_qa: false     # strict projects may require gstack evidence for UI QA/design review
 
 # Project commands (auto-detected by /appmaker:init or set manually)
 test_command:                        # e.g. "npm test", "pytest", "cargo test"

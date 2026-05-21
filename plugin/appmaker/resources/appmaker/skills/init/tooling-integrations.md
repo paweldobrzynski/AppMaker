@@ -1,6 +1,6 @@
 # Init Tooling Integrations
 
-Use during `/appmaker:init` after the materialize script. These integrations are optional but highly recommended: without them AppMaker can still run, but GitHub-backed workflow automation and high-quality Architecture Options Research are weaker. These are user-level tool connections, not project secrets. Never store GitHub tokens or Ref API keys in `appmaker/`, `CLAUDE.md`, or git-tracked files.
+Use during `/appmaker:init` after the materialize script. These integrations are optional but highly recommended: without them AppMaker can still run, but GitHub workflow automation, Architecture Options Research, and browser-backed QA/design review are weaker. These are user-level tool connections, not project secrets. Never store GitHub tokens or Ref API keys in `appmaker/`, `CLAUDE.md`, or git-tracked files.
 
 ## GitHub CLI
 
@@ -43,3 +43,30 @@ env = { "REF_API_KEY" = "<your-api-key>" }
 ```
 
 Verify with `codex mcp list` when Codex is the active client, or the equivalent MCP server list command for the user's client. If Ref is available, set `ref_tools_enabled: true` and keep `ref_tools_mcp_server: ref`.
+
+## gstack Browser Runtime
+
+Purpose: optional gstack browser runtime for `/appmaker:qa` and `/appmaker:design-review` screenshot/browser evidence.
+
+Default install path:
+
+```bash
+git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
+cd ~/.claude/skills/gstack && ./setup
+```
+
+Verification:
+
+```bash
+B="$HOME/.claude/skills/gstack/browse/dist/browse"
+$B status
+```
+
+If successful, set:
+
+```yaml
+gstack_enabled: true
+gstack_browse_bin: ~/.claude/skills/gstack/browse/dist/browse
+```
+
+Do not run --team by default. Team mode changes repo/session behavior; only enable it after explicit user decision. Do not vendor gstack into AppMaker or project repos.

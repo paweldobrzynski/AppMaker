@@ -37,6 +37,20 @@ Hardcoded visuals without rationale are FAIL. New visual variants must be define
 
 For browser UI, require screenshot evidence before/after or current-state screenshots at representative desktop/mobile widths. If no browser is available, mark BLOCKED or require human-review criteria.
 
+If `appmaker/config.yaml` has `gstack_enabled: true`, use `gstack_browse_bin` as `$B`:
+
+```bash
+B="$(grep '^gstack_browse_bin:' appmaker/config.yaml | sed 's/^gstack_browse_bin:[[:space:]]*//')"
+[ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
+$B status
+$B screenshot --full-page --path appmaker/reviews/design-<scope>.png
+$B responsive <url>
+$B inspect <selector>
+$B hover <selector>
+```
+
+If `gstack_required_for_ui_qa: true` and `$B status` fails, mark design review BLOCKED rather than accepting unevidenced visual claims.
+
 ### 4. Persist report
 
 ```bash
