@@ -1,7 +1,7 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.22 — Phase dry-run patch: `/appmaker:phase <phase-id> --dry-run`, backlog phase metadata, write-scope conflict detection, persisted `appmaker/phase-plans/` evidence, explicit disabled `--execute` path, and optional gstack browser runtime still serving QA/design evidence. 24 smoke suites, 365 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, phase dry-run, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
-Last updated: 2026-05-21.
+Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.23 — Phase execute patch: `/appmaker:phase <phase-id> --dry-run` plans safe waves; `/appmaker:phase <phase-id> --execute` dispatches one subagent per item wave-by-wave, integrates, verifies, runs one Repair Loop, review/QA-gates, and persists `appmaker/phase-plans/` evidence. optional gstack browser runtime still serves QA/design evidence. 25 smoke suites, 391 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, phase dry-run/execute, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Last updated: 2026-05-22.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
 
@@ -42,7 +42,7 @@ LAYER 3: Optional Graphify pair (separate tool)
   zapisuje małe `appmaker/context/*.md` packets. Graphify remains read-only.
 
 LAYER 4: Optional execution runners
-  /appmaker:phase — dry-run phase planner for future parallel subagent work.
+  /appmaker:phase — dry-run + execute orchestrator for parallel subagent waves.
   /appmaker:afk — bounded autonomous loop for explicit `execution_class: autonomous` backlog items.
 ```
 
@@ -92,7 +92,7 @@ Note: high-impact architecture choices are already covered by the embedded Archi
 
 | Skill | Inspiration | Purpose |
 |---|---|---|
-| `/appmaker:phase` | GSD phase execution adapted | Phase dry-run: parallel waves, write-scope conflicts, persisted plan; execute disabled |
+| `/appmaker:phase` | GSD phase execution adapted | Phase dry-run + execute: safe waves, one subagent per item, verify/repair/review/QA evidence |
 | `/appmaker:afk` | Matt's Sandcastle / Ralph loop | Bounded autonomous loop over autonomous backlog items |
 | `/appmaker:sync-github` | Custom adapter | TODO: push/pull backlog ↔ GitHub issues (optional) |
 
@@ -141,7 +141,7 @@ AppMaker/
 │       ├── afk/SKILL.md                  ← /appmaker:afk
 │       ├── status/SKILL.md               ← /appmaker:status (v0.2.6)
 │       ├── token-audit/SKILL.md          ← /appmaker:token-audit (v0.2.8)
-│       └── phase/SKILL.md                ← /appmaker:phase (v0.2.22 dry-run)
+│       └── phase/SKILL.md                ← /appmaker:phase (v0.2.23 execute)
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                              ← archived prior iterations (skill format, slash command format)

@@ -23,7 +23,7 @@ DESIGN_BODY="$(cat "$DESIGN" 2>/dev/null || true)"
 
 assert_contains "phase skill is manual side-effect handoff" "$PHASE_BODY" "disable-model-invocation: true"
 assert_contains "phase supports dry-run command" "$PHASE_BODY" "/appmaker:phase <phase-id> --dry-run"
-assert_contains "phase execute is disabled in v1" "$PHASE_BODY" "--execute is TODO"
+assert_contains "phase supports execute command after dry-run" "$PHASE_BODY" "/appmaker:phase <phase-id> --execute"
 assert_contains "phase dry-run writes a persisted plan" "$PHASE_BODY" "appmaker/phase-plans/"
 assert_contains "phase requires write scope before planning waves" "$PHASE_BODY" "write_scope"
 assert_contains "phase detects write scope overlap conflicts" "$PHASE_BODY" "scope overlap"

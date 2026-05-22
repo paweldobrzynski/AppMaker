@@ -25,7 +25,7 @@ assert_contains "version is semver-ish" "$PLUGIN_VERSION" "."
 # Release-target assertion. Bump EXPECTED_RELEASE_VERSION together with the
 # 4 other places: plugin.json + marketplace.json + README:19 Status + DESIGN:3 Status.
 # Introduced v0.2.18 (pcrit-009 addendum); kept release-agnostic from v0.2.20.
-EXPECTED_RELEASE_VERSION="0.2.22"
+EXPECTED_RELEASE_VERSION="0.2.23"
 assert_eq "plugin.json version matches release target" "$EXPECTED_RELEASE_VERSION" "$PLUGIN_VERSION"
 
 # Cross-slice coherence: README + DESIGN Status narrative must reference release target.

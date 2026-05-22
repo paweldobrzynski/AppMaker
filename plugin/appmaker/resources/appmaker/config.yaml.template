@@ -36,6 +36,12 @@ checklist_report_dir: appmaker/checklists
 diagnostics_dir: appmaker/diagnostics
 review_report_dir: appmaker/reviews
 
+# Phase orchestrator config (Layer 4, explicit opt-in)
+max_parallel_agents: 3              # cap for /appmaker:phase --execute waves
+phase_plan_dir: appmaker/phase-plans
+phase_repair_attempts: 1            # bounded repair loop per failed wave
+phase_require_clean_git: true       # stop on unrelated dirty worktree before execute
+
 # Memory wiki (Karpathy-style compiled knowledge)
 memory_wiki_enabled: true
 memory_wiki_dir: appmaker/memory/wiki

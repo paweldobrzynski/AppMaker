@@ -1,16 +1,16 @@
 ---
-description: Plan one execution phase from AppMaker backlog items. Dry-run only in v1: groups independent items into parallel waves, detects write-scope conflicts, and persists a phase execution plan. Execute remains disabled until the dry-run contract is validated.
+description: Plan and execute one AppMaker phase from backlog items. Dry-run builds safe parallel waves; execute dispatches one subagent per item wave by wave, integrates results, verifies, repairs once, reviews/QA-gates, and persists phase evidence.
 disable-model-invocation: true
 ---
 
-Phase planner. GSD-like "do phase" adapted to AppMaker: plan first, evidence on disk, no execution until scope/dependency conflicts are visible.
+Phase Orchestrator. GSD-like "do phase" adapted to AppMaker: plan -> dispatch -> integrate -> verify -> repair/review/QA -> evidence. States: `PLANNED -> RUNNING -> VERIFYING -> REVIEWING -> DONE` (or `FAILED`).
 
 ## When to invoke
 
 - Manual: `/appmaker:phase <phase-id> --dry-run`
-- Execute: `/appmaker:phase <phase-id> --execute` is rejected for now. `--execute is TODO` until dry-run plans validate in real projects.
+- Manual: `/appmaker:phase <phase-id> --execute`
 - Suggested after `/appmaker:decompose` when several backlog items share `phase_id`
-- AFK-safe: NO — writes plan artifact and may later dispatch subagents; user approval required
+- AFK-safe: bounded only; writes code/tests/reports through subagents, requires explicit approval
 - Required state: `appmaker/backlog/*.md` items with phase metadata
 - Required input: `phase_id`
 
@@ -18,59 +18,29 @@ Phase planner. GSD-like "do phase" adapted to AppMaker: plan first, evidence on 
 
 ### 1. Read phase items
 
-Find active backlog items where frontmatter has `phase_id: <phase-id>`.
+Find active backlog items with `phase_id: <phase-id>`. Read `id`, `slug`, `status`, `execution_class`, `blocked_by`, `depends_on`, `agent_profile`, `write_scope`, `integration_risk`, `feature`, `traces_to`, `context_packets`. Read config: `test_command`, `lint_command`, `typecheck_command`, `build_command`, `max_parallel_agents` (default 3), `project_mode`, review/QA settings. Ignore `status: done` as targets, but allow done items to satisfy dependencies.
 
-Read each item's:
-- `id`, `slug`, `status`, `execution_class`
-- `blocked_by` and `depends_on`
-- `agent_profile`
-- `write_scope`
-- `integration_risk`
-- `feature`, `traces_to`, `context_packets`
+### 2. Dry-run validation
 
-Ignore `status: done` items as executable targets, but allow them to satisfy `blocked_by` / `depends_on`.
+FAIL plan if target item has missing `write_scope`, missing `agent_profile`, missing AC/PRD `traces_to`, `execution_class: human_required`, unresolved `blocked_by` / `depends_on`, or dirty worktree unrelated to phase item ownership.
 
-### 2. Validate dry-run inputs
-
-FAIL plan if any target item has:
-- missing `write_scope`
-- empty `agent_profile`
-- `execution_class: human_required`
-- unresolved `blocked_by`
-- unresolved `depends_on`
-- missing acceptance criteria or missing `traces_to` where from PRD
-
-WARN plan if:
-- `integration_risk: high`
-- `write_scope` is broad (`src/**`, project root, `**/*`)
-- item has no `context_packets` in brownfield mode
+WARN plan if `integration_risk: high`, `write_scope` is broad (`src/**`, project root, `**/*`), or brownfield item has no `context_packets`.
 
 ### 3. Detect scope overlap
 
-Compare normalized `write_scope` entries across items.
+Compare normalized `write_scope` entries. scope overlap = identical paths, parent/child ownership, or broad globs under same subsystem.
 
-Treat as scope overlap when:
-- two items claim identical paths/globs
-- one item claims a parent of another item's path
-- both claim broad globs under same subsystem
-
-Any scope overlap blocks parallel execution in the same wave. If conflict cannot be isolated by wave ordering, mark plan `FAIL` and ask user to split ownership or serialize the items.
+Overlap blocks same-wave execution. Unresolvable overlap = FAIL; user must split ownership or serialize.
 
 ### 4. Build Parallel Waves
 
-Topologically sort by `blocked_by` + `depends_on`.
+Topologically sort by `blocked_by` + `depends_on`. Cap each wave at `max_parallel_agents`. Prefer safe ownership over concurrency.
 
-Within each wave:
-- only include `status: open` items
-- no unresolved dependency
-- no `write_scope` overlap
-- no `human_required` item
-
-Prefer fewer, larger safe waves over aggressive parallelism. Phase dry-run optimizes for non-conflicting ownership, not maximum concurrency.
+Within each wave: status `open`, no unresolved dependency, no `write_scope` overlap, no `human_required` item.
 
 ### 5. Persist Phase Execution Plan
 
-Write a compact report to `appmaker/phase-plans/` even on FAIL:
+Write compact plan to `appmaker/phase-plans/` even on FAIL:
 
 ```bash
 mkdir -p appmaker/phase-plans
@@ -86,55 +56,124 @@ created: <ISO timestamp>
 # Phase Execution Plan
 
 ## Items
-
 | Item | Agent | Write Scope | Depends On | Risk | Can Run |
 |---|---|---|---|---|---|
-| 001-auth-service | backend-specialist | src/auth/, tests/auth/ | [] | medium | yes |
 
 ## Parallel Waves
-
 | Wave | Items | Reason |
 |---|---|---|
-| 1 | 001, 002 | no deps, no scope overlap |
-| 2 | 003 | depends_on: 001 |
 
 ## Conflicts
-
 | Items | Conflict | Resolution |
 |---|---|---|
-| 004/005 | scope overlap: src/auth/** | split write_scope or serialize |
 
 ## Subagent Task Contract
-
-Each future subagent receives exactly one backlog item, its owned `write_scope`, acceptance criteria, context packets, and the rule: do not edit outside scope; you are not alone in the codebase; do not revert others' edits; report drift instead.
-
-## Execute
-
-Disabled. --execute is TODO.
+Each future subagent receives one backlog item, owned `write_scope`, acceptance criteria, context packets, and this rule: do not edit outside write_scope; you are not alone in the codebase; do not revert others' edits; report drift and touched files.
 PLAN_EOF
 test -f "$REPORT_PATH" && echo "Phase plan: $REPORT_PATH"
 ```
 
-### 6. Output handoff
+### 6. Execute preflight
 
-Print:
+`/appmaker:phase <phase-id> --execute` requires latest PASS/WARN Phase Execution Plan for the same phase, no unresolved conflicts, user approval via AskUserQuestion, clean or attributable dirty worktree, and `max_parallel_agents` applied to every wave.
+
+If missing plan, run dry-run first and stop.
+
+### 7. Dispatch wave by wave
+
+Execute wave by wave. For each wave, start one subagent per item using Agent tool; do not use the Skill tool for side-effect skills. AppMaker phase itself orchestrates; subagents implement directly against the backlog item contract.
+
+Prompt shape:
 
 ```text
-Phase dry-run: PASS|WARN|FAIL
-Plan: appmaker/phase-plans/<file>.md
-Waves: <n>
-Conflicts: <n>
-Execute: disabled (--execute is TODO)
+Agent(
+  subagent_type: <agent_profile>,
+  description: "Phase <phase-id> item <NNN-slug>",
+  prompt: "
+    Implement exactly backlog item <path>.
+    Owned write_scope: <paths>.
+    Acceptance criteria + traces_to: <from backlog>.
+    Context packets: <paths>.
+    You are not alone in the codebase.
+    Do not revert others' edits.
+    Do not edit outside write_scope without stopping and reporting drift.
+    Fill Execution Record: actual files, tests run, AC completed, drift notes.
+    Report touched files and verification result.
+  "
+)
 ```
+
+wait for all subagents in the wave. If any subagent FAIL, stop phase unless Repair Loop is allowed.
+
+### 8. Integrate and verify
+
+After each wave: inspect touched files against `write_scope`; run configured `test_command`, `lint_command`, `typecheck_command`, `build_command` when present; run `/appmaker:checklist backlog <id>` for changed items if needed; update execution report with Wave Results and Integration Gate.
+
+Integration Gate PASS requires: no out-of-scope edits without drift note, verification commands pass, AC checkboxes/Execution Record updated, no unresolved conflict.
+
+### 9. Repair Loop
+
+One bounded Repair Loop per failed wave: if verification fails and maps to a wave item, dispatch one repair subagent for that item with same `write_scope`, same "not alone" warning, no broad refactor; rerun verification.
+
+Second failure = phase `FAILED`; user chooses fix manually / override / stop.
+
+### 10. Review + QA gate
+
+When all waves pass integration: run or hand off `/appmaker:review feature <feature>` or `/appmaker:review <ids>` per phase scope; run or hand off `/appmaker:qa` when QA / Smoke Plan or UI/browser surface exists; persist review/QA paths in phase report.
+
+No archive suggestion until review/QA gates are PASS or explicitly overridden.
+
+### 11. Persist Phase Execution Report
+
+Write report at start, append after every wave, finalize at end:
+
+```bash
+mkdir -p appmaker/phase-plans
+EXEC_PATH="appmaker/phase-plans/$(date -u +%Y-%m-%d-%H%M)-<phase-id>-execute.md"
+cat > "$EXEC_PATH" <<'EXEC_EOF'
+---
+phase_id: <phase-id>
+mode: execute
+status: RUNNING
+started: <ISO timestamp>
+---
+
+# Phase Execution Report
+
+## Wave Results
+| Wave | Items | Agents | Outcome | touched files |
+|---|---|---|---|---|
+
+## Integration Gate
+| Check | Result | Evidence |
+|---|---|---|
+
+## Repair Loop
+| Wave | Item | Action | Result |
+|---|---|---|---|
+
+## Review / QA
+| Gate | Result | Artifact |
+|---|---|---|
+
+## Stop
+(filled at end)
+EXEC_EOF
+test -f "$EXEC_PATH" && echo "Phase execution report: $EXEC_PATH"
+```
+
+Finalize status: `DONE` or `FAILED`.
 
 ## Guardrails
 
-- **Dry-run first.** No subagent execution in v1.
-- **Manual only.** `disable-model-invocation: true`; routers emit slash command and stop.
-- **One item per future subagent.** No feature-sized vague delegation.
-- **Owned write scope mandatory.** Missing `write_scope` = FAIL.
-- **No conflicting wave.** scope overlap blocks same-wave execution.
-- **Respect blockers.** `blocked_by` and `depends_on` both block execution.
-- **No human-required work.** Human-required items stay outside phase automation.
-- **Persist every result.** PASS/WARN/FAIL all create `appmaker/phase-plans/` evidence.
-- **No silent execute.** `--execute` returns "disabled" until separate implementation.
+- **Dry-run before execute.** Execute requires latest PASS/WARN plan.
+- **Manual approval.** AskUserQuestion before dispatch.
+- **MUST NOT use the Skill tool** for side-effect slash skills from inside phase.
+- **One subagent per item.** No vague feature-sized delegation.
+- **Bounded concurrency.** Respect `max_parallel_agents`.
+- **Owned scope.** do not edit outside write_scope.
+- **Shared workspace.** Every agent is told: you are not alone in the codebase.
+- **Stop on subagent FAIL** unless bounded Repair Loop applies.
+- **Verify before next wave.** No stacking broken waves.
+- **Review/QA before done.** Phase is not done until review/QA gates pass or user overrides.
+- **Persist every state.** Plan + execution report are audit trail.

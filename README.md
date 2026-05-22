@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.22. 22 skills (17 core + afk + status + token-audit + next + phase). Phase dry-run patch: `/appmaker:phase <phase-id> --dry-run`, backlog phase metadata, write-scope conflict detection, and persisted `appmaker/phase-plans/` evidence. 24 smoke test suites, 365 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.23. 22 skills (17 core + afk + status + token-audit + next + phase). Phase orchestrator patch: `/appmaker:phase <phase-id> --dry-run` plans safe waves; `/appmaker:phase <phase-id> --execute` dispatches one subagent per item wave-by-wave, verifies, repairs once, review/QA-gates, and persists `appmaker/phase-plans/` evidence. 25 smoke test suites, 391 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -90,10 +90,11 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:plan                  → durable plan artifacts for large work units (multi-phase)
 ```
 
-### Layer 4 — phase planner + AFK runner
+### Layer 4 — phase orchestrator + AFK runner
 
 ```
 /appmaker:phase <phase-id> --dry-run → plan parallel waves, detect write-scope conflicts
+/appmaker:phase <phase-id> --execute → dispatch wave subagents, verify, repair, review/QA-gate
 /appmaker:afk                   → controlled autonomous loop for autonomous backlog items
 /appmaker:sync-github           → push/pull backlog ↔ GitHub issues (optional adapter) [TODO]
 ```
@@ -128,7 +129,7 @@ tool; routers such as `/appmaker:start` and `/appmaker:next` must show the exact
 | glossary | `true` | Side effect: writes glossary.md (v0.2.9 fix — was `false`; now explicit user slash command only) |
 | status | `true` | Read-only filesystem inspection (no writes, but explicit user trigger) |
 | token-audit | `true` | Read-only diagnostic (parses session logs, no writes) |
-| phase | `true` | Side effect: writes phase dry-run plan; future execute remains disabled |
+| phase | `true` | Side effect: writes phase plans/reports and dispatches bounded subagents |
 | afk | `true` | Side effect: runs bounded autonomous work loop |
 
 **Why some skills keep `false` (intentional, not oversight):**
@@ -185,7 +186,7 @@ AppMaker/
 │       ├── status/SKILL.md             ← v0.2.6: compact state snapshot
 │       ├── token-audit/SKILL.md        ← v0.2.8: session log diagnostic
 │       ├── next/SKILL.md               ← v0.2.13: lifecycle orchestrator (user-explicit chain trigger)
-│       └── phase/SKILL.md              ← v0.2.22: dry-run phase planner for future subagent execution
+│       └── phase/SKILL.md              ← v0.2.23: phase orchestrator for wave subagent execution
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                             ← archived prior iterations

@@ -6,12 +6,12 @@
   },
   "metadata": {
     "description": "AppMaker plugin — single-purpose Claude Code skills orchestrating full dev lifecycle",
-    "version": "0.2.22"
+    "version": "0.2.23"
   },
   "plugins": [
     {
       "name": "appmaker",
-      "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → QA → Archive, with phase dry-runs for future subagent execution. Inspired by Matt Pocock, GSD, gstack, OpenSpec, Spec Kit. Pairs with Graphify + Forest's CLAUDE.md.",
+      "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → QA → Archive, with phase orchestration for parallel subagent execution. Inspired by Matt Pocock, GSD, gstack, OpenSpec, Spec Kit. Pairs with Graphify + Forest's CLAUDE.md.",
       "source": "./plugin/appmaker",
       "strict": false
     }
