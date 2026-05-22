@@ -79,6 +79,16 @@ if [ -n "$FEATURE" ] && [ -f "appmaker/features/$FEATURE/review.md" ]; then
   REVIEW_STATUS=$(grep -m1 '^\*\*Status:\*\*' "appmaker/features/$FEATURE/review.md" 2>/dev/null | awk '{print $2}')
 fi
 
+# Phase Orchestrator visibility: latest dry-run/execute report, if any.
+PHASE_STATUS="—"
+PHASE_FILE=$(ls -t appmaker/phase-plans/*-execute.md appmaker/phase-plans/*-dry-run.md 2>/dev/null | head -1)
+if [ -n "$PHASE_FILE" ]; then
+  PHASE_MODE=$(grep -m1 '^mode:' "$PHASE_FILE" 2>/dev/null | awk '{print $2}')
+  PHASE_STATE=$(grep -m1 '^status:' "$PHASE_FILE" 2>/dev/null | awk '{print $2}')
+  PHASE_ID=$(grep -m1 '^phase_id:' "$PHASE_FILE" 2>/dev/null | awk '{print $2}')
+  PHASE_STATUS="$PHASE_ID $PHASE_MODE $PHASE_STATE ($(basename "$PHASE_FILE"))"
+fi
+
 # PRD / decomposition presence
 PRD_OK="—"; DECOMP_OK="—"
 if [ -n "$FEATURE" ]; then
@@ -120,6 +130,7 @@ May compute project token volume from Claude Code jsonl logs if `jq` and logs ar
 | Decomposition | ✓ |
 | TDD | 5/7 done (open: 006, 007) |
 | Checklist | WARN (latest: 2026-05-11-feature-001-...post-archive.md) |
+| Phase Orchestrator | 001-ui-shell dry-run PASS (latest plan) |
 | Review | feature-level: PASS |
 | Review Readiness Dashboard | Architecture Research / Brownfield Audit / TDD Plan Check / QA / Smoke Plan / Design Review / Documentation staleness / Archive |
 | Archive | not archived |
@@ -144,6 +155,7 @@ Heuristic, in priority order:
 | Slices partially done | `/appmaker:tdd <lowest-open-slice-id>` |
 | All slices done, no review | `/appmaker:review feature <NNN>` |
 | Review PASS but QA / Smoke Plan or Design Review missing for touched UI | `/appmaker:qa` or `/appmaker:design-review diff` |
+| Latest Phase Orchestrator dry-run is PASS/WARN and execute report missing | `/appmaker:phase <phase-id> --execute` |
 | Review PASS, not archived | `/appmaker:archive <NNN-slug>` |
 | Active feature is force-archived with open slices | `/appmaker:tdd <open-slice>` (finish work) OR move slice to `done/` if completed externally |
 

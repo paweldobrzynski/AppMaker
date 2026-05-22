@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.23 — Phase execute patch: `/appmaker:phase <phase-id> --dry-run` plans safe waves; `/appmaker:phase <phase-id> --execute` dispatches one subagent per item wave-by-wave, integrates, verifies, runs one Repair Loop, review/QA-gates, and persists `appmaker/phase-plans/` evidence. optional gstack browser runtime still serves QA/design evidence. 25 smoke suites, 391 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, phase dry-run/execute, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.24 — Phase execute runtime patch: deterministic `phase-plan.sh` persists PASS/FAIL dry-runs, checklist/status understand phase scope, and config exposes `local|worktree|pr` execution modes for future worktree/PR isolation. optional gstack browser runtime still serves QA/design evidence. 26 smoke suites, 405 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, phase dry-run/execute/runtime, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
 Last updated: 2026-05-22.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
@@ -88,7 +88,7 @@ Profile:
 
 Note: high-impact architecture choices are already covered by the embedded Architecture Options Research gate in PRD/decompose/TDD/review/checklist. The future `/appmaker:research` skill is for standalone reusable research caches, not for replacing that gate.
 
-### Layer 4 — AFK runner
+### Layer 4 — phase orchestrator + AFK runner
 
 | Skill | Inspiration | Purpose |
 |---|---|---|
@@ -108,7 +108,8 @@ AppMaker/
 │   ├── hooks/
 │   │   └── session-start.sh              ← v0.2.6: 1-line status print on session start
 │   ├── scripts/
-│   │   └── init-materialize.sh            ← resource materializer used by init skill
+│   │   ├── init-materialize.sh            ← resource materializer used by init skill
+│   │   └── phase-plan.sh                  ← deterministic phase dry-run planner
 │   ├── resources/                        ← packaged data materialized by /appmaker:init
 │   │   ├── appmaker/
 │   │   │   ├── memory/                   ← Karpathy-style wiki seed files
@@ -141,7 +142,7 @@ AppMaker/
 │       ├── afk/SKILL.md                  ← /appmaker:afk
 │       ├── status/SKILL.md               ← /appmaker:status (v0.2.6)
 │       ├── token-audit/SKILL.md          ← /appmaker:token-audit (v0.2.8)
-│       └── phase/SKILL.md                ← /appmaker:phase (v0.2.23 execute)
+│       └── phase/SKILL.md                ← /appmaker:phase (v0.2.24 runtime)
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                              ← archived prior iterations (skill format, slash command format)

@@ -41,6 +41,10 @@ max_parallel_agents: 3              # cap for /appmaker:phase --execute waves
 phase_plan_dir: appmaker/phase-plans
 phase_repair_attempts: 1            # bounded repair loop per failed wave
 phase_require_clean_git: true       # stop on unrelated dirty worktree before execute
+phase_execution_mode: local         # local | worktree | pr
+phase_worktree_base_dir: ../appmaker-phase-worktrees
+phase_pr_base_branch: main
+phase_pr_draft: true                # create draft PRs in pr mode; orchestrator integrates
 
 # Memory wiki (Karpathy-style compiled knowledge)
 memory_wiki_enabled: true

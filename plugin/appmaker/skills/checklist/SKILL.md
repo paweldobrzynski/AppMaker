@@ -9,7 +9,8 @@ Checklist gate. Spec Kit `/analyze` spirit, AppMaker invariants. Deterministic f
 
 ## When to invoke
 
-- Manual: `/appmaker:checklist [feature <NNN-slug> | backlog <NNN> | project | archive <NNN-slug> | memory]`
+- Manual: `/appmaker:checklist [feature <NNN-slug> | backlog <NNN> | phase <phase-id> | project | archive <NNN-slug> | memory]`
+- Manual: `/appmaker:checklist phase <phase-id>`
 - Suggested by `decompose` before `tdd`, by `archive` before closeout, by `afk` before loops
 - AFK-safe: yes for read-only checks; writes report
 - Required state: `appmaker/`
@@ -79,6 +80,9 @@ Required checks:
 | Memory broken links | project/memory | `[[name]]` in wiki/* that doesn't resolve to existing memory file = FAIL |
 | Memory stale pages | project/memory | `memory/wiki/*.md` mtime > 30 days since last touch = WARN |
 | Memory raw orphans | project/memory | `memory/raw/*.md` not referenced in `memory/log.md` and mtime > 30 days = WARN |
+| Phase dry-run plan | phase | latest `appmaker/phase-plans/*-<phase-id>-dry-run.md` missing, `status: FAIL`, or unresolved conflicts |
+| Phase execute report | phase | phase claims RUNNING/DONE but `*-execute.md` lacks Wave Results or Integration Gate |
+| Phase execution mode | phase | `phase_execution_mode: pr` without GitHub CLI config, or `worktree` without base dir |
 
 ### 3. Use shell where useful
 
@@ -92,6 +96,8 @@ Prefer concrete commands:
 - `rg -n '^## Brownfield Impact Audit|Audit status:|rg -n|Search evidence|Dependency surface map|Reuse / refactor-first|Visual system / CSS reuse|Design standards compliance' appmaker/backlog`
 - `rg -n '^## QA / Smoke Plan|Documentation staleness|edit_scope|Design Review|Adversarial review|gstack browser evidence|\\$B status|screenshot|responsive' appmaker/backlog appmaker/features appmaker/reviews appmaker/checklists appmaker/qa`
 - `find appmaker/context -type f`
+- `ls -t appmaker/phase-plans/*-<phase-id>-dry-run.md appmaker/phase-plans/*-<phase-id>-execute.md 2>/dev/null | head`
+- `grep -m1 '^status:' appmaker/phase-plans/*-<phase-id>-dry-run.md`
 - `git status --short` and `git log -1 --format=%ct -- graphify-out/GRAPH_REPORT.md` if git repo
 - Memory checks (scope=memory or project):
   - broken `[[links]]`: `rg -no '\[\[[^]]+\]\]' appmaker/memory/` then for each match `test -f appmaker/memory/wiki/<name>.md || test -f appmaker/memory/<name>.md`

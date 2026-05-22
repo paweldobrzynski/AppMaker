@@ -134,6 +134,7 @@ Will add new config fields:
   - checklist_report_dir: appmaker/checklists
   - afk_report_dir: appmaker/afk
   - phase_plan_dir: appmaker/phase-plans
+  - phase_execution_mode: local
 Will NOT touch (user-owned):
   - appmaker/constitution.md
   - appmaker/glossary.md (12 terms)

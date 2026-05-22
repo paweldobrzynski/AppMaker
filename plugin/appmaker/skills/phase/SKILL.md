@@ -1,5 +1,5 @@
 ---
-description: Plan and execute one AppMaker phase from backlog items. Dry-run builds safe parallel waves; execute dispatches one subagent per item wave by wave, integrates results, verifies, repairs once, reviews/QA-gates, and persists phase evidence.
+description: Plan and execute one AppMaker phase from backlog items. Dry-run calls deterministic phase-plan.sh to build safe waves; execute dispatches one subagent per item wave by wave, integrates results, verifies, repairs once, reviews/QA-gates, and persists phase evidence.
 disable-model-invocation: true
 ---
 
@@ -7,7 +7,7 @@ Phase Orchestrator. GSD-like "do phase" adapted to AppMaker: plan -> dispatch ->
 
 ## When to invoke
 
-- Manual: `/appmaker:phase <phase-id> --dry-run`
+- Manual: `/appmaker:phase <phase-id> --dry-run` (run deterministic `phase-plan.sh` first)
 - Manual: `/appmaker:phase <phase-id> --execute`
 - Suggested after `/appmaker:decompose` when several backlog items share `phase_id`
 - AFK-safe: bounded only; writes code/tests/reports through subagents, requires explicit approval
@@ -16,9 +16,19 @@ Phase Orchestrator. GSD-like "do phase" adapted to AppMaker: plan -> dispatch ->
 
 ## Process
 
+### 0. Deterministic dry-run helper
+
+Before model judgment, run the packaged planner from the project root:
+
+```bash
+bash <plugin-root>/scripts/phase-plan.sh <phase-id>
+```
+
+The helper reads `appmaker/backlog/*.md`, validates phase metadata, detects dependency/scope conflicts, builds `max_parallel_agents` waves, and persists `appmaker/phase-plans/*-<phase-id>-dry-run.md`. Treat its `status: FAIL` as blocking; do not dispatch agents until the plan is PASS or WARN and the user explicitly approves execute.
+
 ### 1. Read phase items
 
-Find active backlog items with `phase_id: <phase-id>`. Read `id`, `slug`, `status`, `execution_class`, `blocked_by`, `depends_on`, `agent_profile`, `write_scope`, `integration_risk`, `feature`, `traces_to`, `context_packets`. Read config: `test_command`, `lint_command`, `typecheck_command`, `build_command`, `max_parallel_agents` (default 3), `project_mode`, review/QA settings. Ignore `status: done` as targets, but allow done items to satisfy dependencies.
+Find active backlog items with `phase_id: <phase-id>`. Read `id`, `slug`, `status`, `execution_class`, `blocked_by`, `depends_on`, `agent_profile`, `write_scope`, `integration_risk`, `feature`, `traces_to`, `context_packets`. Read config: `test_command`, `lint_command`, `typecheck_command`, `build_command`, `max_parallel_agents` (default 3), `phase_execution_mode` (`local|worktree|pr`, default `local`), `project_mode`, review/QA settings. Ignore `status: done` as targets, but allow done items to satisfy dependencies.
 
 ### 2. Dry-run validation
 
@@ -78,6 +88,12 @@ test -f "$REPORT_PATH" && echo "Phase plan: $REPORT_PATH"
 `/appmaker:phase <phase-id> --execute` requires latest PASS/WARN Phase Execution Plan for the same phase, no unresolved conflicts, user approval via AskUserQuestion, clean or attributable dirty worktree, and `max_parallel_agents` applied to every wave.
 
 If missing plan, run dry-run first and stop.
+
+Execution mode contract:
+
+- `local` (default): subagents work in the current workspace with strict `write_scope` and wave-by-wave verification.
+- `worktree`: create one per-item git worktree under `phase_worktree_base_dir`; integrate each wave back to the main workspace only after item verification passes.
+- `pr`: require `github_cli_enabled: true`, authenticated `gh`, `phase_pr_base_branch`, and clean base. Each item branch/PR is draft by default (`phase_pr_draft: true`); the phase orchestrator reviews and integrates PRs wave by wave. Subagents must not merge their own PRs.
 
 ### 7. Dispatch wave by wave
 

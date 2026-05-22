@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.23. 22 skills (17 core + afk + status + token-audit + next + phase). Phase orchestrator patch: `/appmaker:phase <phase-id> --dry-run` plans safe waves; `/appmaker:phase <phase-id> --execute` dispatches one subagent per item wave-by-wave, verifies, repairs once, review/QA-gates, and persists `appmaker/phase-plans/` evidence. 25 smoke test suites, 391 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.24. 22 skills (17 core + afk + status + token-audit + next + phase). Real phase runtime patch: deterministic `phase-plan.sh` persists PASS/FAIL dry-runs, checklist/status understand phase scope, and config exposes `local|worktree|pr` execution modes. 26 smoke test suites, 405 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -149,7 +149,8 @@ AppMaker/
 │   ├── hooks/
 │   │   └── session-start.sh            ← v0.2.6: prints 1-line status on session start
 │   ├── scripts/
-│   │   └── init-materialize.sh          ← fresh init/upgrade resource materializer
+│   │   ├── init-materialize.sh          ← fresh init/upgrade resource materializer
+│   │   └── phase-plan.sh                ← deterministic /appmaker:phase dry-run planner
 │   ├── resources/                        ← packaged resources, materialized by /appmaker:init
 │   │   ├── appmaker/
 │   │   │   ├── config.yaml.template
@@ -186,7 +187,7 @@ AppMaker/
 │       ├── status/SKILL.md             ← v0.2.6: compact state snapshot
 │       ├── token-audit/SKILL.md        ← v0.2.8: session log diagnostic
 │       ├── next/SKILL.md               ← v0.2.13: lifecycle orchestrator (user-explicit chain trigger)
-│       └── phase/SKILL.md              ← v0.2.23: phase orchestrator for wave subagent execution
+│       └── phase/SKILL.md              ← v0.2.24: phase planner + wave subagent execution
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                             ← archived prior iterations
