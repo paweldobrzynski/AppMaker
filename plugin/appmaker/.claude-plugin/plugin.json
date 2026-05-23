@@ -1,7 +1,7 @@
 {
   "name": "appmaker",
-  "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → QA → Archive, with phase orchestration for parallel subagent execution. Inspired by Matt Pocock skills, GSD, gstack, OpenSpec, Spec Kit. Pairs with Graphify and Forest's CLAUDE.md.",
-  "version": "0.2.24",
+  "description": "Single-purpose Claude Code skills orchestrating full dev lifecycle: Interview → PRD → Decomposition → TDD → Review → QA → Archive, with phase orchestration and a local Studio UI for project status and phase planning. Inspired by Matt Pocock skills, GSD, gstack, OpenSpec, Spec Kit. Pairs with Graphify and Forest's CLAUDE.md.",
+  "version": "0.2.26",
   "author": {
     "name": "Paweł Dobrzyński",
     "email": "pawedo@gmail.com"

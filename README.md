@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.24. 22 skills (17 core + afk + status + token-audit + next + phase). Real phase runtime patch: deterministic `phase-plan.sh` persists PASS/FAIL dry-runs, checklist/status understand phase scope, and config exposes `local|worktree|pr` execution modes. 26 smoke test suites, 405 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.26. 22 skills (17 core + afk + status + token-audit + next + phase). AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. 28 smoke test suites, 467 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -99,6 +99,14 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:sync-github           → push/pull backlog ↔ GitHub issues (optional adapter) [TODO]
 ```
 
+### Local Studio UI
+
+```bash
+node /path/to/AppMaker/plugin/appmaker/studio/server.mjs --project-dir /path/to/your-project --port 19773
+```
+
+Open the printed localhost URL. Studio reads AppMaker JSON APIs and serves a cockpit for project status, evidence, and phase dry-runs. It does not replace repo artifacts; `appmaker/` remains the source of truth.
+
 ## Invocation control (per skill)
 
 Each skill declares `disable-model-invocation` in frontmatter:
@@ -150,7 +158,11 @@ AppMaker/
 │   │   └── session-start.sh            ← v0.2.6: prints 1-line status on session start
 │   ├── scripts/
 │   │   ├── init-materialize.sh          ← fresh init/upgrade resource materializer
-│   │   └── phase-plan.sh                ← deterministic /appmaker:phase dry-run planner
+│   │   ├── phase-plan.sh                ← deterministic /appmaker:phase dry-run planner (+ --json)
+│   │   └── status-json.sh               ← read-only project status JSON for UI/adapters
+│   ├── studio/
+│   │   ├── server.mjs                   ← local Studio server / JSON API bridge
+│   │   └── public/                      ← static cockpit UI
 │   ├── resources/                        ← packaged resources, materialized by /appmaker:init
 │   │   ├── appmaker/
 │   │   │   ├── config.yaml.template
@@ -187,7 +199,7 @@ AppMaker/
 │       ├── status/SKILL.md             ← v0.2.6: compact state snapshot
 │       ├── token-audit/SKILL.md        ← v0.2.8: session log diagnostic
 │       ├── next/SKILL.md               ← v0.2.13: lifecycle orchestrator (user-explicit chain trigger)
-│       └── phase/SKILL.md              ← v0.2.24: phase planner + wave subagent execution
+│       └── phase/SKILL.md              ← v0.2.26: phase planner + Studio-readable JSON contract
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                             ← archived prior iterations

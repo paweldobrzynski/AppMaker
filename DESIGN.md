@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.24 — Phase execute runtime patch: deterministic `phase-plan.sh` persists PASS/FAIL dry-runs, checklist/status understand phase scope, and config exposes `local|worktree|pr` execution modes for future worktree/PR isolation. optional gstack browser runtime still serves QA/design evidence. 26 smoke suites, 405 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, phase dry-run/execute/runtime, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.26 — AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. Phase execute remains the wave-by-wave subagent runtime contract. optional gstack browser runtime still serves QA/design evidence. 28 smoke suites, 467 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, engine JSON API, Studio UI, phase dry-run/execute/runtime, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
 Last updated: 2026-05-22.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
@@ -44,6 +44,10 @@ LAYER 3: Optional Graphify pair (separate tool)
 LAYER 4: Optional execution runners
   /appmaker:phase — dry-run + execute orchestrator for parallel subagent waves.
   /appmaker:afk — bounded autonomous loop for explicit `execution_class: autonomous` backlog items.
+
+LAYER 5: Optional local Studio UI
+  plugin/appmaker/studio/server.mjs — localhost cockpit over deterministic JSON APIs.
+  Repo/appmaker artifacts remain source of truth; Studio is view/control plane.
 ```
 
 Profile:
@@ -109,7 +113,11 @@ AppMaker/
 │   │   └── session-start.sh              ← v0.2.6: 1-line status print on session start
 │   ├── scripts/
 │   │   ├── init-materialize.sh            ← resource materializer used by init skill
-│   │   └── phase-plan.sh                  ← deterministic phase dry-run planner
+│   │   ├── phase-plan.sh                  ← deterministic phase dry-run planner (+ --json)
+│   │   └── status-json.sh                 ← read-only project status JSON for UI/adapters
+│   ├── studio/
+│   │   ├── server.mjs                     ← local Studio server / JSON API bridge
+│   │   └── public/                        ← static cockpit UI
 │   ├── resources/                        ← packaged data materialized by /appmaker:init
 │   │   ├── appmaker/
 │   │   │   ├── memory/                   ← Karpathy-style wiki seed files
@@ -142,7 +150,7 @@ AppMaker/
 │       ├── afk/SKILL.md                  ← /appmaker:afk
 │       ├── status/SKILL.md               ← /appmaker:status (v0.2.6)
 │       ├── token-audit/SKILL.md          ← /appmaker:token-audit (v0.2.8)
-│       └── phase/SKILL.md                ← /appmaker:phase (v0.2.24 runtime)
+│       └── phase/SKILL.md                ← /appmaker:phase (v0.2.26 runtime)
 ├── DESIGN.md / README.md / REFERENCES.md
 ├── tests/
 └── history/                              ← archived prior iterations (skill format, slash command format)

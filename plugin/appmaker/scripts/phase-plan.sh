@@ -6,6 +6,7 @@ set -u
 usage() {
   cat <<'USAGE'
 Usage: phase-plan.sh <phase-id> [--project-dir DIR]
+       phase-plan.sh --json <phase-id> [--project-dir DIR]
 
 Reads appmaker/backlog/*.md, validates phase ownership metadata, builds safe
 parallel waves, and writes appmaker/phase-plans/*-dry-run.md.
@@ -19,9 +20,13 @@ die() {
 
 PHASE_ID=""
 PROJECT_DIR="."
+JSON_MODE=0
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --json)
+      JSON_MODE=1
+      ;;
     --project-dir)
       shift
       [ "$#" -gt 0 ] || die "--project-dir requires a value"
@@ -63,6 +68,42 @@ WAVES_FILE="$TMP_ROOT/waves.tsv"
 
 trim_value() {
   sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^"//; s/"$//; s/^'\''//; s/'\''$//'
+}
+
+json_escape() {
+  sed 's/\\/\\\\/g; s/"/\\"/g; s/	/\\t/g'
+}
+
+json_string() {
+  printf '"%s"' "$(printf "%s" "$1" | json_escape)"
+}
+
+json_words_array() {
+  local words="$1"
+  local first=1
+  local word
+  printf '['
+  for word in $words; do
+    [ "$first" -eq 1 ] || printf ','
+    json_string "$word"
+    first=0
+  done
+  printf ']'
+}
+
+json_lines_array() {
+  local file_name="$1"
+  local first=1
+  local line_value
+  printf '['
+  if [ -s "$file_name" ]; then
+    while IFS= read -r line_value; do
+      [ "$first" -eq 1 ] || printf ','
+      json_string "$line_value"
+      first=0
+    done < "$file_name"
+  fi
+  printf ']'
 }
 
 extract_scalar() {
@@ -459,8 +500,54 @@ mkdir -p "$PLAN_DIR"
   echo "Each future subagent receives one backlog item, owned write_scope, acceptance criteria, context packets, and this rule: do not edit outside write_scope; you are not alone in the codebase; do not revert others' edits; report drift and touched files."
 } > "$REPORT_PATH"
 
-echo "Phase plan: $REPORT_PATH"
-echo "Status: $PLAN_STATE"
+if [ "$JSON_MODE" -eq 1 ]; then
+  printf '{'
+  printf '"phase_id":'
+  json_string "$PHASE_ID"
+  printf ',"mode":"dry-run"'
+  printf ',"status":'
+  json_string "$PLAN_STATE"
+  printf ',"execution_mode":'
+  json_string "$EXECUTION_MODE"
+  printf ',"report_path":'
+  json_string "$REPORT_PATH"
+  printf ',"waves":['
+  first_wave=1
+  if [ -s "$WAVES_FILE" ]; then
+    while IFS='|' read -r wave_no wave_items wave_reason; do
+      [ "$first_wave" -eq 1 ] || printf ','
+      printf '{"wave":%s,"items":' "$wave_no"
+      json_words_array "$(printf "%s" "$wave_items" | tr ',' ' ')"
+      printf ',"reason":'
+      json_string "$wave_reason"
+      printf '}'
+      first_wave=0
+    done < "$WAVES_FILE"
+  fi
+  printf '],"conflicts":['
+  first_conflict=1
+  if [ -s "$CONFLICT_FILE" ]; then
+    while IFS='|' read -r conflict_items conflict_note conflict_resolution; do
+      [ "$first_conflict" -eq 1 ] || printf ','
+      printf '{"items":'
+      json_string "$conflict_items"
+      printf ',"conflict":'
+      json_string "$conflict_note"
+      printf ',"resolution":'
+      json_string "$conflict_resolution"
+      printf '}'
+      first_conflict=0
+    done < "$CONFLICT_FILE"
+  fi
+  printf '],"warnings":'
+  json_lines_array "$WARN_FILE"
+  printf ',"blockers":'
+  json_lines_array "$FAIL_FILE"
+  printf '}\n'
+else
+  echo "Phase plan: $REPORT_PATH"
+  echo "Status: $PLAN_STATE"
+fi
 
 [ "$PLAN_STATE" = "FAIL" ] && exit 1
 exit 0

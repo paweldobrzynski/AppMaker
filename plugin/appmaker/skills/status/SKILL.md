@@ -5,6 +5,8 @@ disable-model-invocation: true
 
 Status snapshot. Read-only filesystem inspection. Companion to the session-start hook (which prints a 1-liner); this skill prints the full report on demand.
 
+UI/adapters can read the same deterministic state via `scripts/status-json.sh --project-dir <dir>`.
+
 **Data sources:**
 - AppMaker filesystem (`appmaker/`) — primary, always-on
 - Claude Code session logs (`~/.claude/projects/<dashes-path>/*.jsonl`) — optional, for token usage telemetry; requires `jq`; format is internal to Claude Code and may change without notice (degrade gracefully on parse error)

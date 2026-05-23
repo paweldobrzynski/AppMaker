@@ -24,7 +24,7 @@ Before model judgment, run the packaged planner from the project root:
 bash <plugin-root>/scripts/phase-plan.sh <phase-id>
 ```
 
-The helper reads `appmaker/backlog/*.md`, validates phase metadata, detects dependency/scope conflicts, builds `max_parallel_agents` waves, and persists `appmaker/phase-plans/*-<phase-id>-dry-run.md`. Treat its `status: FAIL` as blocking; do not dispatch agents until the plan is PASS or WARN and the user explicitly approves execute.
+The helper reads `appmaker/backlog/*.md`, validates phase metadata, detects dependency/scope conflicts, builds `max_parallel_agents` waves, and persists `appmaker/phase-plans/*-<phase-id>-dry-run.md`. Use `--json` for UI/adapters that need machine-readable waves/conflicts. Treat `status: FAIL` as blocking; do not dispatch agents until the plan is PASS or WARN and the user explicitly approves execute.
 
 ### 1. Read phase items
 

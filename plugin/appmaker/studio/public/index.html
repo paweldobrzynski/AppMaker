@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AppMaker Studio</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Local control plane</p>
+          <h1>AppMaker Studio</h1>
+        </div>
+        <div class="topbar-actions">
+          <span class="state-pill" data-connection-state>loading</span>
+          <button type="button" data-refresh>Refresh</button>
+        </div>
+      </header>
+
+      <section class="status-band" data-status-grid aria-label="Project status">
+        <article>
+          <span>Project</span>
+          <strong data-field="project">-</strong>
+        </article>
+        <article>
+          <span>Feature</span>
+          <strong data-field="feature">-</strong>
+        </article>
+        <article>
+          <span>Backlog</span>
+          <strong data-field="backlog">-</strong>
+        </article>
+        <article>
+          <span>Checklist</span>
+          <strong data-field="checklist">-</strong>
+        </article>
+        <article>
+          <span>Git</span>
+          <strong data-field="git">-</strong>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <section class="panel panel-wide" aria-labelledby="phase-title">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Parallel work</p>
+              <h2 id="phase-title">Phase Orchestrator</h2>
+            </div>
+            <form id="phase-form" class="phase-form">
+              <input name="phase_id" type="text" placeholder="phase-alpha" aria-label="Phase id">
+              <button type="submit">Plan phase</button>
+            </form>
+          </div>
+          <div class="phase-summary" data-phase-summary>
+            <span class="state-pill">idle</span>
+            <span>No phase plan loaded</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Wave</th>
+                  <th>Items</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody data-waves>
+                <tr><td colspan="3">Run a phase dry-run to see waves.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="evidence-title">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Audit trail</p>
+              <h2 id="evidence-title">Evidence</h2>
+            </div>
+          </div>
+          <dl class="evidence-list">
+            <div>
+              <dt>Latest phase</dt>
+              <dd data-evidence="phase">-</dd>
+            </div>
+            <div>
+              <dt>Checklist file</dt>
+              <dd data-evidence="checklist">-</dd>
+            </div>
+            <div>
+              <dt>Open items</dt>
+              <dd data-evidence="open">-</dd>
+            </div>
+          </dl>
+          <pre data-errors hidden></pre>
+        </section>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
