@@ -1,6 +1,6 @@
 # AppMaker — Current Design (P-Hybrid plugin)
 
-Status: 22 skills (17 core + afk + status + token-audit + next + phase). v0.2.26 — AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. Phase execute remains the wave-by-wave subagent runtime contract. optional gstack browser runtime still serves QA/design evidence. 28 smoke suites, 467 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, engine JSON API, Studio UI, phase dry-run/execute/runtime, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
+Status: 24 skills (19 core + afk + status + token-audit + next + phase). v0.2.27 — AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. Phase execute remains the wave-by-wave subagent runtime contract. optional gstack browser runtime still serves QA/design evidence. 28 smoke suites, 467 assertions. Test harness covers hooks + glossary-extract + version SoT (with release-target), fresh init materialization, skill body diet, architecture research, brownfield impact audit, GSD/gstack-inspired planning gates, engine JSON API, Studio UI, phase dry-run/execute/runtime, gstack browser adapter, rigor config, checklist Execution Record gates, and side-effect invocation boundaries.
 Last updated: 2026-05-22.
 
 ## Esencja (v0.2.12+ pozycjonowanie)
@@ -59,7 +59,7 @@ Profile:
 
 ## Skills
 
-### Core (17 skills, 17 written)
+### Core (19 skills, 19 written)
 
 | Skill | Status | `disable-model-invocation` | Inspiration | Purpose |
 |---|---|---|---|---|
@@ -80,6 +80,8 @@ Profile:
 | `/appmaker:context` | ✓ | true | Custom (Graphify-aware) | Codebase context packet retrieval |
 | `/appmaker:feedback` | ✓ | true | Matt's QA feedback button | Quick capture → backlog item |
 | `/appmaker:glossary` | ✓ | true | Matt Pocock `deprecated/ubiquitous-language` | Ubiquitous language, best-effort maintained via parent invocation (v0.2.9: was `false`, fixed) |
+| `/appmaker:council` | ✓ | true | ECC `council` (MIT) as AppMaker governance gate | v0.2.27: go/no-go gate for strategic forks (PRD→decompose); 4-voice council (in-context + 3 fresh subagents) → SHIP/NEEDS_WORK/BLOCKED, writes appmaker/decisions/ |
+| `/appmaker:security-scan` | ✓ | true | ECC AgentShield pattern, vendor-agnostic | v0.2.27: security gate — deterministic scanners + optional LLM overlay → PASS/FAIL/WARN, writes appmaker/security/ |
 
 ### Opt-in deepening (4 skills, all TODO)
 
@@ -129,7 +131,7 @@ AppMaker/
 │   │   │   │   └── status/               ← telemetry/refinement reference
 │   │   │   └── config.yaml.template      ← seed config (auto-detected fields filled at init)
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                           ← 22 dirs (17 core + afk + status + token-audit + next + phase)
+│   └── skills/                           ← 24 dirs (19 core + afk + status + token-audit + next + phase)
 │       ├── init/SKILL.md                 ← /appmaker:init
 │       ├── start/SKILL.md                ← /appmaker:start
 │       ├── grill/SKILL.md                ← /appmaker:grill
@@ -147,6 +149,8 @@ AppMaker/
 │       ├── context/SKILL.md              ← /appmaker:context
 │       ├── feedback/SKILL.md             ← /appmaker:feedback
 │       ├── glossary/SKILL.md             ← /appmaker:glossary
+│       ├── council/SKILL.md              ← /appmaker:council (v0.2.27)
+│       ├── security-scan/SKILL.md        ← /appmaker:security-scan (v0.2.27)
 │       ├── afk/SKILL.md                  ← /appmaker:afk
 │       ├── status/SKILL.md               ← /appmaker:status (v0.2.6)
 │       ├── token-audit/SKILL.md          ← /appmaker:token-audit (v0.2.8)
@@ -498,7 +502,7 @@ Body sections (mandatory unless noted):
 ## Status snapshot
 
 ```
-Plugin skills written: 17/17 core
+Plugin skills written: 19/19 core
 Plugin skills TODO: 0
 Opt-in skills TODO: 4 (clarify, research, spike, plan)
 Layer 4 implemented: afk

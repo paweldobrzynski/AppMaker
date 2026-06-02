@@ -18,6 +18,9 @@ queries:
   - graphify path "ClaimSignal" "PolicyThreshold"
 related_feature:
 related_backlog_item:
+provenance:                        # v0.2.27 — see appmaker/skills/output-style.md (provenance schema)
+  author: appmaker:context
+  confidence: file_verified        # graph edges may be inferred — downgrade to model_assertion if unconfirmed
 ---
 
 # Context Packet: Claim Scoring Pipeline

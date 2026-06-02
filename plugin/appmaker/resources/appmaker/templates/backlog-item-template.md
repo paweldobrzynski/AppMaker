@@ -34,6 +34,9 @@ edit_scope:
   forbid: [src/billing/, migrations/]
 created: 2026-05-10
 source: decompose                  # decompose | feedback | manual
+provenance:                        # v0.2.27 — see appmaker/skills/output-style.md (provenance schema)
+  author: appmaker:decompose       # appmaker:<skill> | human | subagent:<type>
+  confidence: model_assertion      # model_assertion | web_verified | file_verified | human_confirmed (weakest link)
 ---
 
 # 008: Theme Context Setup

@@ -36,6 +36,27 @@ checklist_report_dir: appmaker/checklists
 diagnostics_dir: appmaker/diagnostics
 review_report_dir: appmaker/reviews
 
+# Decision council (go/no-go gate, v0.2.27, opt-in)
+# /appmaker:council convenes a 4-voice council (in-context + 3 fresh subagents) for
+# ambiguous strategic decisions — typically between PRD and decompose. Provider-agnostic:
+# the three external voices run as subagents of the configured type (anti-anchoring = fresh context).
+council_enabled: true
+council_subagent: general-purpose    # Claude Code subagent type for the 3 external voices (Skeptic/Pragmatist/Critic)
+council_report_dir: appmaker/decisions
+council_min_confidence: file_verified # provenance floor council demands before a SHIP verdict (see output-style provenance vocab)
+
+# Security gate (Safety/Validator hook, v0.2.27, opt-in)
+# /appmaker:security-scan runs deterministic external scanners + optional LLM critic overlay
+# over config/.claude + the diff. Vendor-agnostic: list the scanner commands you have installed.
+# Pattern (not vendor): deterministic facts first, LLM judgment second, never invent findings.
+security_scan_enabled: true
+security_report_dir: appmaker/security
+security_subagent: code-reviewer     # subagent for the LLM overlay pass (injection/trust-boundary); empty = skip overlay
+security_scan_commands: []           # e.g. ["gitleaks detect --no-banner", "npm audit --omit=dev", "semgrep --error --config auto"]
+                                     # auto-detected at init when tools are present; AgentShield is one valid backend:
+                                     # ["npx ecc-agentshield scan --format json"]
+security_gate_on_strict: true        # when rigor_level: strict, /appmaker:next suggests security-scan before archive
+
 # Phase orchestrator config (Layer 4, explicit opt-in)
 max_parallel_agents: 3              # cap for /appmaker:phase --execute waves
 phase_plan_dir: appmaker/phase-plans

@@ -26,7 +26,7 @@ fi
 echo "ⓘ Plugin version: $PLUGIN_VERSION (source: plugin.json)"
 
 # Directory tree.
-mkdir -p appmaker/{templates,skills,memory/raw,memory/wiki,context,backlog/done,features/archive,reviews,checklists,diagnostics,afk,phase-plans,hooks}
+mkdir -p appmaker/{templates,skills,memory/raw,memory/wiki,context,backlog/done,features/archive,reviews,checklists,diagnostics,decisions,security,afk,phase-plans,hooks}
 
 # Templates (per-project overrides allowed; user edits freely).
 cp -n "$RESOURCES_DIR/templates/"*.md appmaker/templates/ 2>/dev/null || true

@@ -82,6 +82,34 @@ if [ -n "$FEATURE" ]; then
     fi
   done
 fi
+
+# --- v0.2.27 advisory gates: council (pre-decompose) + security-scan (pre-archive) ---
+COUNCIL_ENABLED=$(grep '^council_enabled:' appmaker/config.yaml 2>/dev/null | awk '{print $2}')
+SECURITY_ENABLED=$(grep '^security_scan_enabled:' appmaker/config.yaml 2>/dev/null | awk '{print $2}')
+SECURITY_GATE_STRICT=$(grep '^security_gate_on_strict:' appmaker/config.yaml 2>/dev/null | awk '{print $2}')
+RIGOR=$(grep '^rigor_level:' appmaker/config.yaml 2>/dev/null | awk '{print $2}')
+
+# Strategic fork unresolved (advisory council trigger): PRD present, no decomposition yet,
+# PRD has a pending Architecture Options Research OR an unresolved/human_required gray area,
+# AND no council decision already recorded for this feature.
+STRATEGIC_FORK=""
+if [ -n "$FEATURE" ] && [ -n "$PRD_OK" ] && [ -z "$DECOMP_OK" ] && [ "$COUNCIL_ENABLED" != "false" ]; then
+  PRD="appmaker/features/$FEATURE/prd.md"
+  if grep -qiE '^\**Status:\**[[:space:]]*pending' "$PRD" 2>/dev/null || \
+     grep -qiE 'human_required|Unresolved gray area' "$PRD" 2>/dev/null; then
+    grep -lq "$FEATURE" appmaker/decisions/*.md 2>/dev/null || STRATEGIC_FORK="yes"
+  fi
+fi
+
+# Security gate (pre-archive): strict rigor (when enabled) OR a sensitive slice label, and no scan yet.
+SECURITY_DUE=""
+if [ -n "$FEATURE" ] && [ "$SECURITY_ENABLED" != "false" ]; then
+  SENSITIVE=""
+  grep -rqiE '^labels:.*(security|auth|payments|migration)' appmaker/backlog/done/*.md appmaker/backlog/*.md 2>/dev/null && SENSITIVE="yes"
+  if { [ "$RIGOR" = "strict" ] && [ "$SECURITY_GATE_STRICT" != "false" ]; } || [ -n "$SENSITIVE" ]; then
+    ls appmaker/security/*.md >/dev/null 2>&1 || SECURITY_DUE="yes"
+  fi
+fi
 ```
 
 ### 2. Determine next phase (deterministic state machine)
@@ -92,15 +120,19 @@ fi
 | No active feature | start new | `/appmaker:start` | ask user for intent string |
 | Active feature, no interview-result.md (greenfield) | interview | `/appmaker:interview` | feature folder |
 | Active feature, no PRD | PRD synthesis | `/appmaker:prd` | feature folder |
+| PRD exists, no decomposition, **unresolved strategic fork** (`$STRATEGIC_FORK`, council_enabled) | go/no-go council (advisory) | `/appmaker:council` | `"<decision question>"` |
 | PRD exists, no decomposition | decompose | `/appmaker:decompose` | feature folder |
 | Decomposition exists, no checklist or checklist FAIL | checklist | `/appmaker:checklist` | `feature <NNN-slug>` |
 | **Done slice without per-slice review** (`$UNREVIEWED_DONE` non-empty) | per-slice review | `/appmaker:review` | `$UNREVIEWED_DONE` |
 | Checklist PASS/WARN, slices open, no unreviewed done | TDD next slice | `/appmaker:tdd` | `$FIRST_OPEN` |
 | All slices done + all reviewed, no feature review.md | feature review | `/appmaker:review` | `feature <NNN-slug>` |
+| Feature review PASS, **security gate due** (`$SECURITY_DUE`, strict/sensitive, no scan yet) | security gate (advisory) | `/appmaker:security-scan` | `project` |
 | Feature review PASS, not archived | archive | `/appmaker:archive` | `<NNN-slug>` |
 | Active feature is in archive/ AND all slices done | nothing — lifecycle complete | (output: "Feature lifecycle complete. Use /appmaker:start for next feature.") | — |
 
 **Per-slice review takes priority** over "next TDD slice" (v0.2.15). Rationale: catching constitution / glossary / AC-coverage / memory-regression issues immediately after a slice is cheaper than discovering them at end-of-feature review when 6 dependent slices have already inherited the flaw. Same critic gate as feature-level review, scoped to one backlog item — `/appmaker:review <id>` (see `review/SKILL.md` step 2: backlog-item scope reads backlog file + parent PRD + `context_packets` + diff). Override flow unchanged: review FAIL → user fix or `review_status: failed_overridden` + reason → orchestrator un-blocks.
+
+**Council and security gates are advisory, not hard blocks (v0.2.27).** Both rows fire only on a heuristic (`$STRATEGIC_FORK` / `$SECURITY_DUE`) and the user may always skip straight to `decompose` / `archive`. When `next` proposes one, the AskUserQuestion options must include **Skip this gate → proceed to <decompose|archive>** so the gate never traps the lifecycle. `council` writes a decision artifact + `SHIP|NEEDS_WORK|BLOCKED` verdict; `security-scan` writes a `PASS|FAIL|WARN` report. A council `BLOCKED`/`NEEDS_WORK` or security `FAIL` becomes the next remediation handoff, same as a review FAIL.
 
 If state is ambiguous (e.g., review FAIL not resolved), surface via AskUserQuestion with options: address findings / override / skip phase.
 

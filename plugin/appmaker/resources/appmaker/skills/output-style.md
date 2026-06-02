@@ -125,6 +125,57 @@ created: 2026-05-11
 
 That's the entire report. No further sections.
 
+## Verdict vocabulary (v0.2.27)
+
+Every gate and decision artifact carries a machine-readable `verdict:` frontmatter field. One value, fixed vocabulary — so `next`, `checklist`, and humans can branch on it without parsing prose. Two families:
+
+**Quality gates** — "is this artifact/code good enough?" (`checklist`, `review`, `qa`, `design-review`, `security-scan`):
+
+| Verdict | Meaning | Effect on lifecycle |
+|---|---|---|
+| `PASS` | No blocking issues; suggestions allowed. | Proceed. |
+| `WARN` | Non-blocking issues; accepted risk must be named. | Proceed with recorded caveat. |
+| `FAIL` | ≥ 1 blocking issue. | Stop. Fix, or explicit override (`*_status: failed_overridden` + reason). |
+
+**Decision gates** — "which path / should we proceed at all?" (`council`):
+
+| Verdict | Meaning | Effect on lifecycle |
+|---|---|---|
+| `SHIP` | Proceed with the recommended path. | Hand off to next phase (e.g. `decompose`). |
+| `NEEDS_WORK` | Decision not ready — named gaps must close first. | Loop back (more grill/research/prd) before proceeding. |
+| `BLOCKED` | Cannot proceed — external dependency, missing input, or non-delegable human judgment. | Halt; surface the blocker to the human. |
+
+Rules:
+- **Quality gates never emit `SHIP`/`NEEDS_WORK`/`BLOCKED`; decision gates never emit `PASS`/`FAIL`.** Don't cross the vocabularies.
+- The verdict in frontmatter is the single source of truth. The summary line restates it for humans; it does not redefine it.
+- `next` reads `verdict:` to decide remediation-vs-advance. A missing verdict on a gate artifact = treat as not-yet-run.
+
+## Provenance schema (v0.2.27)
+
+Generated artifacts carry a provenance block so a future reader knows who produced a claim and how much to trust it — the foundation of the deferred Evidence-First fact policy, started here at near-zero cost. Four fields, in frontmatter:
+
+```yaml
+provenance:
+  author: appmaker:prd          # appmaker:<skill> | human | subagent:<type> (who/what wrote it)
+  created: 2026-06-02           # ISO date
+  source: interview-result.md   # upstream input(s) this was derived from; "conversation" if none
+  confidence: file_verified     # see vocabulary below — the WEAKEST link in the artifact
+```
+
+`confidence` vocabulary (ordered weakest → strongest):
+
+| Value | Meaning |
+|---|---|
+| `model_assertion` | Claude's reasoning only; not checked against code/docs/web. |
+| `web_verified` | Backed by an external source (Ref / docs / fetched page). |
+| `file_verified` | Backed by reading the actual repo files (`rg`/Read evidence). |
+| `human_confirmed` | A human explicitly approved the claim/decision. |
+
+Rules:
+- **Report the weakest link.** An artifact mixing a verified fact and a guess is `model_assertion` until the guess is checked.
+- Provenance is additive — it never replaces existing fields. Backlog items keep their own `source:`/`created:`; the `provenance:` block sits alongside and may reference them.
+- Decision gates (`council`) with a `SHIP` verdict must meet `council_min_confidence` (config) — default `file_verified`. A `SHIP` resting on `model_assertion` is downgraded to `NEEDS_WORK`.
+
 ## Artifact-specific templates
 
 Each skill that produces an artifact has its own template. See:

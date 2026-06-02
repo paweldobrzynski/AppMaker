@@ -14,6 +14,9 @@ human_required_count: 1
 autonomous_count: 3
 context_packets:
   - appmaker/context/2026-05-11-theme-context.md
+provenance:                        # v0.2.27 — see appmaker/skills/output-style.md (provenance schema)
+  author: appmaker:decompose
+  confidence: model_assertion      # model_assertion | web_verified | file_verified | human_confirmed (weakest link)
 ---
 
 # Decomposition: Add Dark Mode

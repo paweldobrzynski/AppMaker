@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.26. 22 skills (17 core + afk + status + token-audit + next + phase). AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. 28 smoke test suites, 467 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.27. 24 skills (19 core + afk + status + token-audit + next + phase). AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. 28 smoke test suites, 467 assertions. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -57,7 +57,7 @@ High-impact architecture choices use an embedded **Architecture Options Research
 
 ## Command Reference
 
-### Core (17 skills)
+### Core (19 skills)
 
 ```
 /appmaker:init                  → bootstrap appmaker/ in fresh project
@@ -66,6 +66,7 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:grill-brownfield      → brownfield variant (reads code/docs/glossary/memory/context first)
 /appmaker:interview             → feature-specific entry, structured output to features/<NNN-slug>/
 /appmaker:prd                   → synthesize PRD with Understanding section + Clarifications
+/appmaker:council "<question>"  → go/no-go gate for strategic forks (4-voice) → SHIP/NEEDS_WORK/BLOCKED
 /appmaker:decompose             → vertical slices with execution_class, items go to backlog/
 /appmaker:tdd <backlog-id>      → test-first implementation per slice
 /appmaker:diagnose              → bug/perf diagnosis loop with repro + hypotheses + regression
@@ -73,13 +74,14 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:qa                    → diff-aware QA + smoke report with browser/screenshot evidence
 /appmaker:design-review         → visual/design compliance review for UI changes
 /appmaker:checklist             → deterministic PASS/FAIL/WARN gate across artifacts
+/appmaker:security-scan [scope] → security gate: scanners + optional LLM overlay → PASS/FAIL/WARN
 /appmaker:archive               → close out feature, move to features/archive/
 /appmaker:context "<topic>"     → Graphify-aware context packet, fallback to file reads
 /appmaker:feedback "<desc>"     → quick capture from QA → backlog item
 /appmaker:glossary              → ubiquitous language (deterministic stub extraction + best-effort semantic review)
 ```
 
-22 written: 17 core (above) + 5 supporting (afk, status, token-audit, next, phase).
+24 written: 19 core (above) + 5 supporting (afk, status, token-audit, next, phase).
 
 ### Opt-in deepening (4 skills, all TODO)
 
@@ -177,7 +179,7 @@ AppMaker/
 │   │   │       ├── context-packet-template.md
 │   │   │       └── decomposition-template.md
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                          ← 22 dirs (17 core + afk + status + token-audit + next + phase)
+│   └── skills/                          ← 24 dirs (19 core + afk + status + token-audit + next + phase)
 │       ├── init/SKILL.md
 │       ├── start/SKILL.md
 │       ├── grill/SKILL.md

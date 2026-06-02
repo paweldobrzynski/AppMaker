@@ -2,7 +2,7 @@
 
 External projects, articles, and concepts that influenced AppMaker's design (P-Hybrid). Not exhaustive — only entries with concrete value for future decisions.
 
-Last updated: 2026-05-10.
+Last updated: 2026-06-02.
 
 ---
 
@@ -61,6 +61,21 @@ Last updated: 2026-05-10.
 - **What:** 5-phase spec-driven workflow (constitution → specify → plan → tasks → implement) with optional deepening commands (clarify/analyze/checklist)
 - **Why for AppMaker:** Constitution layer concept (project-level principles), opt-in deepening commands pattern
 - **Slash commands:** `/speckit.constitution`, `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, `/speckit.implement`, `/speckit.clarify`, `/speckit.analyze`, `/speckit.checklist`
+
+### ECC (everything-claude-code)
+
+- **Repo:** https://github.com/paweldobrzynski/ECC
+- **Local clone:** `/Users/pawel/Projects/ECC/`
+- **Pinned commit (analysed):** `99baa825` (2026-06-02)
+- **License:** MIT (+ commercial "ECC Pro" tier for private repos)
+- **What:** Large multi-harness "operator system" plugin — 249 skills, 63 agents, 79 command shims, per-language rules, hooks, MCP configs, a Rust control-plane (`ecc2/`), and per-harness adapter mirrors (Claude Code, Cursor, OpenCode, Codex, Gemini, Kiro, …).
+- **Adopted into AppMaker (v0.2.27):**
+  - `/appmaker:council` — go/no-go decision gate, reshaped from ECC `council` (4-voice, anti-anchoring via fresh subagents) into an AppMaker governance gate (persisted decision artifact + SHIP/NEEDS_WORK/BLOCKED verdict, provider-agnostic `council_subagent`).
+  - `/appmaker:security-scan` — security gate, from ECC's AgentShield pattern (`skills/security-scan`, `commands/security-scan.md`) made **vendor-agnostic**: deterministic scanners + optional LLM overlay, AgentShield is one backend not a dependency.
+  - **Verdict vocabulary + provenance schema** (`output-style.md`) — distilled from ECC's handoff verdicts and provenance/confidence tagging; also seeds the deferred Evidence-First fact policy.
+- **Why for AppMaker:** Capability-breadth library — the *opposite* bet to AppMaker's discipline-spine. Useful as a pattern source for governance/orchestration ideas, NOT as a bundle.
+- **Caveats:** Very new (0★, pushed same day analysed), heavily duplicated across per-harness mirror dirs (~46% of files are docs), skill library overlaps the user's existing gstack ~1:1 → installing the bundle = context-bloat + name collisions. ECC's standalone Rust runtime (`ecc2/`) is explicitly contrary to AppMaker's "plugin-only, no runtime" stance. Adopt patterns by cherry-pick only.
+- **Adoption analysis:** `audits/ecc-adoption/01-04*.md` (AppMaker baseline, ECC skills, mechanisms, governance).
 
 ### Graphify
 
