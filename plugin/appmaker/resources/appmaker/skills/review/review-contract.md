@@ -26,6 +26,8 @@ Pass this checklist to the configured reviewer:
 20. Security and performance flags.
 21. Graph context coverage: changed files match expected touched communities/files, or drift is justified.
 22. Memory regression: change does not repeat a known testing or integration gotcha.
+23. Test validity (anti-placebo): no skipped/focused/tautology/commented/no-assert test guards an AC, and each AC test would go red on regression. Run `appmaker/skills/tdd/test-validity.md` Tier 1 sweep. Placebo test guarding an AC = review FAIL.
+24. Browser E2E grounding: UI/browser E2E specs use locators traced to a live-DOM snapshot (scan-first, per `appmaker/skills/tdd/browser-e2e.md`), not invented selectors/test-ids. Fabricated/blind E2E = review FAIL.
 
 ## Ultra mode
 
@@ -65,6 +67,8 @@ Fallback to local review only with an explicit warning if `/ultra-review` is una
 - Visual system: no hardcoded visuals
 - Design standards: touched elements follow existing patterns
 - Memory wiki gotchas: 0 repeated
+- Test validity: no placebo tests guarding ACs
+- Browser E2E grounding: locators traced to live-DOM snapshot when required
 ```
 
 Omit the findings table and notes lines when empty. Do not create separate sections for critical/suggestions/constitution/glossary/AC if each has 0-1 item.

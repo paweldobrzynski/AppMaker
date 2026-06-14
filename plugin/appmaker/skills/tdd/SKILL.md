@@ -91,7 +91,7 @@ Matt Pocock checklist + AppMaker addition:
 - [ ] **AppMaker:** UI changes use reusable CSS/component primitives; no new hardcoded visual styling without documented exception.
 - [ ] **AppMaker:** every touched visual element follows existing design standards for tokens, states, accessibility, and responsive behavior.
 - [ ] **AppMaker:** TDD cycles cover every non-deferred dependency from the Brownfield Impact Audit.
-- [ ] **AppMaker:** draft `QA / Smoke Plan` for affected surfaces, including browser/screenshot checks for UI.
+- [ ] **AppMaker:** draft `QA / Smoke Plan` for affected surfaces, including browser/screenshot checks for UI. UI/browser ACs needing an end-to-end flow use scan-first E2E per `appmaker/skills/tdd/browser-e2e.md` (scan live DOM -> ground locators, never invent them).
 - [ ] **AppMaker:** run `TDD Plan Check` from `appmaker/skills/tdd/plan-check.md`; revise until PASS/WARN, escalate after 2 failed revisions.
 - [ ] Get user approval
 
@@ -149,7 +149,7 @@ After all ACs ✓, see `appmaker/skills/tdd/refactoring.md`. **Never refactor wh
 
 Before marking `done`:
 - All ACs ✓
-- All tests pass
+- All tests pass; no placebo tests guarding ACs — run `appmaker/skills/tdd/test-validity.md` Tier 1 sweep (no skipped/tautology/commented/no-assert tests)
 - Lint clean
 - Type check clean
 - Constitution rule 3: integration tests use real boundaries (not mocks)

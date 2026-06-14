@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.27. 24 skills (19 core + afk + status + token-audit + next + phase). AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. 28 smoke test suites, 467 assertions. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.28. 24 skills (19 core + afk + status + token-audit + next + phase). AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. TDD now grounds UI E2E in a live-DOM scan (no hallucinated locators) and gates against placebo tests (anti-please-the-LLM). 30 smoke test suites. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
