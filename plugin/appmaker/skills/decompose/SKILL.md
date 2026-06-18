@@ -133,6 +133,7 @@ Suggested next: /appmaker:tdd 008  (or autonomous via /appmaker:afk if Layer 4)
 
 ## Guardrails
 
+- **Apply the YAGNI ladder.** Scope minimal slices — stdlib/native/reuse before new code; question speculative slices; honor `build_intensity`. See `appmaker/skills/yagni-ladder.md`.
 - **Tracer bullet, not horizontal slice.** UI-only or DB-only = wrong.
 - **Many thin > few thick.**
 - **`execution_class` per slice mandatory.** Default `autonomous` unless constitution rule 6.

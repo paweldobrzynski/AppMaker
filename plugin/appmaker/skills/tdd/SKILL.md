@@ -183,8 +183,8 @@ Use `appmaker/skills/tdd/tests.md`: public behavior, minimal code, no speculativ
 
 ## Guardrails
 
-- **One backlog item at a time.**
-- **Honor `blocked_by`.**
+- **YAGNI ladder before code.** Stdlib/native/reuse first; honor `build_intensity`; mark deliberate shortcuts `// appmaker:debt <ceiling> -> upgrade: <path>`. See `appmaker/skills/yagni-ladder.md`.
+- **One backlog item at a time.** Honor `blocked_by`.
 - **Update AC checkboxes per cycle.**
 - **Constitution rule 3 mandatory** — real boundaries in integration tests.
 - **Constitution rule 7 mandatory** — don't mark `done` with failing CI.

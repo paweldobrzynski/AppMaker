@@ -145,6 +145,12 @@ test -f "$REVIEW_PATH" && echo "✓ Diff review: $REVIEW_PATH"
 
 **Verification before continuing:** after writing, `test -f "$path"` to confirm. If write failed, report to user — don't silently proceed to gate decision.
 
+### 4a. Visual recap (consumption aid — NOT a gate)
+
+If the scope has visual evidence, aggregate it into one scannable index so a reviewer opens one file instead of hunting. **This does NOT change PASS/FAIL** — it is a Tier-3 legibility aid, not a deterministic gate. Skip cleanly when no visual evidence exists.
+
+Collect existing artifacts (do not regenerate): `appmaker/reviews/*-design-*.png`, `appmaker/qa/*.png`, the feature's `wireframe.md`, and the diff summary. Write `appmaker/reviews/<date>-recap-<slug>.md` — embedded image links + a table `Source | Type | Path | traces_to`. Reference the recap path in the step-6 chat reply.
+
 ### 5. Gate decision
 
 Classify findings:

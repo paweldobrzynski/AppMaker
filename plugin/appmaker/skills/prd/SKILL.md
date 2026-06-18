@@ -15,12 +15,7 @@ Synthesize PRD. **Do NOT interview** — synthesize what's already in conversati
 - Required state: `interview-result.md` with `readiness: ready` OR `readiness: ready_with_override` (source can be `interview` OR `grill-brownfield` — v0.2.14)
 - Required input: feature folder path (auto-detected if latest non-PRD'd feature obvious)
 
-**Input source paths (v0.2.14):**
-- Greenfield: `/appmaker:interview` writes `interview-result.md` with `source: interview, readiness: ready`
-- Brownfield (direct): `/appmaker:grill-brownfield` step 5 writes `interview-result.md` with `source: grill-brownfield, readiness: ready_with_override` (override_reason documents that brownfield grilling covered interview dimensions)
-- Brownfield (wrapped): `/appmaker:interview` internally invokes `grill-brownfield` then structures output — same artifact shape
-
-PRD does NOT branch on source — same synthesis logic regardless. The source field is metadata for audit trail.
+**Input source paths (v0.2.14):** greenfield `/appmaker:interview` → `source: interview, readiness: ready`; brownfield `/appmaker:grill-brownfield` step 5 → `source: grill-brownfield, readiness: ready_with_override`; wrapped `/appmaker:interview` invokes grill-brownfield then structures the same artifact. PRD does NOT branch on source — same synthesis logic; source is audit metadata.
 
 ## Process
 
@@ -43,9 +38,7 @@ if [ "$WIKI_MODE" != "never" ]; then
 fi
 ```
 
-Cite as `per wiki/architecture.md: <decision>` in the PRD's Implementation Decisions section when a wiki entry directly drives a decision. If the wiki contradicts what the user proposed in interview, raise via AskUserQuestion before drafting — don't silently override either source.
-
-Note: this supersedes the prior "lazy-read only pages related to feature" guidance — read these two pages ALWAYS, additional pages as relevant.
+Cite as `per wiki/architecture.md: <decision>` in the PRD's Implementation Decisions section when a wiki entry directly drives a decision. If the wiki contradicts what the user proposed in interview, raise via AskUserQuestion before drafting — don't silently override either source. Read these two pages ALWAYS, additional pages as relevant.
 
 ### 1. Locate feature folder
 
@@ -77,6 +70,16 @@ Output sketch as table:
 
 Confirm via AskUserQuestion: do modules match expectations? Which want tests?
 
+### 3.5 Wireframe-first (UI or API surface only)
+
+If the feature has a user-facing UI surface OR an external API surface, sketch it BEFORE writing AC — humans catch intent drift cheapest here. For pure internal/refactor work, skip and note "no UI/API surface" in the PRD (anti-bureaucracy).
+
+Write `appmaker/features/<NNN>/wireframe.md` from `appmaker/templates/wireframe-template.md`: a **mermaid** flow/screen-map (or API shape) **+ ASCII** layout. Markdown-native only — no HTML/MDX. Optional real screenshot via gstack `$B` when a live UI exists (reuse design-review/qa wiring; don't add deps).
+
+Confirm via AskUserQuestion: "does this match what you pictured?" Iterate before AC exist.
+
+**Direction (do not invert):** the wireframe is a *view of* the PRD, never a source of intent. After criticisms are written in step 4, fill the wireframe's `## Traces` table mapping each region → the `pcrit-*` it illustrates. Add `wireframe: appmaker/features/<NNN>/wireframe.md` to PRD frontmatter when produced.
+
 ### 4. Write PRD using template
 
 Save to `appmaker/features/<NNN>/prd.md`:
@@ -94,34 +97,19 @@ readiness: inherited
 
 ## Understanding (7 subsections — AppMaker extension)
 
-### Users / buyers / operators
-[Who uses, who pays, who operates this.]
-
-### Domain invariants
-[Things that must always be true.]
-
-### Identity model
-[How identity flows through feature.]
-
-### Trust boundaries
-[Where untrusted input crosses into trusted execution.]
-
-### Non-delegable judgments
-[Decisions that MUST stay human. Identity/money/irreversible/security.]
-
-### Verifiable success criteria
-[Each = auto-check OR human-review-with-criteria. No vague goals.]
-
-### Failure modes / unacceptable outcomes
-[What we explicitly want to NOT happen.]
+### Users / buyers / operators — who uses, who pays, who operates.
+### Domain invariants — things that must always be true.
+### Identity model — how identity flows through the feature.
+### Trust boundaries — where untrusted input crosses into trusted execution.
+### Non-delegable judgments — must stay human (identity/money/irreversible/security).
+### Verifiable success criteria — each = auto-check OR human-review-with-criteria; no vague goals.
+### Failure modes / unacceptable outcomes — what we explicitly want to NOT happen.
 
 ## Clarifications (auto-populated by /appmaker:clarify if invoked)
 
 ## Criticisms
 
-Numbered criticisms — each = one tight MUST/MUST NOT statement. Stable `pcrit-NNN` IDs anchor downstream `traces_to` (decomposition + backlog).
-
-Per criterion: verification mechanism explicit — `auto-check` (scripted) OR `human-review-with-criteria` (documented rule).
+Numbered criticisms — each = one tight MUST/MUST NOT statement with explicit verification (`auto-check` scripted OR `human-review-with-criteria` documented rule). Stable `pcrit-NNN` IDs anchor downstream `traces_to` (decomposition + backlog).
 
 - **pcrit-001:** <one-line criterion>. Verification: `auto-check` via `<assertion>`.
 - **pcrit-002:** <one-line criterion>. Verification: `human-review-with-criteria: <rule>`.
@@ -153,14 +141,9 @@ For high-impact architectural choices, complete `Architecture Options Research`:
 
 ## Existing System Context
 
-Context packet(s):
-- `appmaker/context/2026-05-11-auth-tenancy.md`
-
-Affected communities/modules:
-- [Only include if Graphify/context packet identified them.]
-
-Key constraints:
-- [Brownfield constraints from context packet. Keep concise.]
+- Context packet(s): `appmaker/context/<date>-<topic>.md`
+- Affected communities/modules: [only if Graphify/context packet identified them]
+- Key constraints: [brownfield constraints from packet; concise]
 
 ## Out of Scope
 

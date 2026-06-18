@@ -25,6 +25,17 @@ Last updated: 2026-06-02.
 - **Why for AppMaker:** Form factor + philosophy template. Each AppMaker skill modeled after Pocock pattern.
 - **Key insight:** "Inspiracja > runtime dependency" — copy-paste skill markdown, modify, no framework.
 
+### ponytail (`DietrichGebert/ponytail`)
+
+- **Repo:** https://github.com/DietrichGebert/ponytail
+- **License:** MIT, Copyright (c) Dietrich Gebert
+- **What:** Agent-portable "lazy senior dev" skill — forces the simplest/shortest solution that works (YAGNI ladder), with persistence hooks, intensity levels (lite/full/ultra), `ponytail:` shortcut-marker comments harvested by a `ponytail-debt` ledger skill, and ~15 host adapters from one source of truth.
+- **Adopted (AppMaker v0.2.30):**
+  - **Marker-comment → deterministic debt ledger.** `appmaker:debt <ceiling> -> upgrade: <path>` comments harvested by `scripts/debt-json.sh` (Tier-1 grep) into a ledger via `/appmaker:debt`; `review`/`checklist` warn on bare markers. Fits AppMaker's determinism-over-judgment tier and sits beside the anti-placebo test-validity gate.
+  - **YAGNI / over-engineering ladder.** Adapted into `resources/appmaker/skills/yagni-ladder.md` (ladder + "when NOT to be lazy" safety carve-outs) + a `build_intensity` config dial + a review/checklist over-engineering lens.
+- **Deliberately NOT adopted:** multi-host portability (AppMaker is a Claude-Code layer by design) and the always-on behavioral hook (clashes with AppMaker's opt-in, per-skill model). Kept `caveman` (style) separate from build discipline.
+- **Why for AppMaker:** ponytail solved in-code shortcut tracking that AppMaker's `traces_to`/Execution Record (plan drift) did not cover.
+
 ### Matt Pocock — `deprecated/ubiquitous-language` (adopt format)
 
 - **Path (older clone):** `/Users/pawel/Projects/Matt_Pocock_Skills/skills/deprecated/ubiquitous-language/SKILL.md`

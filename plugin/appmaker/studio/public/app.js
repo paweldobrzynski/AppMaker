@@ -18,6 +18,8 @@ const phaseForm = document.querySelector("#phase-form");
 const phaseSummary = document.querySelector("[data-phase-summary]");
 const wavesBody = document.querySelector("[data-waves]");
 const errors = document.querySelector("[data-errors]");
+const wireframesBody = document.querySelector("[data-wireframes]");
+const recapsField = document.querySelector("[data-recaps]");
 
 refreshButton.addEventListener("click", () => refreshStatus());
 phaseForm.addEventListener("submit", (event) => {
@@ -36,6 +38,7 @@ async function refreshStatus() {
     setConnection("loading", "loading");
     const status = await fetchJson("/api/status");
     renderStatus(status);
+    await loadWireframes();
     setConnection("connected", "connected");
     clearError();
   } catch (error) {
@@ -115,6 +118,30 @@ function renderPhasePlan(plan) {
     );
     return row;
   }));
+}
+
+async function loadWireframes() {
+  const data = await fetchJson("/api/wireframes");
+  const wireframes = Array.isArray(data.wireframes) ? data.wireframes : [];
+  if (!wireframes.length) {
+    wireframesBody.innerHTML = '<tr><td colspan="4">No wireframes yet.</td></tr>';
+  } else {
+    wireframesBody.replaceChildren(...wireframes.map((wf) => {
+      const row = document.createElement("tr");
+      row.append(
+        cell(wf.feature || "-"),
+        cell(wf.path || "-"),
+        cell(wf.has_diagram ? "mermaid" : "-"),
+        cell(Array.isArray(wf.pcrit_refs) && wf.pcrit_refs.length ? wf.pcrit_refs.join(", ") : "-"),
+      );
+      return row;
+    }));
+  }
+
+  const recaps = Array.isArray(data.recaps) ? data.recaps : [];
+  recapsField.textContent = recaps.length
+    ? recaps.map((r) => `${r.scope || "?"} (${r.path})`).join("; ")
+    : "-";
 }
 
 function cell(value) {

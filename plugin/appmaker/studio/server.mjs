@@ -11,6 +11,7 @@ const pluginRoot = resolve(__dirname, "..");
 const publicDir = resolve(__dirname, "public");
 const statusScript = resolve(pluginRoot, "scripts/status-json.sh");
 const phaseScript = resolve(pluginRoot, "scripts/phase-plan.sh");
+const wireframesScript = resolve(pluginRoot, "scripts/wireframes-json.sh");
 
 const options = parseArgs(process.argv.slice(2));
 
@@ -77,6 +78,7 @@ function printHelp() {
   console.log(`Usage: node studio/server.mjs [--project-dir DIR] [--host HOST] [--port PORT]
        node studio/server.mjs --api status [--project-dir DIR]
        node studio/server.mjs --api phase-plan --phase-id ID [--project-dir DIR]
+       node studio/server.mjs --api wireframes [--project-dir DIR]
 
 Serves the local AppMaker Studio UI and read-only JSON APIs.
 
@@ -84,7 +86,7 @@ Options:
   --project-dir DIR   Project root to inspect. Defaults to current directory.
   --host HOST         Host to bind. Defaults to 127.0.0.1.
   --port PORT         Port to bind. Use 0 for an available port.
-  --api NAME          Non-listening API mode for tests/adapters: status | phase-plan.
+  --api NAME          Non-listening API mode for tests/adapters: status | phase-plan | wireframes.
   --phase-id ID       Phase id for --api phase-plan.
   --help              Show this help.`);
 }
@@ -104,6 +106,13 @@ async function runApiMode(apiOptions) {
       return;
     }
     const result = await runJson(phaseScript, ["--json", apiOptions.phaseId, "--project-dir", projectDir]);
+    process.stdout.write(`${result.stdout}\n`);
+    process.exitCode = result.statusCode >= 400 ? 1 : 0;
+    return;
+  }
+
+  if (apiOptions.api === "wireframes") {
+    const result = await runJson(wireframesScript, ["--project-dir", projectDir]);
     process.stdout.write(`${result.stdout}\n`);
     process.exitCode = result.statusCode >= 400 ? 1 : 0;
     return;
@@ -134,6 +143,12 @@ async function route(req, res) {
       return;
     }
     const result = await runJson(phaseScript, ["--json", phaseId, "--project-dir", projectDir]);
+    sendRawJson(res, result.statusCode, result.stdout);
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/wireframes") {
+    const result = await runJson(wireframesScript, ["--project-dir", projectDir]);
     sendRawJson(res, result.statusCode, result.stdout);
     return;
   }

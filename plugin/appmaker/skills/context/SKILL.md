@@ -143,23 +143,7 @@ echo "✓ Context packet: $PACKET_PATH"
 
 **Verification before returning:** `test -f "$PACKET_PATH"` to confirm. Return packet path to caller (other skill or user). Without persistence, downstream commands can't reference packet via `context_packets` field.
 
-Packet captures:
-- exact topic/query
-- source mode (`graphify` or `standard`)
-- Graphify commands or file-search operations used
-- relevant communities
-- key files
-- architecture options research sources when the topic touches high-impact architecture/library/vendor/storage/auth/design-system choices
-- canonical values / hardcoded contracts when the topic touches brownfield behavior
-- dependency surfaces across domain/API/UI/jobs/tests/docs
-- reuse / refactor-first candidates so new code is justified instead of automatic
-- visual system / CSS reuse candidates so UI is not hardcoded inline
-- design standards compliance checks for touched visual elements
-- graph relationships
-- risks/constraints
-- open questions
-
-Downstream commands consume packet path instead of re-querying broad context.
+Packet captures every section shown above (and in `appmaker/templates/context-packet-template.md`): topic/query, source mode, queries used, communities, key files, architecture-options sources, canonical values/contracts, dependency surfaces, reuse/refactor-first candidates, visual+design-standards compliance, graph relationships, risks, open questions. Downstream commands consume the packet path instead of re-querying broad context.
 
 ### 4. Cache hint
 

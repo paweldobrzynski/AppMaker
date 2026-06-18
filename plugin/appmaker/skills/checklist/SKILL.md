@@ -66,6 +66,8 @@ Required checks:
 | Design Review | UI/backlog | UI/CSS item missing design-review evidence or hardcoded visual exception |
 | Test validity | backlog/review | done item has a placebo test (`.skip`/`.only`/`xit`/tautology/commented or no-assert) guarding an AC = FAIL; reasoned skip with tracking = WARN |
 | Browser E2E grounding | UI/backlog | UI/browser AC has E2E with invented selectors (no app-map / live-DOM snapshot evidence per `browser-e2e.md`) = WARN/FAIL by impact |
+| Debt marker hygiene | backlog/review | `appmaker:debt` marker missing a ceiling or an upgrade path = WARN (run `/appmaker:debt`) |
+| Over-engineering | backlog/review | speculative abstraction / reinvented stdlib / unneeded new dependency without rationale = WARN (see `appmaker/skills/yagni-ladder.md`) |
 | gstack browser evidence | UI/backlog | `gstack_required_for_ui_qa: true` but UI QA/design review lacks `$B status`, screenshot, or responsive evidence |
 | Documentation staleness | feature/review | code changes affect documented commands/workflows/APIs/UI but docs were not updated or marked not_applicable |
 | Edit scope | backlog/review | actual changed files violate `edit_scope.allow` / `edit_scope.forbid` without drift notes or user approval |
@@ -99,6 +101,7 @@ Prefer concrete commands:
 - `rg -n '^## QA / Smoke Plan|Documentation staleness|edit_scope|Design Review|Adversarial review|gstack browser evidence|\\$B status|screenshot|responsive' appmaker/backlog appmaker/features appmaker/reviews appmaker/checklists appmaker/qa`
 - Test validity (anti-placebo) over changed test files: `git diff --name-only --diff-filter=d | rg -i 'test|spec' | xargs rg -n '\\.skip\\(|\\.only\\(|\\bxit\\(|\\bfit\\(|expect\\(true\\)\\.|assert\\(true\\)|^\\s*(//|#)\\s*(expect|assert)' 2>/dev/null` — any hit guarding an AC = FAIL (see `appmaker/skills/tdd/test-validity.md`)
 - Browser E2E grounding: `test -f appmaker/features/<NNN>/app-map.md` and `rg -n 'getByRole|getByLabel|getByText|snapshot' <e2e specs>` — UI/browser AC E2E without app-map / live-DOM grounding (per `appmaker/skills/tdd/browser-e2e.md`) = WARN/FAIL
+- Debt markers (Tier-1): `bash plugin/appmaker/scripts/debt-json.sh --project-dir .` (or `${CLAUDE_PLUGIN_ROOT}/scripts/debt-json.sh`) — any `"has_ceiling":false` or `"has_upgrade":false` = WARN. `/appmaker:debt` writes the full ledger.
 - `find appmaker/context -type f`
 - `ls -t appmaker/phase-plans/*-<phase-id>-dry-run.md appmaker/phase-plans/*-<phase-id>-execute.md 2>/dev/null | head`
 - `grep -m1 '^status:' appmaker/phase-plans/*-<phase-id>-dry-run.md`
@@ -108,32 +111,10 @@ Prefer concrete commands:
   - stale wiki: `find appmaker/memory/wiki -name '*.md' -mtime +30`
   - raw orphans: `find appmaker/memory/raw -name '*.md' ! -name 'README.md' -mtime +30` then `rg -l "<stem>" appmaker/memory/log.md`
 
-Do not rely on vibes when a file/regex check is possible.
-
+Do not rely on vibes when a file/regex check is possible (Tier-1 first).
 ### Shell safety (Bash tool on macOS often runs via zsh)
 
-⚠ macOS default `$SHELL=/bin/zsh`. Claude Code's Bash tool may invoke zsh subprocess. Several variable names are **read-only in zsh** and will fail assignment:
-
-- `status` (zsh built-in — last command's exit code)
-- `path` (zsh built-in — $PATH as array)
-- `argv`, `argc`
-- `pipestatus`
-
-**Use safe names instead:** `check_state`, `result`, `outcome`, `file_path`, `n_args`.
-
-Example — DO:
-```bash
-check_state="PASS"
-result=$(rg -c 'pcrit-' appmaker/features/*/prd.md || echo 0)
-```
-
-Example — DON'T:
-```bash
-status="PASS"          # zsh: read-only variable
-path="/some/dir"       # zsh: read-only variable
-```
-
-If zsh rejection happens, retry the same logic with safe variable names — do NOT switch to subshell hacks.
+⚠ macOS default `$SHELL=/bin/zsh`; the Bash tool may invoke zsh. These names are **read-only in zsh** and fail assignment: `status`, `path`, `argv`, `argc`, `pipestatus`. Use safe names instead (`check_state`, `result`, `outcome`, `file_path`, `n_args`). On a zsh rejection, retry the same logic with a safe name — do NOT switch to subshell hacks.
 
 ### PRD criterion ID format
 

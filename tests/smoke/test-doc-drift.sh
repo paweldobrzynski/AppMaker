@@ -29,9 +29,9 @@ assert_file_exists "DESIGN.md present" "$DESIGN"
 
 # --- README layout (pcrit-003) ---
 
-README_22=$(grep -cE '← 24 dirs \(19 core \+ afk \+ status \+ token-audit \+ next \+ phase\)' "$README" || true)
+README_22=$(grep -cE '← 25 dirs \(19 core \+ afk \+ status \+ token-audit \+ next \+ phase \+ debt\)' "$README" || true)
 [ "$README_22" -ge 1 ] && README_22_OK="yes" || README_22_OK="no"
-assert_eq "README layout shows ← 24 dirs (19 core + afk + status + token-audit + next + phase)" "yes" "$README_22_OK"
+assert_eq "README layout shows ← 25 dirs (19 core + afk + status + token-audit + next + phase + debt)" "yes" "$README_22_OK"
 
 README_18=$(grep -cE '← 18 dirs' "$README" || true)
 [ "$README_18" -eq 0 ] && README_18_GONE="yes" || README_18_GONE="no"
@@ -43,15 +43,15 @@ README_BARE=$(grep -cE '^15 written\.$' "$README" || true)
 [ "$README_BARE" -eq 0 ] && README_BARE_GONE="yes" || README_BARE_GONE="no"
 assert_eq "README narrative no longer bare '15 written.' (incomplete count)" "yes" "$README_BARE_GONE"
 
-README_TOTAL=$(grep -cE '^24 written:' "$README" || true)
+README_TOTAL=$(grep -cE '^25 written:' "$README" || true)
 [ "$README_TOTAL" -ge 1 ] && README_TOTAL_OK="yes" || README_TOTAL_OK="no"
-assert_eq "README narrative explicit '24 written:' total" "yes" "$README_TOTAL_OK"
+assert_eq "README narrative explicit '25 written:' total" "yes" "$README_TOTAL_OK"
 
 # --- DESIGN layout (pcrit-004) ---
 
-DESIGN_22=$(grep -cE '← 24 dirs \(19 core \+ afk \+ status \+ token-audit \+ next \+ phase\)' "$DESIGN" || true)
+DESIGN_22=$(grep -cE '← 25 dirs \(19 core \+ afk \+ status \+ token-audit \+ next \+ phase \+ debt\)' "$DESIGN" || true)
 [ "$DESIGN_22" -ge 1 ] && DESIGN_22_OK="yes" || DESIGN_22_OK="no"
-assert_eq "DESIGN layout shows ← 24 dirs (19 core + afk + status + token-audit + next + phase)" "yes" "$DESIGN_22_OK"
+assert_eq "DESIGN layout shows ← 25 dirs (19 core + afk + status + token-audit + next + phase + debt)" "yes" "$DESIGN_22_OK"
 
 DESIGN_18=$(grep -cE '← 18 dirs' "$DESIGN" || true)
 [ "$DESIGN_18" -eq 0 ] && DESIGN_18_GONE="yes" || DESIGN_18_GONE="no"

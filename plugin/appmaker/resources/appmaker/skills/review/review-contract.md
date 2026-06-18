@@ -28,6 +28,8 @@ Pass this checklist to the configured reviewer:
 22. Memory regression: change does not repeat a known testing or integration gotcha.
 23. Test validity (anti-placebo): no skipped/focused/tautology/commented/no-assert test guards an AC, and each AC test would go red on regression. Run `appmaker/skills/tdd/test-validity.md` Tier 1 sweep. Placebo test guarding an AC = review FAIL.
 24. Browser E2E grounding: UI/browser E2E specs use locators traced to a live-DOM snapshot (scan-first, per `appmaker/skills/tdd/browser-e2e.md`), not invented selectors/test-ids. Fabricated/blind E2E = review FAIL.
+25. Debt marker hygiene: every `appmaker:debt` marker in the diff names a ceiling AND an upgrade path (`appmaker:debt <ceiling> -> upgrade: <path>`). Bare marker (no ceiling or no upgrade path) = WARN. Run `/appmaker:debt` to harvest the ledger.
+26. Over-engineering (YAGNI): flag reinvented stdlib, unneeded new dependencies, speculative abstractions (interface with one implementation, factory for one product, config for a constant), and dead flexibility no AC asked for. Respect `build_intensity`; apply `appmaker/skills/yagni-ladder.md`. One line per finding: location -> what to cut -> what replaces it. Broader than item 11 (reuse-first); honors the same safety carve-outs (never simplify away validation/error-handling/security/a11y).
 
 ## Ultra mode
 
@@ -69,6 +71,8 @@ Fallback to local review only with an explicit warning if `/ultra-review` is una
 - Memory wiki gotchas: 0 repeated
 - Test validity: no placebo tests guarding ACs
 - Browser E2E grounding: locators traced to live-DOM snapshot when required
+- Debt markers: ceiling + upgrade path named; bare markers flagged
+- Over-engineering: no speculative abstractions / reinvented stdlib / unneeded deps
 ```
 
 Omit the findings table and notes lines when empty. Do not create separate sections for critical/suggestions/constitution/glossary/AC if each has 0-1 item.

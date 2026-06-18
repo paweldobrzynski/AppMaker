@@ -16,7 +16,7 @@ Optionally pairs with [Graphify](https://github.com/safishamsi/graphify) for rea
 **Form:** Claude Code plugin at `plugin/appmaker/`. Skills loaded via `--plugin-dir` flag or marketplace install.
 **Convention:** `/appmaker:<name>` (colon namespace per Claude Code plugin spec — like OpenSpec `/opsx:propose`).
 **Philosophy:** minimal, single-purpose, opt-in everywhere. Delegate to Claude Code built-ins where they exist.
-**Status:** v0.2.28. 24 skills (19 core + afk + status + token-audit + next + phase). AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh` and `phase-plan.sh --json`, showing project state, evidence, and phase waves without adding a separate source of truth. TDD now grounds UI E2E in a live-DOM scan (no hallucinated locators) and gates against placebo tests (anti-please-the-LLM). 30 smoke test suites. See `DESIGN.md`, `METHOD.md`.
+**Status:** v0.2.30. 25 skills (19 core + afk + status + token-audit + next + phase + debt). Ponytail-adopted (legibility, not new epistemics): deliberate shortcuts leave an `appmaker:debt <ceiling> -> upgrade: <path>` marker; `/appmaker:debt` harvests them into a ledger (Tier-1 grep); review/checklist warn on bare markers and gain a YAGNI / over-engineering lens (`skills/yagni-ladder.md` + `build_intensity` config dial). Multi-host portability and always-on mode deliberately NOT adopted. Visual layer: `prd` adds a markdown-native wireframe-first step (mermaid + ASCII) that catches intent drift before AC — a view of the PRD, never a new source of intent; `review` emits a non-gating visual recap; Studio gains a Wireframes panel. AppMaker Studio MVP: local Node server + static cockpit over `status-json.sh`, `phase-plan.sh --json`, and `wireframes-json.sh`, without adding a separate source of truth. TDD grounds UI E2E in a live-DOM scan and gates against placebo tests (anti-please-the-LLM). 34 smoke test suites. See `DESIGN.md`, `METHOD.md`.
 
 ## Install
 
@@ -79,9 +79,10 @@ High-impact architecture choices use an embedded **Architecture Options Research
 /appmaker:context "<topic>"     → Graphify-aware context packet, fallback to file reads
 /appmaker:feedback "<desc>"     → quick capture from QA → backlog item
 /appmaker:glossary              → ubiquitous language (deterministic stub extraction + best-effort semantic review)
+/appmaker:debt                  → harvest `appmaker:debt` shortcut markers into a ledger (Tier-1 grep, collects never fixes)
 ```
 
-24 written: 19 core (above) + 5 supporting (afk, status, token-audit, next, phase).
+25 written: 19 core (above) + 6 supporting (afk, status, token-audit, next, phase, debt).
 
 ### Opt-in deepening (4 skills, all TODO)
 
@@ -107,7 +108,7 @@ High-impact architecture choices use an embedded **Architecture Options Research
 node /path/to/AppMaker/plugin/appmaker/studio/server.mjs --project-dir /path/to/your-project --port 19773
 ```
 
-Open the printed localhost URL. Studio reads AppMaker JSON APIs and serves a cockpit for project status, evidence, and phase dry-runs. It does not replace repo artifacts; `appmaker/` remains the source of truth.
+Open the printed localhost URL. Studio reads AppMaker JSON APIs and serves a cockpit for project status, evidence, phase dry-runs, and a **Wireframes & recaps** panel (wireframe-first artifacts + visual recaps, via `wireframes-json.sh`). It does not replace repo artifacts; `appmaker/` remains the source of truth.
 
 ## Invocation control (per skill)
 
@@ -179,7 +180,7 @@ AppMaker/
 │   │   │       ├── context-packet-template.md
 │   │   │       └── decomposition-template.md
 │   │   └── graphify/.graphifyignore.template
-│   └── skills/                          ← 24 dirs (19 core + afk + status + token-audit + next + phase)
+│   └── skills/                          ← 25 dirs (19 core + afk + status + token-audit + next + phase + debt)
 │       ├── init/SKILL.md
 │       ├── start/SKILL.md
 │       ├── grill/SKILL.md
@@ -277,4 +278,5 @@ Earlier heavyweight iteration (5 ADRs, 18 constitutional rules, 3 JSON Schemas, 
 - **[Spec Kit](https://github.com/github/spec-kit)** — constitution layer + opt-in deepening commands + cross-artifact analyze pattern + slash command form factor (`/speckit.*`)
 - **[Graphify](https://github.com/safishamsi/graphify)** — context layer (optional pair)
 - **[Forest's CLAUDE.md](https://github.com/forrestchang/andrej-karpathy-skills)** — universal agent behavior (recommended pairing)
+- **[ponytail](https://github.com/DietrichGebert/ponytail)** by `DietrichGebert` (MIT) — lazy-senior-dev skill. AppMaker adopts (v0.2.30): the marker-comment → deterministic debt-ledger pattern (`appmaker:debt` markers → `/appmaker:debt`) and the YAGNI / over-engineering ladder (`skills/yagni-ladder.md` + `build_intensity` dial). Deliberately NOT adopted: multi-host portability and always-on mode (clash with AppMaker's Claude-Code-layer, opt-in positioning).
 - **[Aider](https://github.com/Aider-AI/aider)** — repo-map algorithm reference (tree-sitter + PageRank)
